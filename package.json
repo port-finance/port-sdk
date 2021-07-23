@@ -1,13 +1,13 @@
 {
   "name": "@port.finance/port-sdk",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "ts-node node_modules/jasmine/bin/jasmine"
   },
   "keywords": [],
-  "author": "port_bjy",
-  "license": "ISC",
+  "author": "Port Finance <info@port.finance>",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/port-finance/port-sdk.git"
@@ -16,5 +16,21 @@
     "url": "https://github.com/port-finance/port-sdk/issues"
   },
   "homepage": "https://github.com/port-finance/port-sdk#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "@solana/spl-token": "^0.1.6",
+    "@solana/web3.js": "^1.22.0",
+    "big.js": "^6.1.1",
+    "buffer-layout": "^1.2.2",
+    "typescript": "^4.3.5"
+  },
+  "devDependencies": {
+    "@types/big.js": "^6.1.1",
+    "@types/jasmine": "^3.8.1",
+    "jasmine": "^3.8.0",
+    "jasmine-spec-reporter": "^7.0.0",
+    "jasmine-ts": "^0.4.0",
+    "ts-loader": "^9.2.3",
+    "ts-node": "^10.1.0"
+  }
 }
