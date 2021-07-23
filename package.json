@@ -1,0 +1,20 @@
+{
+  "name": "@port.finance/port-sdk",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "port_bjy",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/port-finance/port-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/port-finance/port-sdk/issues"
+  },
+  "homepage": "https://github.com/port-finance/port-sdk#readme",
+  "description": ""
+}
