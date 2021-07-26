@@ -9,7 +9,7 @@ import Big from "big.js";
 import {AssetId} from "./AssetId";
 import {SupplyApy} from "./SupplyApy";
 import {LoanToValueRatio} from "./LoanToValueRatio";
-import {Reserve, ReserveCollateral, ReserveConfig, ReserveLiquidity} from "../structs/Reserve";
+import {ReserveCollateral, ReserveConfig, ReserveData, ReserveLiquidity} from "../structs/ReserveData";
 import {Wads} from "./Wads";
 import {ShareId} from "./ShareId";
 import {OracleId} from "./OracleId";
@@ -44,7 +44,7 @@ export class ReserveInfo {
     this.params = params;
   }
 
-  public static fromRaw(account: ParsedAccount<Reserve>): ReserveInfo {
+  public static fromRaw(account: ParsedAccount<ReserveData>): ReserveInfo {
     const id = new ReserveId(account.pubkey);
     const marketId = MarketId.of(account.data.lendingMarket);
     const asset = ReserveAssetInfo.fromRaw(account.data.liquidity);

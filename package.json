@@ -19,6 +19,7 @@
   "description": "",
   "dependencies": {
     "@solana/spl-token": "^0.1.6",
+    "@solana/spl-token-registry": "^0.2.205",
     "@solana/web3.js": "^1.22.0",
     "big.js": "^6.1.1",
     "buffer-layout": "^1.2.2",

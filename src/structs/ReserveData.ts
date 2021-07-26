@@ -9,7 +9,7 @@ import {LastUpdate, LastUpdateLayout} from './LastUpdate';
 
 export const RESERVE_DATA_SIZE = 575;
 
-export interface Reserve {
+export interface ReserveData {
   version: number;
   lastUpdate: LastUpdate;
   lendingMarket: PublicKey;

@@ -5,11 +5,17 @@ describe("Port", function () {
   let port: Port;
 
   beforeEach(function () {
-    port = Port.getInstance();
+    port = Port.forMainNet();
   });
 
-  it("should be able to play a Song", async () => {
-    const accounts = await port.getReserveAccounts();
-    expect(accounts).toHaveSize(2);
+  it('should have at least one reserve', async () => {
+    const context = await port.getReserveContext();
+    const reserves = context.getAllReserves();
+    expect(reserves.length).toBeGreaterThanOrEqual(1);
   });
+
+  it('should have positive total market cap', async () => {
+    const total = await port.getTotalMarketCap();
+    expect(total.toNumber()).toBeGreaterThan(0);
+  })
 });
