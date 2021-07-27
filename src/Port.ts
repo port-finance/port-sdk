@@ -1,4 +1,4 @@
-import {Connection, PublicKey} from '@solana/web3.js';
+import {Connection} from '@solana/web3.js';
 import {RESERVE_DATA_SIZE, ReserveData} from "./structs/ReserveData";
 import {ReserveParser} from "./parsers/ReserveParser";
 import {ReserveInfo} from "./models/ReserveInfo";
@@ -15,25 +15,28 @@ import {BalanceData, BalanceParser} from "./parsers/BalanceParser";
 import {BalanceId} from "./models/BalanceId";
 import {ShareId} from "./models/ShareId";
 import {PortBalanceData} from "./structs/PortBalanceData";
+import {Profile} from "./Profile";
+import {ENV} from "@solana/spl-token-registry";
 
 export class Port {
 
   private readonly connection: Connection;
-  private readonly lendingProgramPk: PublicKey;
-  private readonly tokenProgramPk: PublicKey;
+  private readonly profile: Profile;
 
-  constructor(endpoint: string, lendingProgramPk: PublicKey, tokenProgramPk: PublicKey) {
+  constructor(endpoint: string, profile: Profile) {
     this.connection = new Connection(endpoint, 'recent');
-    this.lendingProgramPk = lendingProgramPk;
-    this.tokenProgramPk = tokenProgramPk;
+    this.profile = profile;
   }
 
-  public static forMainNet(): Port {
+  public static forMainNet(endpoint?: string): Port {
     return new Port(
-      'https://port-finance.rpcpool.com',
-      new PublicKey('Port7uDYB3wk6GJAw4KT1WpTeMtSu9bTcChBHkX2LfR'),
-      new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
+      endpoint || 'https://port-finance.rpcpool.com',
+      Profile.forMainNet(),
     );
+  }
+
+  public getEnv(): ENV {
+    return this.profile.getEnv();
   }
 
   public async getTotalMarketCap(): Promise<QuoteValue> {
@@ -49,7 +52,7 @@ export class Port {
     context: ReserveContext,
   ): Promise<Balance<Share>[]> {
     const shareMintPks = context.getAllReserves().map(r => r.getShareId()).map(s => s.key);
-    const programId = this.tokenProgramPk;
+    const programId = this.profile.getTokenProgramPk();
     const result = await this.connection.getTokenAccountsByOwner(
       walletId.key,
       {programId},
@@ -72,7 +75,7 @@ export class Port {
     context: ReserveContext,
   ): Promise<PortBalance | undefined> {
     const raw = await this.connection.getProgramAccounts(
-      this.lendingProgramPk,
+      this.profile.getLendingProgramPk(),
       PortBalanceForWallet(walletId),
     );
     const parsed = raw
@@ -87,7 +90,7 @@ export class Port {
 
   public async getReserveContext(): Promise<ReserveContext> {
     const raw = await this.connection.getProgramAccounts(
-      this.lendingProgramPk,
+      this.profile.getLendingProgramPk(),
       {
         filters: [{
           dataSize: RESERVE_DATA_SIZE
