@@ -1,9 +1,10 @@
 {
   "name": "@port.finance/port-sdk",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "index.js",
   "scripts": {
-    "test": "ts-node node_modules/jasmine/bin/jasmine"
+    "test": "ts-node node_modules/jasmine/bin/jasmine",
+    "publish": "npm publish --access public"
   },
   "keywords": [],
   "author": "Port Finance <info@port.finance>",
