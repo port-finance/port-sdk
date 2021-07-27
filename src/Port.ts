@@ -11,21 +11,28 @@ import {PortBalanceForWallet} from "./utils/Filters";
 import {PortBalanceParser} from "./parsers/PortBalanceParser";
 import {Balance} from "./models/Balance";
 import {Share} from "./models/Share";
+import {BalanceData, BalanceParser} from "./parsers/BalanceParser";
+import {BalanceId} from "./models/BalanceId";
+import {ShareId} from "./models/ShareId";
+import {PortBalanceData} from "./structs/PortBalanceData";
 
 export class Port {
 
   private readonly connection: Connection;
-  private readonly program: PublicKey;
+  private readonly lendingProgramPk: PublicKey;
+  private readonly tokenProgramPk: PublicKey;
 
-  constructor(endpoint: string, program: PublicKey) {
+  constructor(endpoint: string, lendingProgramPk: PublicKey, tokenProgramPk: PublicKey) {
     this.connection = new Connection(endpoint, 'recent');
-    this.program = program;
+    this.lendingProgramPk = lendingProgramPk;
+    this.tokenProgramPk = tokenProgramPk;
   }
 
   public static forMainNet(): Port {
     return new Port(
       'https://port-finance.rpcpool.com',
       new PublicKey('Port7uDYB3wk6GJAw4KT1WpTeMtSu9bTcChBHkX2LfR'),
+      new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
     );
   }
 
@@ -41,7 +48,23 @@ export class Port {
     walletId: WalletId,
     context: ReserveContext,
   ): Promise<Balance<Share>[]> {
-    return [];
+    const shareMintPks = context.getAllReserves().map(r => r.getShareId()).map(s => s.key);
+    const programId = this.tokenProgramPk;
+    const result = await this.connection.getTokenAccountsByOwner(
+      walletId.key,
+      {programId},
+    );
+    const raw = result.value;
+    return raw
+      .map(a => BalanceParser(a))
+      .filter(p => p && shareMintPks.find(k => k.equals(p.data.mint)))
+      .map(p => {
+        const parsed = p as ParsedAccount<BalanceData>;
+        const balanceId = new BalanceId(parsed.pubkey, false);
+        const shareId = new ShareId(parsed.data.mint);
+        const share = new Share(shareId, parsed.data.amount.toString());
+        return new Balance(balanceId, share);
+      });
   }
 
   public async getPortBalance(
@@ -49,19 +72,22 @@ export class Port {
     context: ReserveContext,
   ): Promise<PortBalance | undefined> {
     const raw = await this.connection.getProgramAccounts(
-      this.program,
+      this.lendingProgramPk,
       PortBalanceForWallet(walletId),
     );
     const parsed = raw
       .map(a => PortBalanceParser(a))
       .filter(p => !!p)
-      .map(a => PortBalance.fromRaw(a, context)) as PortBalance[];
+      .map(p => {
+        const parsed = p as ParsedAccount<PortBalanceData>
+        return PortBalance.fromRaw(parsed, context);
+      });
     return parsed.length > 0 ? parsed[0] : undefined;
   }
 
   public async getReserveContext(): Promise<ReserveContext> {
     const raw = await this.connection.getProgramAccounts(
-      this.program,
+      this.lendingProgramPk,
       {
         filters: [{
           dataSize: RESERVE_DATA_SIZE

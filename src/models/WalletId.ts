@@ -8,6 +8,10 @@ export class WalletId extends Id {
     super(key);
   }
 
+  public static fromBase58(base58: string): WalletId {
+    return WalletId.of(new PublicKey(base58));
+  }
+
   public static of(key: PublicKey): WalletId {
     return new WalletId(key);
   }

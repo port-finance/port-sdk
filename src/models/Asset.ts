@@ -13,13 +13,13 @@ export class Asset extends Lamport<AssetId, Asset> {
 
   public static MIN_NATIVE_LAMPORT = Asset.native(new Big(5_000_000));
 
-  private static SIGNIFICANT_DIGITS = 6;
-  private static LARGE_THRESHOLD = new Big(10).pow(6).toNumber();
-  private static FORMATTER_NORMAL = new Intl.NumberFormat('en-US', {
+  private static readonly SIGNIFICANT_DIGITS = 6;
+  private static readonly LARGE_THRESHOLD = new Big(10).pow(6).toNumber();
+  private static readonly FORMATTER_NORMAL = new Intl.NumberFormat('en-US', {
     style: 'decimal',
     maximumSignificantDigits: Asset.SIGNIFICANT_DIGITS,
   });
-  private static FORMATTER_LARGE = new Intl.NumberFormat('en-US', {
+  private static readonly FORMATTER_LARGE = new Intl.NumberFormat('en-US', {
     style: 'decimal',
     maximumFractionDigits: 0,
   });

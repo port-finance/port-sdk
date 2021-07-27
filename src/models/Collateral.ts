@@ -1,9 +1,9 @@
 import {Share} from "./Share";
 import {ReserveId} from "./ReserveId";
-import {PortBalanceCollateralData} from "../../models";
 import {ShareId} from "./ShareId";
 import Big from "big.js";
 import {QuoteValue} from "./QuoteValue";
+import {PortBalanceCollateralData} from "../structs/PortBalanceData";
 
 export class Collateral {
 

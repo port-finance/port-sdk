@@ -4,9 +4,9 @@ import {Loan} from "./Loan";
 import {ReserveId} from "./ReserveId";
 import {Margin} from "./Margin";
 import {ReserveContext} from "./ReserveContext";
-import {PortBalanceParser} from "../../models";
-import {ParsedAccount} from "../../contexts/AccountContext";
 import {MarginRatio} from "./MarginRatio";
+import {ParsedAccount} from "../parsers/ParsedAccount";
+import {PortBalanceData} from "../structs/PortBalanceData";
 
 export class PortBalance {
 
@@ -35,9 +35,9 @@ export class PortBalance {
     this.maintenanceMargin = maintenanceMargin;
   }
 
-  public static fromRaw(raw: ParsedAccount<PortBalanceParser>, reserves: ReserveContext): PortBalance {
+  public static fromRaw(raw: ParsedAccount<PortBalanceData>, reserves: ReserveContext): PortBalance {
     const portId = new PortId(raw.pubkey);
-    const collaterals = raw.info.deposits
+    const collaterals = raw.data.deposits
       .map(c => {
         const reserveId = new ReserveId(c.depositReserve)
         const reserve = reserves.getReserveByReserveId(reserveId);
@@ -47,7 +47,7 @@ export class PortBalance {
         return Collateral.fromRaw(c, reserve.getShareId());
       })
       .filter(Boolean) as Collateral[];
-    const loans = raw.info.borrows
+    const loans = raw.data.borrows
       .map(l => {
         const reserveId = new ReserveId(l.borrowReserve)
         const reserve = reserves.getReserveByReserveId(reserveId);
@@ -57,9 +57,9 @@ export class PortBalance {
         return Loan.fromRaw(l, reserve.getAssetId());
       })
       .filter(Boolean) as Loan[];
-    const loanMargin = Margin.fromWads(raw.info.borrowedValue);
-    const initialMargin = Margin.fromWads(raw.info.allowedBorrowValue);
-    const maintenanceMargin = Margin.fromWads(raw.info.unhealthyBorrowValue);
+    const loanMargin = Margin.fromWads(raw.data.borrowedValue);
+    const initialMargin = Margin.fromWads(raw.data.allowedBorrowValue);
+    const maintenanceMargin = Margin.fromWads(raw.data.unhealthyBorrowValue);
     return new PortBalance(
       portId,
       collaterals,

@@ -1,9 +1,9 @@
 import {ReserveId} from "./ReserveId";
 import {Asset} from "./Asset";
-import {PortBalanceLoanData} from "../../models/state";
 import {AssetId} from "./AssetId";
 import {Wads} from "./Wads";
 import {QuoteValue} from "./QuoteValue";
+import {PortBalanceLoanData} from "../structs/PortBalanceData";
 
 export class Loan {
 

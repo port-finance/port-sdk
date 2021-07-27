@@ -1,5 +1,4 @@
 import BufferLayout from "buffer-layout";
-import {ParsedAccount} from "./ParsedAccount";
 import {
   ObligationCollateralLayout,
   ObligationLayout,
@@ -10,11 +9,11 @@ import {
   ProtoObligation
 } from "../structs/PortBalanceData";
 import {RawAccount} from "./RawAccount";
+import {Parser} from "./Parser";
 
-
-export function PortBalanceParser(
+export const PortBalanceParser: Parser<PortBalanceData> = (
   raw: RawAccount,
-): ParsedAccount<PortBalanceData> | undefined {
+) => {
   const pubkey = raw.pubkey;
   const buffer = Buffer.from(raw.account.data);
   const {
