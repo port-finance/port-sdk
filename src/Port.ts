@@ -16,7 +16,6 @@ import {BalanceId} from "./models/BalanceId";
 import {ShareId} from "./models/ShareId";
 import {PortBalanceData} from "./structs/PortBalanceData";
 import {Profile} from "./Profile";
-import {ENV} from "@solana/spl-token-registry";
 
 export class Port {
 
@@ -35,8 +34,8 @@ export class Port {
     );
   }
 
-  public getEnv(): ENV {
-    return this.profile.getEnv();
+  public getProfile(): Profile {
+    return this.profile;
   }
 
   public async getTotalMarketCap(): Promise<QuoteValue> {
