@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "outDir": "./lib",
     "target": "es5",
     "module": "commonjs",
     "lib": [
@@ -12,12 +13,13 @@
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "typeRoots": [
-      "src/types"
-    ],
     "isolatedModules": true
   },
   "include": [
-    "src"
+    "./src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/node_modules"
   ]
 }

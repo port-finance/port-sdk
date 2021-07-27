@@ -3,6 +3,7 @@ import {AccountInfo, AccountLayout, u64} from "@solana/spl-token";
 import {Parser} from "./Parser";
 import {RawAccount} from "./RawAccount";
 
+
 export type BalanceData = AccountInfo;
 
 export const BalanceParser: Parser<BalanceData> = (
