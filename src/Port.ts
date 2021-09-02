@@ -14,7 +14,7 @@ import {Share} from "./models/Share";
 import {BalanceData, BalanceParser} from "./parsers/BalanceParser";
 import {BalanceId} from "./models/BalanceId";
 import {ShareId} from "./models/ShareId";
-import {PortBalanceData} from "./structs/PortBalanceData";
+import {OBLIGATION_DATA_SIZE, PortBalanceData} from "./structs/PortBalanceData";
 import {Profile} from "./Profile";
 
 export class Port {
@@ -108,7 +108,7 @@ export class Port {
       this.profile.getLendingProgramPk(),
       {
         filters: [{
-          dataSize: RESERVE_DATA_SIZE
+          dataSize: OBLIGATION_DATA_SIZE
         }]
       }
     );

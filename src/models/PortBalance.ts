@@ -7,11 +7,13 @@ import {ReserveContext} from "./ReserveContext";
 import {MarginRatio} from "./MarginRatio";
 import {ParsedAccount} from "../parsers/ParsedAccount";
 import {PortBalanceData} from "../structs/PortBalanceData";
+import { PublicKey } from "@solana/web3.js";
 
 export class PortBalance {
 
   static DATA_SIZE = 916;
 
+  public readonly owner: PublicKey;
   private readonly portId: PortId;
   private readonly collaterals: Collateral[];
   private readonly loans: Loan[];
@@ -26,6 +28,7 @@ export class PortBalance {
     loanMargin: Margin,
     initialMargin: Margin,
     maintenanceMargin: Margin,
+    owner: PublicKey,
   ) {
     this.portId = portId;
     this.collaterals = collaterals;
@@ -33,6 +36,7 @@ export class PortBalance {
     this.loanMargin = loanMargin;
     this.initialMargin = initialMargin;
     this.maintenanceMargin = maintenanceMargin;
+    this.owner = owner;
   }
 
   public static fromRaw(raw: ParsedAccount<PortBalanceData>, reserves: ReserveContext): PortBalance {
@@ -67,6 +71,7 @@ export class PortBalance {
       loanMargin,
       initialMargin,
       maintenanceMargin,
+      raw.data.owner
     );
   }
 
