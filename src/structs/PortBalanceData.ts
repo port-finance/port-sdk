@@ -4,6 +4,8 @@ import * as BufferLayout from 'buffer-layout';
 import * as Layout from '../utils/layout';
 import {LastUpdate} from './LastUpdate';
 
+export const OBLIGATION_DATA_SIZE = 916;
+
 export const ObligationLayout: typeof BufferLayout.Structure = BufferLayout.struct(
   [
     BufferLayout.u8('version'),

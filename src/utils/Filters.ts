@@ -1,5 +1,6 @@
 import {GetProgramAccountsConfig} from "@solana/web3.js";
 import {WalletId} from "../models/WalletId";
+import { OBLIGATION_DATA_SIZE } from "../structs/PortBalanceData";
 
 export function PortBalanceForWallet(walletId: WalletId): GetProgramAccountsConfig {
   return {
@@ -11,7 +12,7 @@ export function PortBalanceForWallet(walletId: WalletId): GetProgramAccountsConf
         }
       },
       {
-        dataSize: 916,
+        dataSize: OBLIGATION_DATA_SIZE,
       }
     ]
   };

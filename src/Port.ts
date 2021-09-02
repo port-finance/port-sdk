@@ -102,4 +102,21 @@ export class Port {
       .map(a => ReserveInfo.fromRaw(a as ParsedAccount<ReserveData>)) as ReserveInfo[];
     return ReserveContext.index(parsed);
   }
+
+  public async getAllPortBalances(): Promise<PortBalance[]> {
+    const raw = await this.connection.getProgramAccounts(
+      this.profile.getLendingProgramPk(),
+      {
+        filters: [{
+          dataSize: RESERVE_DATA_SIZE
+        }]
+      }
+    );
+    const allReserves = await this.getReserveContext();
+    const parsed = raw
+      .map(p => PortBalanceParser(p))
+      .filter(p => !!p)
+      .map(p => PortBalance.fromRaw(p as ParsedAccount<PortBalanceData>, allReserves)) as PortBalance[];
+    return parsed;
+  }
 }
