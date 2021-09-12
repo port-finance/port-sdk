@@ -113,6 +113,58 @@ export const MAINNET_PAI: AssetConfig = new AssetConfig(
   }),
 );
 
+export const MAINNET_SRM: AssetConfig = new AssetConfig(
+  AssetId.fromBase58('SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt'),
+  ReserveId.fromBase58('ZgS3sv1tJAor2rbGMFLeJwxsEGDiHkcrR2ZaNHZUpyF'),
+  new AssetDisplayConfig('Serum', 'SRM'),
+  AssetPriceConfig.fromDecimals(5),
+  new AssetDepositConfig({
+    min: 10_000, // min 0.01 PAI
+    max: 100_000_000, // max 100 PAI
+  }),
+);
+
+export const MAINNET_BTC: AssetConfig = new AssetConfig(
+  AssetId.fromBase58('9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E'),
+  ReserveId.fromBase58('DSST29PMCVkxo8cf5ht9LxrPoMc8jAZt98t6nuJywz8p'),
+  new AssetDisplayConfig('Bitcoin', 'BTC'),
+  AssetPriceConfig.fromDecimals(5),
+  new AssetDepositConfig({
+    min: 1, // min 1 * 10 ^(-6) BTC
+  }),
+);
+
+
+export const MAINNET_MER: AssetConfig = new AssetConfig(
+  AssetId.fromBase58('MERt85fc5boKw3BW1eYdxonEuJNvXbiMbs6hvheau5K'),
+  ReserveId.fromBase58('BnhsmYVvNjXK3TGDHLj1Yr1jBGCmD1gZMkAyCwoXsHwt'),
+  new AssetDisplayConfig('Mercurial', 'MER'),
+  AssetPriceConfig.fromDecimals(5),
+  new AssetDepositConfig({
+    min: 10_000, // min 0.01 MER
+  }),
+);
+
+export const MAINNET_MSOL: AssetConfig = new AssetConfig(
+  AssetId.fromBase58('mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So'),
+  ReserveId.fromBase58('9gDF5W94RowoDugxT8cM29cX8pKKQitTp2uYVrarBSQ7'),
+  new AssetDisplayConfig('Marinade Staked SOL', 'mSOL'),
+  AssetPriceConfig.fromDecimals(5),
+  new AssetDepositConfig({
+    min: 1_000, // min 0.01 mSOL
+  }),
+);
+
+export const MAINNET_PSOL: AssetConfig = new AssetConfig(
+  AssetId.fromBase58('9EaLkQrbjmbbuZG9Wdpo8qfNUEjHATJFSycEmw6f1rGX'),
+  ReserveId.fromBase58('GRJyCEezbZQibAEfBKCRAg5YoTPP2UcRSTC7RfzoMypy'),
+  new AssetDisplayConfig('Parrot Staking SOL', 'pSOL'),
+  AssetPriceConfig.fromDecimals(5),
+  new AssetDepositConfig({
+    min: 1_000, // min 0.01 PAI
+  }),
+);
+
 
 export const DEVNET_ASSETS: AssetConfig[] = [
   DEVNET_BTC,
@@ -126,6 +178,11 @@ export const MAINNET_ASSETS: AssetConfig[] = [
   MAINNET_USDC,
   MAINNET_USDT,
   MAINNET_PAI,
+  MAINNET_SRM,
+  MAINNET_BTC,
+  MAINNET_MER,
+  MAINNET_MSOL,
+  MAINNET_PSOL,
 ]
 
 export function getAssetConfigs(env: ENV): AssetConfig[] {
