@@ -34,4 +34,9 @@ describe("Port", function () {
     const pb = await port.getPortBalance(GOLDEN_WALLET, context);
     expect(pb).not.toBeUndefined();
   });
+
+  it('should have port balances', async () => {
+    const pb = await port.getAllPortBalances();
+    expect(pb).not.toBeUndefined();
+  });
 });

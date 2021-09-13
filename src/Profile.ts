@@ -73,6 +73,54 @@ export class Profile {
             max: 100_000_000, // max 100 PAI
           }),
         ),
+        new AssetConfig(
+          AssetId.fromBase58('9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E'),
+          ReserveId.fromBase58('DSST29PMCVkxo8cf5ht9LxrPoMc8jAZt98t6nuJywz8p'),
+          new AssetDisplayConfig(
+            'Bitcoin',
+            'BTC',
+          ),
+          AssetPriceConfig.fromDecimals(1),
+          new AssetDepositConfig({
+            min: 1, // min 1 * 10 ^ (-6) BTC
+          }),
+        ),
+        new AssetConfig(
+          AssetId.fromBase58('SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt'),
+          ReserveId.fromBase58('ZgS3sv1tJAor2rbGMFLeJwxsEGDiHkcrR2ZaNHZUpyF'),
+          new AssetDisplayConfig(
+            'Serum',
+            'SRM',
+          ),
+          AssetPriceConfig.fromDecimals(4),
+          new AssetDepositConfig({
+            min: 1_000, // min 0.001 SRM
+          }),
+        ),
+        new AssetConfig(
+          AssetId.fromBase58('MERt85fc5boKw3BW1eYdxonEuJNvXbiMbs6hvheau5K'),
+          ReserveId.fromBase58('BnhsmYVvNjXK3TGDHLj1Yr1jBGCmD1gZMkAyCwoXsHwt'),
+          new AssetDisplayConfig(
+            'Mercurial',
+            'MER',
+          ),
+          AssetPriceConfig.fromDecimals(4),
+          new AssetDepositConfig({
+            min: 10_000, // min 0.01 MER
+          }),
+        ),
+        new AssetConfig(
+          AssetId.fromBase58('mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So'),
+          ReserveId.fromBase58('9gDF5W94RowoDugxT8cM29cX8pKKQitTp2uYVrarBSQ7'),
+          new AssetDisplayConfig(
+            'Marinade staked SOL',
+            'mSOL',
+          ),
+          AssetPriceConfig.fromDecimals(4),
+          new AssetDepositConfig({
+            min: 1_000, // min 0.001 mSOL
+          }),
+        ),
       ]);
   }
 

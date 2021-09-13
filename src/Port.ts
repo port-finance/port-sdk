@@ -14,7 +14,7 @@ import {Share} from "./models/Share";
 import {BalanceData, BalanceParser} from "./parsers/BalanceParser";
 import {BalanceId} from "./models/BalanceId";
 import {ShareId} from "./models/ShareId";
-import {PortBalanceData} from "./structs/PortBalanceData";
+import {OBLIGATION_DATA_SIZE, PortBalanceData} from "./structs/PortBalanceData";
 import {Profile} from "./Profile";
 
 export class Port {
@@ -22,14 +22,14 @@ export class Port {
   private readonly connection: Connection;
   private readonly profile: Profile;
 
-  constructor(endpoint: string, profile: Profile) {
-    this.connection = new Connection(endpoint, 'recent');
+  constructor(connection: Connection, profile: Profile) {
+    this.connection = connection;
     this.profile = profile;
   }
 
-  public static forMainNet(endpoint?: string): Port {
+  public static forMainNet(connection?: Connection): Port {
     return new Port(
-      endpoint || 'https://port-finance.rpcpool.com',
+      connection || new Connection('https://port-finance.rpcpool.com'),
       Profile.forMainNet(),
     );
   }
@@ -101,5 +101,22 @@ export class Port {
       .filter(p => !!p)
       .map(a => ReserveInfo.fromRaw(a as ParsedAccount<ReserveData>)) as ReserveInfo[];
     return ReserveContext.index(parsed);
+  }
+
+  public async getAllPortBalances(): Promise<PortBalance[]> {
+    const raw = await this.connection.getProgramAccounts(
+      this.profile.getLendingProgramPk(),
+      {
+        filters: [{
+          dataSize: OBLIGATION_DATA_SIZE
+        }]
+      }
+    );
+    const allReserves = await this.getReserveContext();
+    const parsed = raw
+      .map(p => PortBalanceParser(p))
+      .filter(p => !!p)
+      .map(p => PortBalance.fromRaw(p as ParsedAccount<PortBalanceData>, allReserves)) as PortBalance[];
+    return parsed;
   }
 }
