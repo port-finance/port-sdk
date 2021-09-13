@@ -22,14 +22,14 @@ export class Port {
   private readonly connection: Connection;
   private readonly profile: Profile;
 
-  constructor(endpoint: string, profile: Profile) {
-    this.connection = new Connection(endpoint, 'recent');
+  constructor(connection: Connection, profile: Profile) {
+    this.connection = connection;
     this.profile = profile;
   }
 
-  public static forMainNet(endpoint?: string): Port {
+  public static forMainNet(connection?: Connection): Port {
     return new Port(
-      endpoint || 'https://port-finance.rpcpool.com',
+      connection || new Connection('https://port-finance.rpcpool.com'),
       Profile.forMainNet(),
     );
   }
