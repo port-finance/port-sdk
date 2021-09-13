@@ -21,6 +21,7 @@ import {AssetPrice} from "./AssetPrice";
 import {AssetQuantityContext} from "./AssetQuantityContext";
 import {AssetValue} from "./AssetValue";
 import {ParsedAccount} from "../parsers/ParsedAccount";
+import { PublicKey } from "@solana/web3.js";
 
 export class ReserveInfo {
 
@@ -29,6 +30,7 @@ export class ReserveInfo {
   readonly asset: ReserveAssetInfo;
   readonly share: ReserveTokenInfo;
   readonly params: ReserveParams;
+  readonly staking_pool: PublicKey | null
 
   constructor(
     reserveId: ReserveId,
@@ -36,12 +38,14 @@ export class ReserveInfo {
     asset: ReserveAssetInfo,
     share: ReserveTokenInfo,
     params: ReserveParams,
+    staking_pool: PublicKey | null,
   ) {
     this.reserveId = reserveId;
     this.marketId = marketId;
     this.asset = asset;
     this.share = share;
     this.params = params;
+    this.staking_pool = staking_pool;
   }
 
   public static fromRaw(account: ParsedAccount<ReserveData>): ReserveInfo {
@@ -50,7 +54,8 @@ export class ReserveInfo {
     const asset = ReserveAssetInfo.fromRaw(account.data.liquidity);
     const token = ReserveTokenInfo.fromRaw(account.data.collateral);
     const params = ReserveParams.fromRaw(asset.getAssetId(), account.data.config);
-    return new ReserveInfo(id, marketId, asset, token, params);
+    const reserve_staking_pool = account.data.deposit_staking_pool_option === 0 ? null : account.data.deposit_staking_pool;
+    return new ReserveInfo(id, marketId, asset, token, params, reserve_staking_pool);
   }
 
   public getReserveId(): ReserveId {
