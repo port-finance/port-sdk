@@ -86,6 +86,18 @@ export class Profile {
           }),
         ),
         new AssetConfig(
+          AssetId.fromBase58('SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt'),
+          ReserveId.fromBase58('ZgS3sv1tJAor2rbGMFLeJwxsEGDiHkcrR2ZaNHZUpyF'),
+          new AssetDisplayConfig(
+            'Serum',
+            'SRM',
+          ),
+          AssetPriceConfig.fromDecimals(4),
+          new AssetDepositConfig({
+            min: 1_000, // min 0.001 SRM
+          }),
+        ),
+        new AssetConfig(
           AssetId.fromBase58('MERt85fc5boKw3BW1eYdxonEuJNvXbiMbs6hvheau5K'),
           ReserveId.fromBase58('BnhsmYVvNjXK3TGDHLj1Yr1jBGCmD1gZMkAyCwoXsHwt'),
           new AssetDisplayConfig(
