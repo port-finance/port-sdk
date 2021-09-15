@@ -121,6 +121,18 @@ export class Profile {
             min: 1_000, // min 0.001 mSOL
           }),
         ),
+        new AssetConfig(
+          AssetId.fromBase58('9EaLkQrbjmbbuZG9Wdpo8qfNUEjHATJFSycEmw6f1rGX'),
+          ReserveId.fromBase58('GRJyCEezbZQibAEfBKCRAg5YoTPP2UcRSTC7RfzoMypy'),
+          new AssetDisplayConfig(
+            'Parrot Staked SOL',
+            'pSOL',
+          ),
+          AssetPriceConfig.fromDecimals(4),
+          new AssetDepositConfig({
+            min: 1_000, // min 0.001 pSOL
+          }),
+        ),
       ]);
   }
 
