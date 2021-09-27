@@ -1,5 +1,5 @@
 # Port Finance SDK
 
 ```
-yarn install @port.finance/port-sdk
+yarn add @port.finance/port-sdk
 ```
