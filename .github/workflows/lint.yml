@@ -31,4 +31,6 @@ jobs:
           cmd: install # will run `yarn install` command
 
       - name: Run linters
-        uses: yarn lint
+      uses: borales/actions-yarn@v2.3.0
+        with:
+          cmd: lint
