@@ -1,13 +1,14 @@
-import Big, {BigSource} from "big.js";
-import {u64} from "@solana/spl-token";
+import Big, { BigSource } from "big.js";
+import { u64 } from "@solana/spl-token";
 
-import {MintId} from "./MintId";
-import {Decimal} from "./Decimal";
+import { MintId } from "./MintId";
+import { Decimal } from "./Decimal";
 
-export abstract class Lamport<I extends MintId, L extends Lamport<I, L>>
-  extends Decimal<L> {
-
-  protected static U64_MAX = new Big('18446744073709551615');
+export abstract class Lamport<
+  I extends MintId,
+  L extends Lamport<I, L>
+> extends Decimal<L> {
+  protected static U64_MAX = new Big("18446744073709551615");
 
   mintId: I;
 

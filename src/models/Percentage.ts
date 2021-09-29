@@ -1,8 +1,7 @@
-import Big, {BigSource} from "big.js";
-import {Decimal} from "./Decimal";
+import Big, { BigSource } from "big.js";
+import { Decimal } from "./Decimal";
 
 export class Percentage extends Decimal<Percentage> {
-
   private static PCT_ZERO = new Percentage(0);
   private static PCT_HUNDRED = new Percentage(1);
 
@@ -35,7 +34,7 @@ export class Percentage extends Decimal<Percentage> {
   }
 
   public print(): string {
-    return this.raw.mul(100).round(2, 1).toString() + '%'; // RoundHalfUp
+    return this.raw.mul(100).round(2, 1).toString() + "%"; // RoundHalfUp
   }
 
   protected isCompatibleWith(that: Percentage): boolean {

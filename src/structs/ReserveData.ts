@@ -1,9 +1,9 @@
-import {AccountInfo, PublicKey} from '@solana/web3.js';
+import { AccountInfo, PublicKey } from "@solana/web3.js";
 
-import BN from 'bn.js';
-import * as BufferLayout from 'buffer-layout';
-import * as Layout from '../utils/layout';
-import {LastUpdate, LastUpdateLayout} from './LastUpdate';
+import BN from "bn.js";
+import * as BufferLayout from "buffer-layout";
+import * as Layout from "../utils/layout";
+import { LastUpdate, LastUpdateLayout } from "./LastUpdate";
 
 export const RESERVE_DATA_SIZE = 575;
 
@@ -54,63 +54,61 @@ export interface ReserveConfig {
 
 export const ReserveLayout: typeof BufferLayout.Structure = BufferLayout.struct(
   [
-    BufferLayout.u8('version'),
+    BufferLayout.u8("version"),
 
     LastUpdateLayout,
 
-    Layout.publicKey('lendingMarket'),
+    Layout.publicKey("lendingMarket"),
 
     BufferLayout.struct(
       [
-        Layout.publicKey('mintPubkey'),
-        BufferLayout.u8('mintDecimals'),
-        Layout.publicKey('supplyPubkey'),
-        Layout.publicKey('feeReceiver'),
+        Layout.publicKey("mintPubkey"),
+        BufferLayout.u8("mintDecimals"),
+        Layout.publicKey("supplyPubkey"),
+        Layout.publicKey("feeReceiver"),
         // TODO: replace u32 option with generic equivalent
-        BufferLayout.u32('oracleOption'),
-        Layout.publicKey('oraclePubkey'),
-        Layout.uint64('availableAmount'),
-        Layout.uint128('borrowedAmountWads'),
-        Layout.uint128('cumulativeBorrowRateWads'),
-        Layout.uint128('marketPrice'),
+        BufferLayout.u32("oracleOption"),
+        Layout.publicKey("oraclePubkey"),
+        Layout.uint64("availableAmount"),
+        Layout.uint128("borrowedAmountWads"),
+        Layout.uint128("cumulativeBorrowRateWads"),
+        Layout.uint128("marketPrice"),
       ],
-      'liquidity',
+      "liquidity"
     ),
 
     BufferLayout.struct(
       [
-        Layout.publicKey('mintPubkey'),
-        Layout.uint64('mintTotalSupply'),
-        Layout.publicKey('supplyPubkey'),
+        Layout.publicKey("mintPubkey"),
+        Layout.uint64("mintTotalSupply"),
+        Layout.publicKey("supplyPubkey"),
       ],
-      'collateral',
+      "collateral"
     ),
 
     BufferLayout.struct(
       [
-        BufferLayout.u8('optimalUtilizationRate'),
-        BufferLayout.u8('loanToValueRatio'),
-        BufferLayout.u8('liquidationBonus'),
-        BufferLayout.u8('liquidationThreshold'),
-        BufferLayout.u8('minBorrowRate'),
-        BufferLayout.u8('optimalBorrowRate'),
-        BufferLayout.u8('maxBorrowRate'),
+        BufferLayout.u8("optimalUtilizationRate"),
+        BufferLayout.u8("loanToValueRatio"),
+        BufferLayout.u8("liquidationBonus"),
+        BufferLayout.u8("liquidationThreshold"),
+        BufferLayout.u8("minBorrowRate"),
+        BufferLayout.u8("optimalBorrowRate"),
+        BufferLayout.u8("maxBorrowRate"),
         BufferLayout.struct(
-          [Layout.uint64('borrowFeeWad'), BufferLayout.u8('hostFeePercentage')],
-          'fees',
+          [Layout.uint64("borrowFeeWad"), BufferLayout.u8("hostFeePercentage")],
+          "fees"
         ),
       ],
-      'config',
+      "config"
     ),
-    BufferLayout.blob(8, 'padding1'),
-    BufferLayout.u8('deposit_staking_pool_option'),
-    Layout.publicKey('deposit_staking_pool'),
-    BufferLayout.blob(215, 'padding2'),
-
-  ],
+    BufferLayout.blob(8, "padding1"),
+    BufferLayout.u8("deposit_staking_pool_option"),
+    Layout.publicKey("deposit_staking_pool"),
+    BufferLayout.blob(215, "padding2"),
+  ]
 );
 
 export const isReserve = (info: AccountInfo<Buffer>) => {
   return info.data.length === ReserveLayout.span;
 };
-

@@ -1,7 +1,6 @@
 import Big from "big.js";
 
 export class AssetQuantityContext {
-
   readonly decimals: number;
   readonly multiplier: Big;
 

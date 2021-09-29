@@ -1,9 +1,8 @@
-import {PublicKey} from "@solana/web3.js";
-import {MintId} from "./MintId";
-import {MintType} from "./MintType";
+import { PublicKey } from "@solana/web3.js";
+import { MintId } from "./MintId";
+import { MintType } from "./MintType";
 
 export class ShareId extends MintId {
-
   constructor(key: PublicKey) {
     super(key, MintType.SHARE);
   }
