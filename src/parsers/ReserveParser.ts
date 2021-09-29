@@ -1,10 +1,8 @@
-import {ReserveData, ReserveLayout} from "../structs/ReserveData";
-import {Parser} from "./Parser";
-import {RawAccount} from "./RawAccount";
+import { ReserveData, ReserveLayout } from "../structs/ReserveData";
+import { Parser } from "./Parser";
+import { RawAccount } from "./RawAccount";
 
-export const ReserveParser: Parser<ReserveData> = (
-  raw: RawAccount
-) => {
+export const ReserveParser: Parser<ReserveData> = (raw: RawAccount) => {
   const pubkey = raw.pubkey;
   const buffer = Buffer.from(raw.account.data);
   const data = ReserveLayout.decode(buffer) as ReserveData;
@@ -13,5 +11,5 @@ export const ReserveParser: Parser<ReserveData> = (
     return;
   }
 
-  return {pubkey, data};
+  return { pubkey, data };
 };

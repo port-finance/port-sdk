@@ -1,9 +1,9 @@
-import {AssetId} from "./AssetId";
-import {ReserveId} from "./ReserveId";
-import {AssetDisplayConfig} from "./AssetDisplayConfig";
-import {AssetPriceConfig} from "./AssetPriceConfig";
-import {AssetDepositConfig} from "./AssetDepositConfig";
-import {Asset} from "./Asset";
+import { AssetId } from "./AssetId";
+import { ReserveId } from "./ReserveId";
+import { AssetDisplayConfig } from "./AssetDisplayConfig";
+import { AssetPriceConfig } from "./AssetPriceConfig";
+import { AssetDepositConfig } from "./AssetDepositConfig";
+import { Asset } from "./Asset";
 
 export class AssetConfig {
   readonly assetId: AssetId;
@@ -17,7 +17,7 @@ export class AssetConfig {
     reserveId: ReserveId,
     display: AssetDisplayConfig,
     price: AssetPriceConfig,
-    deposit: AssetDepositConfig,
+    deposit: AssetDepositConfig
   ) {
     this.assetId = assetId;
     this.reserveId = reserveId;

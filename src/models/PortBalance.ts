@@ -1,16 +1,15 @@
-import {PortId} from "./PortId";
-import {Collateral} from "./Collateral";
-import {Loan} from "./Loan";
-import {ReserveId} from "./ReserveId";
-import {Margin} from "./Margin";
-import {ReserveContext} from "./ReserveContext";
-import {MarginRatio} from "./MarginRatio";
-import {ParsedAccount} from "../parsers/ParsedAccount";
-import {PortBalanceData} from "../structs/PortBalanceData";
+import { PortId } from "./PortId";
+import { Collateral } from "./Collateral";
+import { Loan } from "./Loan";
+import { ReserveId } from "./ReserveId";
+import { Margin } from "./Margin";
+import { ReserveContext } from "./ReserveContext";
+import { MarginRatio } from "./MarginRatio";
+import { ParsedAccount } from "../parsers/ParsedAccount";
+import { PortBalanceData } from "../structs/PortBalanceData";
 import { PublicKey } from "@solana/web3.js";
 
 export class PortBalance {
-
   static DATA_SIZE = 916;
 
   public readonly owner: PublicKey;
@@ -28,7 +27,7 @@ export class PortBalance {
     loanMargin: Margin,
     initialMargin: Margin,
     maintenanceMargin: Margin,
-    owner: PublicKey,
+    owner: PublicKey
   ) {
     this.portId = portId;
     this.collaterals = collaterals;
@@ -39,11 +38,14 @@ export class PortBalance {
     this.owner = owner;
   }
 
-  public static fromRaw(raw: ParsedAccount<PortBalanceData>, reserves: ReserveContext): PortBalance {
+  public static fromRaw(
+    raw: ParsedAccount<PortBalanceData>,
+    reserves: ReserveContext
+  ): PortBalance {
     const portId = new PortId(raw.pubkey);
     const collaterals = raw.data.deposits
-      .map(c => {
-        const reserveId = new ReserveId(c.depositReserve)
+      .map((c) => {
+        const reserveId = new ReserveId(c.depositReserve);
         const reserve = reserves.getReserveByReserveId(reserveId);
         if (!reserve) {
           return undefined;
@@ -52,8 +54,8 @@ export class PortBalance {
       })
       .filter(Boolean) as Collateral[];
     const loans = raw.data.borrows
-      .map(l => {
-        const reserveId = new ReserveId(l.borrowReserve)
+      .map((l) => {
+        const reserveId = new ReserveId(l.borrowReserve);
         const reserve = reserves.getReserveByReserveId(reserveId);
         if (!reserve) {
           return undefined;
@@ -80,11 +82,13 @@ export class PortBalance {
   }
 
   public getCollateral(reserveId: ReserveId): Collateral | undefined {
-    return this.getCollaterals().find(c => c.getReserveId().equals(reserveId));
+    return this.getCollaterals().find((c) =>
+      c.getReserveId().equals(reserveId)
+    );
   }
 
   public getCollateralReserveIds(): ReserveId[] {
-    return this.getCollaterals().map(c => c.getReserveId());
+    return this.getCollaterals().map((c) => c.getReserveId());
   }
 
   public getCollaterals(): Collateral[] {
@@ -92,11 +96,11 @@ export class PortBalance {
   }
 
   public getLoan(reserveId: ReserveId): Loan | undefined {
-    return this.getLoans().find(l => l.getReserveId().equals(reserveId));
+    return this.getLoans().find((l) => l.getReserveId().equals(reserveId));
   }
 
   public getLoanReserveIds(): ReserveId[] {
-    return this.getLoans().map(l => l.getReserveId());
+    return this.getLoans().map((l) => l.getReserveId());
   }
 
   public getLoans(): Loan[] {

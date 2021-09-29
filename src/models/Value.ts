@@ -1,14 +1,13 @@
-import {BigSource} from "big.js";
-import {Decimal} from "./Decimal";
-import {AssetPrice} from "./AssetPrice";
-import {Asset} from "./Asset";
-import {AssetQuantityContext} from "./AssetQuantityContext";
+import { BigSource } from "big.js";
+import { Decimal } from "./Decimal";
+import { AssetPrice } from "./AssetPrice";
+import { Asset } from "./Asset";
+import { AssetQuantityContext } from "./AssetQuantityContext";
 
 export abstract class Value<V extends Value<V>> extends Decimal<V> {
-
-  private static FORMATTER = Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
+  private static FORMATTER = Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
   });
 
   protected constructor(raw: BigSource) {

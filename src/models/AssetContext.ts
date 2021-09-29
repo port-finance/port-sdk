@@ -1,8 +1,7 @@
-import {AssetConfig} from "./AssetConfig";
-import {AssetId} from "./AssetId";
+import { AssetConfig } from "./AssetConfig";
+import { AssetId } from "./AssetId";
 
 export class AssetContext {
-
   private readonly cache: Map<string, AssetConfig>;
 
   private constructor(cache: Map<string, AssetConfig>) {
@@ -11,7 +10,7 @@ export class AssetContext {
 
   public static index(configs: AssetConfig[]): AssetContext {
     const cache = new Map<string, AssetConfig>();
-    configs.forEach(config => cache.set(config.assetId.toString(), config));
+    configs.forEach((config) => cache.set(config.assetId.toString(), config));
     return new AssetContext(cache);
   }
 
@@ -23,7 +22,7 @@ export class AssetContext {
     const key = assetId.toString();
     const result = this.cache.get(key);
     if (!result) {
-      throw Error('Unknown Asset: ' + assetId);
+      throw Error("Unknown Asset: " + assetId);
     }
 
     return result;

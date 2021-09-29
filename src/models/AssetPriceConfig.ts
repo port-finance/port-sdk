@@ -1,7 +1,6 @@
 import Big from "big.js";
 
 export class AssetPriceConfig {
-
   private readonly decimals: number;
   private readonly increment: Big;
 
