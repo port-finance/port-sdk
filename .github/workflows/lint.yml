@@ -26,7 +26,9 @@ jobs:
 
       # ESLint and Prettier must be in `package.json`
       - name: Install Node.js dependencies
-        run: yarn ci
+        uses: borales/actions-yarn@v2.3.0
+        with:
+          cmd: install # will run `yarn install` command
 
       - name: Run linters
         uses: wearerequired/lint-action@v1
