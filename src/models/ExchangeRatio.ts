@@ -1,10 +1,9 @@
-import {ShareId} from "./ShareId";
-import {AssetId} from "./AssetId";
-import {Ratio} from "./Ratio";
-import {BigSource} from "big.js";
+import { ShareId } from "./ShareId";
+import { AssetId } from "./AssetId";
+import { Ratio } from "./Ratio";
+import { BigSource } from "big.js";
 
 export class ExchangeRatio extends Ratio {
-
   private readonly shareId: ShareId;
   private readonly assetId: AssetId;
 

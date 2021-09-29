@@ -1,8 +1,7 @@
-import {Percentage} from "./Percentage";
-import Big, {BigSource} from "big.js";
+import { Percentage } from "./Percentage";
+import Big, { BigSource } from "big.js";
 
 export abstract class Ratio {
-
   private readonly pct?: Percentage;
 
   protected constructor(pct?: BigSource) {
@@ -15,7 +14,7 @@ export abstract class Ratio {
 
   public getUnchecked(): Big {
     if (!this.pct) {
-      throw 'No value available';
+      throw "No value available";
     }
 
     return this.pct.getRaw();
@@ -26,7 +25,7 @@ export abstract class Ratio {
   }
 
   public print(): string {
-    return !this.pct ? '--' : this.pct.print();
+    return !this.pct ? "--" : this.pct.print();
   }
 
   public toString(): string {

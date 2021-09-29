@@ -1,8 +1,7 @@
-import {AccountMeta, PublicKey} from "@solana/web3.js";
-import {AccessType, getAccess} from "../utils/Instructions";
+import { AccountMeta, PublicKey } from "@solana/web3.js";
+import { AccessType, getAccess } from "../utils/Instructions";
 
 export abstract class Id {
-
   readonly key: PublicKey;
 
   protected constructor(key: PublicKey) {

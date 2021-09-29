@@ -1,12 +1,11 @@
-import {BigSource} from "big.js";
+import { BigSource } from "big.js";
 
-import {ShareId} from "./ShareId";
-import {ExchangeRatio} from "./ExchangeRatio";
-import {Asset} from "./Asset";
-import {Lamport} from "./Lamport";
+import { ShareId } from "./ShareId";
+import { ExchangeRatio } from "./ExchangeRatio";
+import { Asset } from "./Asset";
+import { Lamport } from "./Lamport";
 
 export class Share extends Lamport<ShareId, Share> {
-
   constructor(shareId: ShareId, value: BigSource) {
     super(shareId, value);
   }

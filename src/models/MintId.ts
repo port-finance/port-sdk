@@ -1,10 +1,9 @@
-import {PublicKey} from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 
-import {Id} from "./Id";
-import {MintType} from "./MintType";
+import { Id } from "./Id";
+import { MintType } from "./MintType";
 
 export abstract class MintId extends Id {
-
   private readonly type: MintType;
 
   protected constructor(key: PublicKey, type: MintType) {
@@ -26,4 +25,3 @@ export abstract class MintId extends Id {
     return this.type;
   }
 }
-

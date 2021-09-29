@@ -1,21 +1,23 @@
-import {BigSource} from "big.js";
-import {Collateral} from "./Collateral";
-import {ReserveInfo} from "./ReserveInfo";
-import {Loan} from "./Loan";
-import {Value} from "./Value";
+import { BigSource } from "big.js";
+import { Collateral } from "./Collateral";
+import { ReserveInfo } from "./ReserveInfo";
+import { Loan } from "./Loan";
+import { Value } from "./Value";
 import BN from "bn.js";
-import {Wads} from "./Wads";
-import {MarginRatio} from "./MarginRatio";
+import { Wads } from "./Wads";
+import { MarginRatio } from "./MarginRatio";
 
 export class Margin extends Value<Margin> {
-
   private static MARGIN_ZERO = new Margin(0);
 
   private constructor(value: BigSource) {
     super(value);
   }
 
-  public static fromCollateral(collateral: Collateral, reserve: ReserveInfo): Margin {
+  public static fromCollateral(
+    collateral: Collateral,
+    reserve: ReserveInfo
+  ): Margin {
     const ltv = reserve.params.loanToValueRatio;
     if (!ltv.isPresent()) {
       return Margin.zero();
