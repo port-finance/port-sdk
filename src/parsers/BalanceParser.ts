@@ -5,7 +5,7 @@ import { RawAccount } from "./RawAccount";
 
 export type BalanceData = AccountInfo;
 
-export const BalanceParser: Parser<BalanceData> = (raw: RawAccount) => {
+export const balanceParser: Parser<BalanceData> = (raw: RawAccount) => {
   const pubkey = raw.pubkey;
   const buffer = Buffer.from(raw.account.data);
   const data = deserialize(buffer);

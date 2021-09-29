@@ -12,6 +12,7 @@
     "build": "tsc -d",
     "test": "ts-node node_modules/jasmine/bin/jasmine",
     "publish": "npm publish --access public",
+    "lint": "yarn run eslint src/**.ts",
     "format:fix": "prettier --write \"**/*.+(js|jsx|ts|tsx|json|css|md)\""
   },
   "keywords": [],
@@ -40,6 +41,10 @@
   "devDependencies": {
     "@types/big.js": "^6.1.1",
     "@types/jasmine": "^3.8.1",
+    "@typescript-eslint/eslint-plugin": "^4.32.0",
+    "@typescript-eslint/parser": "^4.32.0",
+    "eslint": "^7.32.0",
+    "eslint-config-google": "^0.14.0",
     "jasmine": "^3.8.0",
     "jasmine-spec-reporter": "^7.0.0",
     "jasmine-ts": "^0.4.0",
