@@ -1,17 +1,17 @@
 import {Connection} from '@solana/web3.js';
 import {RESERVE_DATA_SIZE, ReserveData} from './structs/ReserveData';
-import {ReserveParser} from './parsers/ReserveParser';
+import {ReserveParser as reserveParser} from './parsers/ReserveParser';
 import {ReserveInfo} from './models/ReserveInfo';
 import {ParsedAccount} from './parsers/ParsedAccount';
 import {ReserveContext} from './models/ReserveContext';
 import {QuoteValue} from './models/QuoteValue';
 import {PortBalance} from './models/PortBalance';
 import {WalletId} from './models/WalletId';
-import {PortBalanceForWallet} from './utils/Filters';
-import {PortBalanceParser} from './parsers/PortBalanceParser';
+import {PortBalanceForWallet as portBalanceForWallet} from './utils/Filters';
+import {PortBalanceParser as portBalanceParser} from './parsers/PortBalanceParser';
 import {Balance} from './models/Balance';
 import {Share} from './models/Share';
-import {BalanceData, BalanceParser} from './parsers/BalanceParser';
+import {BalanceData, balanceParser} from './parsers/BalanceParser';
 import {BalanceId} from './models/BalanceId';
 import {ShareId} from './models/ShareId';
 import {
@@ -63,7 +63,7 @@ export class Port {
     });
     const raw = result.value;
     return raw
-        .map((a) => BalanceParser(a))
+        .map((a) => balanceParser(a))
         .filter((p) => p && shareMintPks.find((k) => k.equals(p.data.mint)))
         .map((p) => {
           const parsed = p as ParsedAccount<BalanceData>;
@@ -80,10 +80,10 @@ export class Port {
   ): Promise<PortBalance | undefined> {
     const raw = await this.connection.getProgramAccounts(
         this.profile.getLendingProgramPk(),
-        PortBalanceForWallet(walletId),
+        portBalanceForWallet(walletId),
     );
     const parsed = raw
-        .map((a) => PortBalanceParser(a))
+        .map((a) => portBalanceParser(a))
         .filter((p) => !!p)
         .map((p) => {
           const parsed = p as ParsedAccount<PortBalanceData>;
@@ -104,7 +104,7 @@ export class Port {
         },
     );
     const parsed = raw
-        .map((a) => ReserveParser(a))
+        .map((a) => reserveParser(a))
         .filter((p) => !!p)
         .map((a) =>
           ReserveInfo.fromRaw(a as ParsedAccount<ReserveData>),
@@ -125,7 +125,7 @@ export class Port {
     );
     const allReserves = await this.getReserveContext();
     const parsed = raw
-        .map((p) => PortBalanceParser(p))
+        .map((p) => portBalanceParser(p))
         .filter((p) => !!p)
         .map((p) =>
           PortBalance.fromRaw(p as ParsedAccount<PortBalanceData>, allReserves),
