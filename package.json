@@ -12,6 +12,7 @@
     "build": "tsc -d",
     "test": "ts-node node_modules/jasmine/bin/jasmine",
     "publish": "npm publish --access public",
+    "lint": "yarn run eslint src/**.ts",
     "format:fix": "prettier --write \"**/*.+(js|jsx|ts|tsx|json|css|md)\""
   },
   "keywords": [],

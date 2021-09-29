@@ -31,7 +31,4 @@ jobs:
           cmd: install # will run `yarn install` command
 
       - name: Run linters
-        uses: wearerequired/lint-action@v1
-        with:
-          eslint: true
-          prettier: true
+        uses: yarn lint
