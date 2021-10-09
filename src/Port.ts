@@ -19,10 +19,10 @@ import {
   PortBalanceData,
 } from './structs/PortBalanceData';
 import {Profile} from './Profile';
-import { StakingPoolProto, STAKING_POOL_DATA_SIZE } from './structs/StakingPoolData';
-import { StakingPoolContext } from './models/StakingPoolContext';
-import { StakingPoolParser } from './parsers/StakingPoolParser';
-import { StakingPoolInfo } from './models/StakingPoolInfo';
+import {StakingPoolProto, STAKING_POOL_DATA_SIZE} from './structs/StakingPoolData';
+import {StakingPoolContext} from './models/StakingPoolContext';
+import {StakingPoolParser as stakingPoolParser} from './parsers/StakingPoolParser';
+import {StakingPoolInfo} from './models/StakingPoolInfo';
 
 export class Port {
   private readonly connection: Connection;
@@ -132,7 +132,7 @@ export class Port {
         },
     );
     const parsed = raw
-        .map((a) => StakingPoolParser(a))
+        .map((a) => stakingPoolParser(a))
         .filter((p) => !!p)
         .map((a) =>
           StakingPoolInfo.fromRaw(a as ParsedAccount<StakingPoolProto>),
