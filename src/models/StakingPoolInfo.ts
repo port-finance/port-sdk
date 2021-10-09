@@ -2,6 +2,8 @@ import BN from "bn.js";
 import { PublicKey } from "@solana/web3.js";
 import { StakingPoolProto } from "../structs/StakingPoolData";
 import { ParsedAccount } from "../parsers/ParsedAccount";
+import Big from "big.js";
+import { Wads } from "./Wads";
 
 export class StakingPoolInfo {
   private readonly stakingPoolId: PublicKey;
@@ -10,8 +12,8 @@ export class StakingPoolInfo {
   private readonly endTime: BN;
   private readonly duration: BN;
   private readonly earliestRewardClaimTime: BN;
-  private readonly ratePerSlot: BN;
-  private readonly cumulativeRate: BN;
+  private readonly ratePerSlot: Big;
+  private readonly cumulativeRate: Big;
   private readonly poolSize: BN;
 
   private constructor(
@@ -21,8 +23,8 @@ export class StakingPoolInfo {
     endTime: BN,
     duration: BN,
     earliestRewardClaimTime: BN,
-    ratePerSlot: BN,
-    cumulativeRate: BN,
+    ratePerSlot: Big,
+    cumulativeRate: Big,
     poolSize: BN,
   ) {
     this.stakingPoolId = stakingPoolId;
@@ -46,8 +48,8 @@ export class StakingPoolInfo {
       info.endTime,
       info.duration,
       info.earliestRewardClaimTime,
-      info.ratePerSlot,
-      info.cumulativeRate,
+      new Wads(info.ratePerSlot).toBig(),
+      new Wads(info.cumulativeRate).toBig(),
       info.poolSize,
     );
   }
@@ -80,11 +82,11 @@ export class StakingPoolInfo {
     return this.duration;
   }
 
-  public getRatePerSlot(): BN {
+  public getRatePerSlot(): Big {
     return this.ratePerSlot;
   }
 
-  public getCumulativeRate(): BN {
+  public getCumulativeRate(): Big {
     return this.cumulativeRate;
   }
 
@@ -92,10 +94,10 @@ export class StakingPoolInfo {
     return this.poolSize;
   }
 
-  public getEstimatedRate(currentSlot: BN): BN {
+  public getEstimatedRate(currentSlot: BN): Big {
     const poolSize = this.getPoolSize();
     if (poolSize.isZero()) {
-      return new BN(0);
+      return new Big(0);
     }
 
     currentSlot = BN.min(currentSlot, this.getEndTime())
@@ -105,8 +107,8 @@ export class StakingPoolInfo {
     }
 
     const rateDiff = this.getRatePerSlot()
-      .mul(slotDiff)
-      .div(poolSize);
-    return this.getCumulativeRate().add(rateDiff);
+      .mul(new Big(slotDiff.toString()))
+      .div(new Big(poolSize.toString()));
+    return this.getCumulativeRate().plus(rateDiff);
   }
 }

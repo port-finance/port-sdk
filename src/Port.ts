@@ -21,7 +21,7 @@ import {
 import {Profile} from './Profile';
 import {StakingPoolProto, STAKING_POOL_DATA_SIZE} from './structs/StakingPoolData';
 import {StakingPoolContext} from './models/StakingPoolContext';
-import {StakingPoolParser as stakingPoolParser} from './parsers/StakingPoolParser';
+import {stakingPoolParser} from './parsers/StakingPoolParser';
 import {StakingPoolInfo} from './models/StakingPoolInfo';
 
 export class Port {
