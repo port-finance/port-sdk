@@ -11,17 +11,20 @@ import {AssetContext} from './models/AssetContext';
 export class Profile {
   private readonly env: ENV;
   private readonly lendingProgramPk: PublicKey;
+  private readonly stakingProgramPk: PublicKey | undefined;
   private readonly tokenProgramPk: PublicKey;
   private readonly assetContext: AssetContext;
 
   private constructor(
       env: ENV,
       lendingProgramPk: PublicKey,
+      stakingProgramPk: PublicKey | undefined,
       tokenProgramPk: PublicKey,
       assetConfigs: AssetConfig[],
   ) {
     this.env = env;
     this.lendingProgramPk = lendingProgramPk;
+    this.stakingProgramPk = stakingProgramPk;
     this.tokenProgramPk = tokenProgramPk;
     this.assetContext = AssetContext.index(assetConfigs);
   }
@@ -30,6 +33,7 @@ export class Profile {
     return new Profile(
         ENV.MainnetBeta,
         new PublicKey('Port7uDYB3wk6GJAw4KT1WpTeMtSu9bTcChBHkX2LfR'),
+        new PublicKey('stkarvwmSzv2BygN5e2LeTwimTczLWHCKPKGC2zVLiq'),
         new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
         [
           new AssetConfig(
