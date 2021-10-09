@@ -1,4 +1,4 @@
-# Port Finance SDK
+# 🔧 Port Finance SDK
 
 An SDK to interact with Port Finance on-chain program.
 
