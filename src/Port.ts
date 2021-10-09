@@ -19,6 +19,10 @@ import {
   PortBalanceData,
 } from './structs/PortBalanceData';
 import {Profile} from './Profile';
+import { StakingPoolProto, STAKING_POOL_DATA_SIZE } from './structs/StakingPoolData';
+import { StakingPoolContext } from './models/StakingPoolContext';
+import { StakingPoolParser } from './parsers/StakingPoolParser';
+import { StakingPoolInfo } from './models/StakingPoolInfo';
 
 export class Port {
   private readonly connection: Connection;
@@ -110,6 +114,30 @@ export class Port {
           ReserveInfo.fromRaw(a as ParsedAccount<ReserveData>),
         ) as ReserveInfo[];
     return ReserveContext.index(parsed);
+  }
+
+  public async getStakingPoolContext(): Promise<StakingPoolContext> {
+    if (this.profile.getStakingProgramPk() === undefined) {
+      Promise.resolve();
+    }
+
+    const raw = await this.connection.getProgramAccounts(
+        this.profile.getStakingProgramPk()!,
+        {
+          filters: [
+            {
+              dataSize: STAKING_POOL_DATA_SIZE,
+            },
+          ],
+        },
+    );
+    const parsed = raw
+        .map((a) => StakingPoolParser(a))
+        .filter((p) => !!p)
+        .map((a) =>
+          StakingPoolInfo.fromRaw(a as ParsedAccount<StakingPoolProto>),
+        ) as StakingPoolInfo[];
+    return StakingPoolContext.index(parsed);
   }
 
   public async getAllPortBalances(): Promise<PortBalance[]> {

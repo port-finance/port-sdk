@@ -133,6 +133,10 @@ export class Profile {
     return this.lendingProgramPk;
   }
 
+  public getStakingProgramPk(): PublicKey | undefined {
+    return this.stakingProgramPk;
+  }
+
   public getTokenProgramPk(): PublicKey {
     return this.tokenProgramPk;
   }

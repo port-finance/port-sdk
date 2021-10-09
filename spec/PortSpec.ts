@@ -36,8 +36,13 @@ describe("Port", function () {
     expect(pb).not.toBeUndefined();
   });
 
-  it("should have port balances", async () => {
+  it("should have all port balances", async () => {
     const pb = await port.getAllPortBalances();
+    expect(pb).not.toBeUndefined();
+  });
+
+  it("should have staking pools", async () => {
+    const pb = await port.getStakingPoolContext();
     expect(pb).not.toBeUndefined();
   });
 });
