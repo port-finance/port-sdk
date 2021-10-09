@@ -11,8 +11,8 @@ export const StakingPoolLayout = BufferLayout.struct([
   Layout.publicKey('rewardTokenPool'),
   Layout.uint64('lastUpdate'),
   Layout.uint64('endTime'),
-  Layout.uint64('earliestRewardClaimTime'),
   Layout.uint64('duration'),
+  Layout.uint64('earliestRewardClaimTime'),
   Layout.uint128('ratePerSlot'),
   Layout.uint128('cumulativeRate'),
   Layout.uint64('poolSize'),
@@ -30,8 +30,8 @@ export interface StakingPoolProto {
   rewardTokenPool: PublicKey;
   lastUpdate: BN;
   endTime: BN;
-  earliestRewardClaimTime: BN;
   duration: BN;
+  earliestRewardClaimTime: BN;
   ratePerSlot: BN;
   cumulativeRate: BN;
   poolSize: BN;

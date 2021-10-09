@@ -8,8 +8,8 @@ export class StakingPoolInfo {
   private readonly rewardTokenPool: PublicKey;
   private readonly lastUpdate: BN;
   private readonly endTime: BN;
-  private readonly earliestRewardClaimTime: BN;
   private readonly duration: BN;
+  private readonly earliestRewardClaimTime: BN;
   private readonly ratePerSlot: BN;
   private readonly cumulativeRate: BN;
   private readonly poolSize: BN;
@@ -19,8 +19,8 @@ export class StakingPoolInfo {
     rewardTokenPool: PublicKey,
     lastUpdate: BN,
     endTime: BN,
-    earliestRewardClaimTime: BN,
     duration: BN,
+    earliestRewardClaimTime: BN,
     ratePerSlot: BN,
     cumulativeRate: BN,
     poolSize: BN,
@@ -44,8 +44,8 @@ export class StakingPoolInfo {
       info.rewardTokenPool,
       info.lastUpdate,
       info.endTime,
-      info.earliestRewardClaimTime,
       info.duration,
+      info.earliestRewardClaimTime,
       info.ratePerSlot,
       info.cumulativeRate,
       info.poolSize,
