@@ -8,6 +8,7 @@ import { MarginRatio } from "./MarginRatio";
 import { ParsedAccount } from "../parsers/ParsedAccount";
 import { PortBalanceData } from "../structs/PortBalanceData";
 import { PublicKey } from "@solana/web3.js";
+import Big from "big.js";
 
 export class PortBalance {
   static DATA_SIZE = 916;
@@ -19,6 +20,7 @@ export class PortBalance {
   private readonly loanMargin: Margin;
   private readonly initialMargin: Margin;
   private readonly maintenanceMargin: Margin;
+  private readonly depositedValue: Big;
 
   constructor(
     portId: PortId,
@@ -27,6 +29,7 @@ export class PortBalance {
     loanMargin: Margin,
     initialMargin: Margin,
     maintenanceMargin: Margin,
+    depositedValue: Big,
     owner: PublicKey
   ) {
     this.portId = portId;
@@ -35,6 +38,7 @@ export class PortBalance {
     this.loanMargin = loanMargin;
     this.initialMargin = initialMargin;
     this.maintenanceMargin = maintenanceMargin;
+    this.depositedValue = depositedValue;
     this.owner = owner;
   }
 
@@ -66,6 +70,7 @@ export class PortBalance {
     const loanMargin = Margin.fromWads(raw.data.borrowedValue);
     const initialMargin = Margin.fromWads(raw.data.allowedBorrowValue);
     const maintenanceMargin = Margin.fromWads(raw.data.unhealthyBorrowValue);
+    const depositedValue = new Big(raw.data.depositedValue.toString());
     return new PortBalance(
       portId,
       collaterals,
@@ -73,6 +78,7 @@ export class PortBalance {
       loanMargin,
       initialMargin,
       maintenanceMargin,
+      depositedValue,
       raw.data.owner
     );
   }
