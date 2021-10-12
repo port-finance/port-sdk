@@ -128,4 +128,8 @@ export class PortBalance {
   public getRiskFactor(): MarginRatio {
     return this.getLoanMargin().toRatioAgainst(this.getMaintenanceMargin());
   }
+
+  public getDepositedValue(): Big {
+    return this.depositedValue;
+  }
 }
