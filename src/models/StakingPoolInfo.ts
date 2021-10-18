@@ -8,6 +8,8 @@ import { Wads } from "./Wads";
 export class StakingPoolInfo {
   private readonly stakingPoolId: PublicKey;
   private readonly rewardTokenPool: PublicKey;
+  private readonly ownerAuthority: PublicKey;
+  private readonly adminAuthority: PublicKey;
   private readonly lastUpdate: BN;
   private readonly endTime: BN;
   private readonly duration: BN;
@@ -19,6 +21,8 @@ export class StakingPoolInfo {
   private constructor(
     stakingPoolId: PublicKey,
     rewardTokenPool: PublicKey,
+    ownerAuthority: PublicKey,
+    adminAuthority: PublicKey,
     lastUpdate: BN,
     endTime: BN,
     duration: BN,
@@ -29,6 +33,8 @@ export class StakingPoolInfo {
   ) {
     this.stakingPoolId = stakingPoolId;
     this.rewardTokenPool = rewardTokenPool;
+    this.ownerAuthority = ownerAuthority;
+    this.adminAuthority = adminAuthority;
     this.lastUpdate = lastUpdate;
     this.endTime = endTime;
     this.earliestRewardClaimTime = earliestRewardClaimTime;
@@ -43,6 +49,8 @@ export class StakingPoolInfo {
 
     return new StakingPoolInfo(
       raw.pubkey,
+      info.ownerAuthority,
+      info.adminAuthority,
       info.rewardTokenPool,
       info.lastUpdate,
       info.endTime,
@@ -64,6 +72,14 @@ export class StakingPoolInfo {
 
   public getRewardTokenPool(): PublicKey {
     return this.rewardTokenPool;
+  }
+
+  public getOwnerPubkey(): PublicKey {
+    return this.ownerAuthority;
+  }
+
+  public getAdminPubkey(): PublicKey {
+    return this.adminAuthority;
   }
 
   public getLastUpdate(): BN {
