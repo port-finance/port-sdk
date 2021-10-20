@@ -1,6 +1,6 @@
 {
   "name": "@port.finance/port-sdk",
-  "version": "0.1.18",
+  "version": "0.1.25",
   "license": "MIT",
   "source": "src/index.js",
   "main": "lib/index.js",
@@ -11,6 +11,7 @@
   "scripts": {
     "build": "tsc -d",
     "test": "ts-node node_modules/jasmine/bin/jasmine",
+    "prepublish": "tsc",
     "publish": "npm publish --access public",
     "lint": "yarn run eslint src/**.ts",
     "format:fix": "prettier --write \"**/*.+(js|jsx|ts|tsx|json|css|md)\""

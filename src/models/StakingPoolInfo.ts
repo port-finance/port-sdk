@@ -49,9 +49,9 @@ export class StakingPoolInfo {
 
     return new StakingPoolInfo(
       raw.pubkey,
+      info.rewardTokenPool,
       info.ownerAuthority,
       info.adminAuthority,
-      info.rewardTokenPool,
       info.lastUpdate,
       info.endTime,
       info.duration,
