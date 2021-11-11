@@ -29,7 +29,7 @@ export class StakingPoolInfo {
     earliestRewardClaimTime: BN,
     ratePerSlot: Big,
     cumulativeRate: Big,
-    poolSize: BN,
+    poolSize: BN
   ) {
     this.stakingPoolId = stakingPoolId;
     this.rewardTokenPool = rewardTokenPool;
@@ -58,7 +58,7 @@ export class StakingPoolInfo {
       info.earliestRewardClaimTime,
       new Wads(info.ratePerSlot).toBig(),
       new Wads(info.cumulativeRate).toBig(),
-      info.poolSize,
+      info.poolSize
     );
   }
 
@@ -116,10 +116,10 @@ export class StakingPoolInfo {
       return new Big(0);
     }
 
-    currentSlot = BN.min(currentSlot, this.getEndTime())
+    currentSlot = BN.min(currentSlot, this.getEndTime());
     const slotDiff = currentSlot.sub(this.getLastUpdate());
     if (slotDiff.isNeg()) {
-      throw new Error('Slot older than last update');
+      throw new Error("Slot older than last update");
     }
 
     const rateDiff = this.getRatePerSlot()

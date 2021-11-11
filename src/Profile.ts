@@ -122,23 +122,23 @@ export class Profile {
               }),
           ),
           new AssetConfig(
-            AssetId.fromBase58('Saber2gLauYim4Mvftnrasomsv6NvAuncvMEZwcLpD1'),
-            ReserveId.fromBase58('7dXHPrJtwBjQqU1pLKfkHbq9TjQAK9jTms3rnj1i3G77'),
-            new AssetDisplayConfig('Saber Protocol Token', 'SBR'),
-            AssetPriceConfig.fromDecimals(4),
-            new AssetDepositConfig({
-              min: 1_000, // min 0.001 pSOL
-            }),
-        ),
-        new AssetConfig(
-          AssetId.fromBase58('2poo1w1DL6yd2WNTCnNTzDqkC6MBXq7axo77P16yrBuf'),
-          ReserveId.fromBase58('BXt3EhK5Tj81aKaVSBD27rLFd5w8A6wmGKDh47JWohEu'),
-          new AssetDisplayConfig('Saber USDT USDC LP', 'SLP'),
-          AssetPriceConfig.fromDecimals(6),
-          new AssetDepositConfig({
-            min: 1_000, // min 0.001 pSOL
-          }),
-      ),
+              AssetId.fromBase58('Saber2gLauYim4Mvftnrasomsv6NvAuncvMEZwcLpD1'),
+              ReserveId.fromBase58('7dXHPrJtwBjQqU1pLKfkHbq9TjQAK9jTms3rnj1i3G77'),
+              new AssetDisplayConfig('Saber Protocol Token', 'SBR'),
+              AssetPriceConfig.fromDecimals(4),
+              new AssetDepositConfig({
+                min: 1_000, // min 0.001 pSOL
+              }),
+          ),
+          new AssetConfig(
+              AssetId.fromBase58('2poo1w1DL6yd2WNTCnNTzDqkC6MBXq7axo77P16yrBuf'),
+              ReserveId.fromBase58('BXt3EhK5Tj81aKaVSBD27rLFd5w8A6wmGKDh47JWohEu'),
+              new AssetDisplayConfig('Saber USDT USDC LP', 'SLP'),
+              AssetPriceConfig.fromDecimals(6),
+              new AssetDepositConfig({
+                min: 1_000, // min 0.001 pSOL
+              }),
+          ),
         ],
     );
   }
