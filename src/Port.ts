@@ -19,7 +19,10 @@ import {
   PortBalanceData,
 } from './structs/PortBalanceData';
 import {Profile} from './Profile';
-import {StakingPoolProto, STAKING_POOL_DATA_SIZE} from './structs/StakingPoolData';
+import {
+  StakingPoolProto,
+  STAKING_POOL_DATA_SIZE,
+} from './structs/StakingPoolData';
 import {StakingPoolContext} from './models/StakingPoolContext';
 import {stakingPoolParser} from './parsers/StakingPoolParser';
 import {StakingPoolInfo} from './models/StakingPoolInfo';
@@ -122,14 +125,14 @@ export class Port {
     }
 
     const raw = await this.connection.getProgramAccounts(
-        this.profile.getStakingProgramPk()!,
-        {
-          filters: [
-            {
-              dataSize: STAKING_POOL_DATA_SIZE,
-            },
-          ],
-        },
+      this.profile.getStakingProgramPk()!,
+      {
+        filters: [
+          {
+            dataSize: STAKING_POOL_DATA_SIZE,
+          },
+        ],
+      },
     );
     const parsed = raw
         .map((a) => stakingPoolParser(a))

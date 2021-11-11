@@ -11,7 +11,7 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
-    "downlevelIteration": true,
+    "downlevelIteration": true
   },
   "include": ["./src/**/*"],
   "exclude": ["node_modules", "**/node_modules"]

@@ -7,7 +7,7 @@ export class StakingPoolContext {
 
   private constructor(
     reserves: StakingPoolInfo[],
-    byReserveId: Map<string, StakingPoolInfo>,
+    byReserveId: Map<string, StakingPoolInfo>
   ) {
     this.stakingPools = reserves;
     this.byStakingPoolId = byReserveId;
@@ -38,5 +38,4 @@ export class StakingPoolContext {
 
     return result;
   }
-
 }
