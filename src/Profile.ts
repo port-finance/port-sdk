@@ -140,6 +140,15 @@ export class Profile {
                 min: 1_000, // min 0.001 pSOL
               }),
           ),
+          new AssetConfig(
+            AssetId.fromBase58('9vMJfxuKxXBoEa7rM12mYLMwTacLMLDJqHozw96WQL8i'),
+            ReserveId.fromBase58('4HVSvzUfQ3aP5wEDkCQRqgYMhNatenVRKPdbXUv8VvBa'),
+            new AssetDisplayConfig('UST', 'UST'),
+            AssetPriceConfig.fromDecimals(6),
+            new AssetDepositConfig({
+              min: 1_000, // min 0.001 pSOL
+            }),
+          ),
         ],
     );
   }
