@@ -5,6 +5,7 @@ import { PORT_LENDING } from '../constants';
 import { ReserveConfig, ReserveConfigLayout } from '../structs/ReserveData';
 import { LendingInstruction } from './instruction';
 import * as BufferLayout from "buffer-layout";
+import * as Layout from "buffer-layout";
 
 interface Data {
     instruction: number;
@@ -15,10 +16,10 @@ interface Data {
 }
 
 const DataLayout = BufferLayout.struct<Data>([
-  BufferLayout.uint8('instruction'), 
-  BufferLayout.uint64('liquidityAmount'),
-  BufferLayout.uint32('option'),
-  BufferLayout.uint128('marketPrice'), 
+  BufferLayout.u8('instruction'), 
+  Layout.uint64('liquidityAmount'),
+  BufferLayout.u32('option'),
+  Layout.uint128('marketPrice'), 
   ReserveConfigLayout
 ]);
 

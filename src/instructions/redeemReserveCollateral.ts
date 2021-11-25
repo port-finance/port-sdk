@@ -5,6 +5,7 @@ import {
 } from '@solana/web3.js';
 import BN from 'bn.js';
 import * as BufferLayout from 'buffer-layout';
+import * as Layout from '../utils/layout';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { LendingInstruction } from './instruction';
 import { PORT_LENDING } from '../constants';
@@ -37,7 +38,7 @@ export const redeemReserveCollateralInstruction = (
 ): TransactionInstruction => {
   const dataLayout = BufferLayout.struct([
     BufferLayout.u8('instruction'),
-    BufferLayout.uint64('collateralAmount'),
+    Layout.uint64('collateralAmount'),
   ]);
 
   const data = Buffer.alloc(dataLayout.span);

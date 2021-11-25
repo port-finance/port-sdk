@@ -1,6 +1,7 @@
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { PublicKey, SYSVAR_RENT_PUBKEY, TransactionInstruction } from '@solana/web3.js';
-import { nu64, struct, u8 } from 'buffer-layout';
+import * as BufferLayout from 'buffer-layout';
+import * as Layout from '../utils/layout';
 import { PORT_STAKING } from '../constants';
 import { publicKey } from '../utils/layout';
 
@@ -14,14 +15,14 @@ interface Data {
     adminAuthority: PublicKey;
 }
 
-const DataLayout = struct<Data>([
-  u8('instruction'), 
-  nu64('supply'), 
-  nu64('duration'), 
-  nu64('earliestRewardTime'), 
-  u8('bumpSeed'),
-  publicKey('poolOwnerAuthority'),
-  publicKey('adminAuthority'),
+const DataLayout = BufferLayout.struct<Data>([
+  BufferLayout.u8('instruction'), 
+  Layout.uint64('supply'), 
+  Layout.uint64('duration'), 
+  Layout.uint64('earliestRewardTime'), 
+  BufferLayout.u8('bumpSeed'),
+  Layout.publicKey('poolOwnerAuthority'),
+  Layout.publicKey('adminAuthority'),
 ]);
 
 export const initStakingPool = (

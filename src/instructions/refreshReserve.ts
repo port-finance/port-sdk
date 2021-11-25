@@ -1,5 +1,5 @@
 import { PublicKey, SYSVAR_CLOCK_PUBKEY, TransactionInstruction } from '@solana/web3.js';
-import { struct, u8 } from 'buffer-layout';
+import * as BufferLayout from 'buffer-layout';
 import { PORT_LENDING } from '../constants';
 import { LendingInstruction } from './instruction';
 
@@ -7,7 +7,11 @@ interface Data {
     instruction: number;
 }
 
-const DataLayout = struct<Data>([u8('instruction')]);
+const DataLayout = BufferLayout.struct<Data>(
+  [
+    BufferLayout.u8('instruction')
+  ]
+);
 
 export const refreshReserveInstruction = (reserve: PublicKey, oracle: PublicKey | null): TransactionInstruction => {
     const data = Buffer.alloc(DataLayout.span);

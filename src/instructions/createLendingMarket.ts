@@ -1,8 +1,8 @@
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { PublicKey, SYSVAR_RENT_PUBKEY, TransactionInstruction } from '@solana/web3.js';
-import { blob, struct, u8 } from 'buffer-layout';
+import * as BufferLayout from 'buffer-layout';
 import { PORT_LENDING } from '../constants';
-import { publicKey } from '../utils/layout';
+import * as Layout from '../utils/layout';
 import { LendingInstruction } from './instruction';
 
 interface Data {
@@ -11,7 +11,13 @@ interface Data {
     quoteCurrency: Buffer;
 }
 
-const DataLayout = struct<Data>([u8('instruction'), publicKey('owner'), blob(32, 'quoteCurrency')]);
+const DataLayout = BufferLayout.struct<Data>(
+    [
+        BufferLayout.u8('instruction'), 
+        Layout.publicKey('owner'), 
+        BufferLayout.blob(32, 'quoteCurrency')
+    ]
+);
 
 export const initLendingMarketInstruction = (
     owner: PublicKey,
