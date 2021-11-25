@@ -6,6 +6,7 @@ import { ReserveConfig, ReserveConfigLayout } from '../structs/ReserveData';
 import { LendingInstruction } from './instruction';
 import * as BufferLayout from "buffer-layout";
 import * as Layout from "../utils/layout";
+import BN from 'bn.js'
 
 interface Data {
     instruction: number;
@@ -24,9 +25,9 @@ const DataLayout = BufferLayout.struct<Data>([
 ]);
 
 export const initReserveInstruction = (
-    liquidityAmount: number | bigint,
+    liquidityAmount: number | BN,
     option: number,
-    price: BigNumber,
+    price: BN,
     config: ReserveConfig,
     sourceLiquidity: PublicKey,
     destinationCollateral: PublicKey,
@@ -47,8 +48,8 @@ export const initReserveInstruction = (
         {
             instruction: LendingInstruction.InitReserve,
             option,
-            marketPrice: price,
-            liquidityAmount: BigInt(liquidityAmount),
+            marketPrice: new BN(price),
+            liquidityAmount: new BN(liquidityAmount),
             config,
         },
         data
