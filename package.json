@@ -1,6 +1,6 @@
 {
   "name": "@port.finance/port-sdk",
-  "version": "0.1.34",
+  "version": "0.1.36",
   "license": "MIT",
   "source": "src/index.js",
   "main": "lib/index.js",

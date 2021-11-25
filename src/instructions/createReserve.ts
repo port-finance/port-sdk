@@ -5,7 +5,7 @@ import { PORT_LENDING } from '../constants';
 import { ReserveConfig, ReserveConfigLayout } from '../structs/ReserveData';
 import { LendingInstruction } from './instruction';
 import * as BufferLayout from "buffer-layout";
-import * as Layout from "buffer-layout";
+import * as Layout from "../utils/layout";
 
 interface Data {
     instruction: number;
