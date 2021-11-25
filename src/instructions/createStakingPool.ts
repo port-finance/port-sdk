@@ -3,7 +3,7 @@ import { PublicKey, SYSVAR_RENT_PUBKEY, TransactionInstruction } from '@solana/w
 import * as BufferLayout from 'buffer-layout';
 import * as Layout from '../utils/layout';
 import { PORT_STAKING } from '../constants';
-import { publicKey } from '../utils/layout';
+import BN from 'bn.js'
 
 interface Data {
     instruction: number;
@@ -26,9 +26,9 @@ const DataLayout = BufferLayout.struct<Data>([
 ]);
 
 export const initStakingPool = (
-    supply: number,
-    duration: number,
-    earliestRewardTime: number,
+    supply: number | BN,
+    duration: number | BN,
+    earliestRewardTime: number | BN,
     bumpSeed: number,
     transferRewardSupply: PublicKey,
     rewardTokenSupply: PublicKey,
@@ -43,9 +43,9 @@ export const initStakingPool = (
     DataLayout.encode(
         {
             instruction: 0,
-            supply,
-            duration,
-            earliestRewardTime,
+            supply: new BN(supply),
+            duration: new BN(duration),
+            earliestRewardTime: new BN(earliestRewardTime),
             bumpSeed,
             poolOwnerAuthority,
             adminAuthority
