@@ -48,6 +48,7 @@ export interface ReserveConfig {
   maxBorrowRate: number;
   fees: {
     borrowFeeWad: BN;
+    flashLoanFeeWad: BN;
     hostFeePercentage: number;
   };
 }
@@ -89,7 +90,11 @@ export const ReserveConfigLayout: typeof BufferLayout.Structure = BufferLayout.s
     BufferLayout.u8("optimalBorrowRate"),
     BufferLayout.u8("maxBorrowRate"),
     BufferLayout.struct(
-      [Layout.uint64("borrowFeeWad"), BufferLayout.u8("hostFeePercentage")],
+      [
+        Layout.uint64("borrowFeeWad"), 
+        Layout.uint64("flashLoanFeeWad"), 
+        BufferLayout.u8("hostFeePercentage")
+      ],
       "fees"
     ),
   ],
