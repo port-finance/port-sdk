@@ -7,6 +7,7 @@ import {AssetDisplayConfig} from './models/AssetDisplayConfig';
 import {AssetPriceConfig} from './models/AssetPriceConfig';
 import {AssetDepositConfig} from './models/AssetDepositConfig';
 import {AssetContext} from './models/AssetContext';
+import { PORT_LENDING, PORT_STAKING } from './constants';
 
 export class Profile {
   private readonly env: ENV;
@@ -32,8 +33,8 @@ export class Profile {
   public static forMainNet() {
     return new Profile(
         ENV.MainnetBeta,
-        new PublicKey('Port7uDYB3wk6GJAw4KT1WpTeMtSu9bTcChBHkX2LfR'),
-        new PublicKey('stkarvwmSzv2BygN5e2LeTwimTczLWHCKPKGC2zVLiq'),
+        PORT_LENDING,
+        PORT_STAKING,
         new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
         [
           new AssetConfig(

@@ -52,6 +52,51 @@ export interface ReserveConfig {
   };
 }
 
+
+export const ReserveLiquidityLayout: typeof BufferLayout.Structure = BufferLayout.struct(
+  [
+    Layout.publicKey("mintPubkey"),
+    BufferLayout.u8("mintDecimals"),
+    Layout.publicKey("supplyPubkey"),
+    Layout.publicKey("feeReceiver"),
+    // TODO: replace u32 option with generic equivalent
+    BufferLayout.u32("oracleOption"),
+    Layout.publicKey("oraclePubkey"),
+    Layout.uint64("availableAmount"),
+    Layout.uint128("borrowedAmountWads"),
+    Layout.uint128("cumulativeBorrowRateWads"),
+    Layout.uint128("marketPrice"),
+  ],
+  "liquidity"
+);
+
+export const ReserveCollateralLayout: typeof BufferLayout.Structure = BufferLayout.struct(
+  [
+    Layout.publicKey("mintPubkey"),
+    Layout.uint64("mintTotalSupply"),
+    Layout.publicKey("supplyPubkey"),
+  ],
+  "collateral"
+);
+
+export const ReserveConfigLayout: typeof BufferLayout.Structure = BufferLayout.struct(
+  [
+    BufferLayout.u8("optimalUtilizationRate"),
+    BufferLayout.u8("loanToValueRatio"),
+    BufferLayout.u8("liquidationBonus"),
+    BufferLayout.u8("liquidationThreshold"),
+    BufferLayout.u8("minBorrowRate"),
+    BufferLayout.u8("optimalBorrowRate"),
+    BufferLayout.u8("maxBorrowRate"),
+    BufferLayout.struct(
+      [Layout.uint64("borrowFeeWad"), BufferLayout.u8("hostFeePercentage")],
+      "fees"
+    ),
+  ],
+  "config"
+);
+
+
 export const ReserveLayout: typeof BufferLayout.Structure = BufferLayout.struct(
   [
     BufferLayout.u8("version"),
@@ -60,48 +105,12 @@ export const ReserveLayout: typeof BufferLayout.Structure = BufferLayout.struct(
 
     Layout.publicKey("lendingMarket"),
 
-    BufferLayout.struct(
-      [
-        Layout.publicKey("mintPubkey"),
-        BufferLayout.u8("mintDecimals"),
-        Layout.publicKey("supplyPubkey"),
-        Layout.publicKey("feeReceiver"),
-        // TODO: replace u32 option with generic equivalent
-        BufferLayout.u32("oracleOption"),
-        Layout.publicKey("oraclePubkey"),
-        Layout.uint64("availableAmount"),
-        Layout.uint128("borrowedAmountWads"),
-        Layout.uint128("cumulativeBorrowRateWads"),
-        Layout.uint128("marketPrice"),
-      ],
-      "liquidity"
-    ),
+    ReserveLiquidityLayout,
 
-    BufferLayout.struct(
-      [
-        Layout.publicKey("mintPubkey"),
-        Layout.uint64("mintTotalSupply"),
-        Layout.publicKey("supplyPubkey"),
-      ],
-      "collateral"
-    ),
+    ReserveCollateralLayout,
 
-    BufferLayout.struct(
-      [
-        BufferLayout.u8("optimalUtilizationRate"),
-        BufferLayout.u8("loanToValueRatio"),
-        BufferLayout.u8("liquidationBonus"),
-        BufferLayout.u8("liquidationThreshold"),
-        BufferLayout.u8("minBorrowRate"),
-        BufferLayout.u8("optimalBorrowRate"),
-        BufferLayout.u8("maxBorrowRate"),
-        BufferLayout.struct(
-          [Layout.uint64("borrowFeeWad"), BufferLayout.u8("hostFeePercentage")],
-          "fees"
-        ),
-      ],
-      "config"
-    ),
+    ReserveConfigLayout,
+
     BufferLayout.blob(8, "padding1"),
     BufferLayout.u8("deposit_staking_pool_option"),
     Layout.publicKey("deposit_staking_pool"),
