@@ -15,8 +15,8 @@ export interface ReserveData {
   collateral: ReserveCollateral;
   config: ReserveConfig;
   // u8
-  deposit_staking_pool_option: number;
-  deposit_staking_pool: PublicKey;
+  stakingPoolOption: number;
+  stakingPool: PublicKey;
 }
 
 export interface ReserveLiquidity {
@@ -116,9 +116,8 @@ export const ReserveLayout: typeof BufferLayout.Structure = BufferLayout.struct(
 
     ReserveConfigLayout,
 
-    BufferLayout.blob(8, "padding1"),
-    BufferLayout.u8("deposit_staking_pool_option"),
-    Layout.publicKey("deposit_staking_pool"),
+    BufferLayout.u8("stakingPoolOption"),
+    Layout.publicKey("stakingPool"),
     BufferLayout.blob(215, "padding2"),
   ]
 );
