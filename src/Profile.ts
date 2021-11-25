@@ -7,6 +7,7 @@ import {AssetDisplayConfig} from './models/AssetDisplayConfig';
 import {AssetPriceConfig} from './models/AssetPriceConfig';
 import {AssetDepositConfig} from './models/AssetDepositConfig';
 import {AssetContext} from './models/AssetContext';
+import {PORT_LENDING, PORT_STAKING} from './constants';
 
 export class Profile {
   private readonly env: ENV;
@@ -32,8 +33,8 @@ export class Profile {
   public static forMainNet() {
     return new Profile(
         ENV.MainnetBeta,
-        new PublicKey('Port7uDYB3wk6GJAw4KT1WpTeMtSu9bTcChBHkX2LfR'),
-        new PublicKey('stkarvwmSzv2BygN5e2LeTwimTczLWHCKPKGC2zVLiq'),
+        PORT_LENDING,
+        PORT_STAKING,
         new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
         [
           new AssetConfig(
@@ -134,6 +135,15 @@ export class Profile {
               AssetId.fromBase58('2poo1w1DL6yd2WNTCnNTzDqkC6MBXq7axo77P16yrBuf'),
               ReserveId.fromBase58('BXt3EhK5Tj81aKaVSBD27rLFd5w8A6wmGKDh47JWohEu'),
               new AssetDisplayConfig('Saber USDT USDC LP', 'SLP'),
+              AssetPriceConfig.fromDecimals(6),
+              new AssetDepositConfig({
+                min: 1_000, // min 0.001 pSOL
+              }),
+          ),
+          new AssetConfig(
+              AssetId.fromBase58('9vMJfxuKxXBoEa7rM12mYLMwTacLMLDJqHozw96WQL8i'),
+              ReserveId.fromBase58('4HVSvzUfQ3aP5wEDkCQRqgYMhNatenVRKPdbXUv8VvBa'),
+              new AssetDisplayConfig('UST', 'UST'),
               AssetPriceConfig.fromDecimals(6),
               new AssetDepositConfig({
                 min: 1_000, // min 0.001 pSOL

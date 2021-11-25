@@ -1,6 +1,6 @@
 {
   "name": "@port.finance/port-sdk",
-  "version": "0.1.26",
+  "version": "0.1.41",
   "license": "MIT",
   "source": "src/index.js",
   "main": "lib/index.js",
@@ -35,9 +35,11 @@
     "@solana/spl-token-registry": "^0.2.205",
     "@solana/web3.js": "^1.22.0",
     "big.js": "^6.1.1",
+    "bignumber.js": "^9.0.1",
     "buffer-layout": "1.2.2",
     "prettier": "^2.4.1",
-    "typescript": "^4.3.5"
+    "typescript": "^4.3.5",
+    "user": "^0.0.0"
   },
   "devDependencies": {
     "@types/big.js": "^6.1.1",
