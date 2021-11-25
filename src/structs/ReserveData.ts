@@ -51,6 +51,8 @@ export interface ReserveConfig {
     flashLoanFeeWad: BN;
     hostFeePercentage: number;
   };
+  stakingPoolOption: number;
+  stakingPool: PublicKey;
 }
 
 
@@ -97,6 +99,8 @@ export const ReserveConfigLayout: typeof BufferLayout.Structure = BufferLayout.s
       ],
       "fees"
     ),
+    BufferLayout.u8("stakingPoolOption"),
+    Layout.publicKey("stakingPool"),
   ],
   "config"
 );
@@ -116,8 +120,6 @@ export const ReserveLayout: typeof BufferLayout.Structure = BufferLayout.struct(
 
     ReserveConfigLayout,
 
-    BufferLayout.u8("stakingPoolOption"),
-    Layout.publicKey("stakingPool"),
     BufferLayout.blob(215, "padding2"),
   ]
 );
