@@ -7,7 +7,7 @@ import {AssetDisplayConfig} from './models/AssetDisplayConfig';
 import {AssetPriceConfig} from './models/AssetPriceConfig';
 import {AssetDepositConfig} from './models/AssetDepositConfig';
 import {AssetContext} from './models/AssetContext';
-import { PORT_LENDING, PORT_STAKING } from './constants';
+import {PORT_LENDING, PORT_STAKING} from './constants';
 
 export class Profile {
   private readonly env: ENV;
@@ -141,13 +141,13 @@ export class Profile {
               }),
           ),
           new AssetConfig(
-            AssetId.fromBase58('9vMJfxuKxXBoEa7rM12mYLMwTacLMLDJqHozw96WQL8i'),
-            ReserveId.fromBase58('4HVSvzUfQ3aP5wEDkCQRqgYMhNatenVRKPdbXUv8VvBa'),
-            new AssetDisplayConfig('UST', 'UST'),
-            AssetPriceConfig.fromDecimals(6),
-            new AssetDepositConfig({
-              min: 1_000, // min 0.001 pSOL
-            }),
+              AssetId.fromBase58('9vMJfxuKxXBoEa7rM12mYLMwTacLMLDJqHozw96WQL8i'),
+              ReserveId.fromBase58('4HVSvzUfQ3aP5wEDkCQRqgYMhNatenVRKPdbXUv8VvBa'),
+              new AssetDisplayConfig('UST', 'UST'),
+              AssetPriceConfig.fromDecimals(6),
+              new AssetDepositConfig({
+                min: 1_000, // min 0.001 pSOL
+              }),
           ),
         ],
     );
