@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /** @internal */
 export enum LendingInstruction {
   InitLendingMarket = 0,
