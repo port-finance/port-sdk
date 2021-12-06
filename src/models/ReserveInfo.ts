@@ -62,7 +62,7 @@ export class ReserveInfo {
         account.data.config,
     );
     const reserveStakingPool =
-      account.data.stakingPoolOption === 0 ? null : account.data.stakingPool;
+      account.data.config.stakingPoolOption === 0 ? null : account.data.config.stakingPool;
     return new ReserveInfo(
         id,
         marketId,
