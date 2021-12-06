@@ -51,9 +51,9 @@ export class Port {
     profile = Profile.forMainNet(),
     lendingMarket = DEFAULT_PORT_LENDING_MARKET,
   }: {
-    connection: Connection;
-    profile: Profile;
-    lendingMarket: PublicKey;
+    connection?: Connection;
+    profile?: Profile;
+    lendingMarket?: PublicKey;
   }): Port {
     return new Port(connection, profile, lendingMarket);
   }

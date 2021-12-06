@@ -34,7 +34,7 @@ export class ReserveInfo {
   readonly asset: ReserveAssetInfo;
   readonly share: ReserveTokenInfo;
   readonly params: ReserveParams;
-  readonly staking_pool: PublicKey | null;
+  readonly stakingPool: PublicKey | null;
 
   constructor(
       reserveId: ReserveId,
@@ -42,14 +42,14 @@ export class ReserveInfo {
       asset: ReserveAssetInfo,
       share: ReserveTokenInfo,
       params: ReserveParams,
-      staking_pool: PublicKey | null,
+      stakingPool: PublicKey | null,
   ) {
     this.reserveId = reserveId;
     this.marketId = marketId;
     this.asset = asset;
     this.share = share;
     this.params = params;
-    this.staking_pool = staking_pool;
+    this.stakingPool = stakingPool;
   }
 
   public static fromRaw(account: ParsedAccount<ReserveData>): ReserveInfo {
@@ -61,7 +61,7 @@ export class ReserveInfo {
         asset.getAssetId(),
         account.data.config,
     );
-    const reserve_staking_pool =
+    const reserveStakingPool =
       account.data.stakingPoolOption === 0 ? null : account.data.stakingPool;
     return new ReserveInfo(
         id,
@@ -69,7 +69,7 @@ export class ReserveInfo {
         asset,
         token,
         params,
-        reserve_staking_pool,
+        reserveStakingPool,
     );
   }
 
