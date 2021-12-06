@@ -1,11 +1,10 @@
 {
   "name": "@port.finance/port-sdk",
-  "version": "0.1.52",
+  "version": "0.1.53",
   "license": "MIT",
   "source": "src/index.js",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
-  "types": "lib/index.d.ts",
   "engines": {
     "node": ">=10"
   },
