@@ -5,11 +5,11 @@ import {
 } from '@solana/web3.js';
 
 import * as BufferLayout from 'buffer-layout';
-import * as Layout from '../utils/layout';
+import * as Layout from 'src/utils/layout';
 import BN from 'bn.js';
 import {TOKEN_PROGRAM_ID} from '@solana/spl-token';
 import {LendingInstruction} from './instruction';
-import {PORT_LENDING, PORT_STAKING} from '../constants';
+import {PORT_LENDING, PORT_STAKING} from 'src/constants';
 
 // / Repay borrowed liquidity to a reserve to receive collateral at a discount from an unhealthy
 // / obligation. Requires a refreshed obligation and reserves.

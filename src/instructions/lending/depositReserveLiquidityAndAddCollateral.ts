@@ -6,9 +6,9 @@ import {
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import * as BufferLayout from 'buffer-layout';
 
-import * as Layout from '../utils/layout'
+import * as Layout from 'src/utils/layout'
 import { LendingInstruction } from './instruction';
-import { AccessType, getAccess } from '../utils/Instructions';
+import { AccessType, getAccess } from 'src/utils/Instructions';
 
 /// Combines DepositReserveLiquidity and DepositObligationCollateral
 ///

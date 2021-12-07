@@ -8,7 +8,7 @@ import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import * as BufferLayout from 'buffer-layout';
 
 import { LendingInstruction } from './instruction';
-import { AccessType, getAccess } from '../utils/Instructions';
+import { AccessType, getAccess } from 'src/utils/Instructions';
 
 /// Initializes a new lending market obligation.
 ///

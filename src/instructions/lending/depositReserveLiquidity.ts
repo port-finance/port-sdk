@@ -5,11 +5,11 @@ import {
 } from '@solana/web3.js';
 
 import * as BufferLayout from 'buffer-layout';
-import * as Layout from '../utils/layout'
+import * as Layout from 'src/utils/layout'
 import { LendingInstruction } from './instruction';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
-import { AccessType, getAccess } from '..//utils/Instructions';
-import { Lamport } from '../models/Lamport';
+import { AccessType, getAccess } from 'src//utils/Instructions';
+import { Lamport } from 'src/models/Lamport';
 
 /// Deposit liquidity into a reserve in exchange for collateral. Collateral represents a share
 /// of the reserve liquidity pool.

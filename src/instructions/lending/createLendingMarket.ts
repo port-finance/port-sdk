@@ -5,8 +5,8 @@ import {
   TransactionInstruction,
 } from '@solana/web3.js';
 import * as BufferLayout from 'buffer-layout';
-import {PORT_LENDING} from '../constants';
-import * as Layout from '../utils/layout';
+import {PORT_LENDING} from 'src/constants';
+import * as Layout from 'src/utils/layout';
 import {LendingInstruction} from './instruction';
 
 interface Data {

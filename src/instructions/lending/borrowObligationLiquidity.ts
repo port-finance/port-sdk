@@ -1,10 +1,10 @@
 import { PublicKey, SYSVAR_CLOCK_PUBKEY, TransactionInstruction } from '@solana/web3.js';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import * as BufferLayout from 'buffer-layout';
-import * as Layout from '../utils/layout'
-import { AccessType } from '../utils/Instructions';
-import { Lamport } from '../models/Lamport';
-import { getAccess } from '../utils/Instructions';
+import * as Layout from 'src/utils/layout'
+import { AccessType } from 'src/utils/Instructions';
+import { Lamport } from 'src/models/Lamport';
+import { getAccess } from 'src/utils/Instructions';
 import { LendingInstruction } from './instruction';
 
 /// Borrow liquidity from a reserve by depositing collateral tokens. Requires a refreshed

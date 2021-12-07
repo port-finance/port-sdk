@@ -6,11 +6,11 @@ import {
   TransactionInstruction,
 } from '@solana/web3.js';
 import BigNumber from 'bignumber.js';
-import {PORT_LENDING} from '../constants';
-import {ReserveConfig, ReserveConfigLayout} from '../structs/ReserveData';
+import {PORT_LENDING} from 'src/constants';
+import {ReserveConfig, ReserveConfigLayout} from 'src/structs/ReserveData';
 import {LendingInstruction} from './instruction';
 import * as BufferLayout from 'buffer-layout';
-import * as Layout from '../utils/layout';
+import * as Layout from 'src/utils/layout';
 import BN from 'bn.js';
 
 interface Data {
