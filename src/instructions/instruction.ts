@@ -17,4 +17,5 @@ export enum LendingInstruction {
   FlashLoan = 13,
   DepositReserveLiquidityAndAddCollateral = 14,
   UpdateReserve = 16,
+  WithdrawFee = 17,
 }
