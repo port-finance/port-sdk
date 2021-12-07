@@ -1,4 +1,4 @@
-name: Lint
+name: SDK CI
 
 on:
   # Trigger the workflow on push or pull request,
@@ -34,6 +34,11 @@ jobs:
         uses: borales/actions-yarn@v2.3.0
         with:
           cmd: lint
+
+      - name: Run build
+        uses: borales/actions-yarn@v2.3.0
+        with:
+          cmd: build
 
       - name: Run tests
         uses: borales/actions-yarn@v2.3.0
