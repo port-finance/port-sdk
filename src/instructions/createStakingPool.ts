@@ -4,6 +4,7 @@ import * as BufferLayout from 'buffer-layout';
 import * as Layout from '../utils/layout';
 import { PORT_STAKING } from '../constants';
 import BN from 'bn.js'
+import { LendingInstruction } from './instruction';
 
 interface Data {
     instruction: number;
@@ -42,7 +43,7 @@ export const initStakingPool = (
     const data = Buffer.alloc(DataLayout.span);
     DataLayout.encode(
         {
-            instruction: 0,
+            instruction: LendingInstruction.InitLendingMarket,
             supply: new BN(supply),
             duration: new BN(duration),
             earliestRewardTime: new BN(earliestRewardTime),
