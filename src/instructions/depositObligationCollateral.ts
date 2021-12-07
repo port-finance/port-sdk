@@ -23,7 +23,7 @@ import { AccessType, getAccess } from '../utils/Instructions';
 // /   7. `[signer]` User transfer authority ($authority).
 // /   8. `[]` Clock sysvar.
 // /   9. `[]` Token program id.
-export const DepositObligationCollateral = (
+export const depositObligationCollateralInstruction = (
   transaction: Transaction,
   collateralAmount: Lamport, // TODO: incompatible type with port-app/lamport
   srcCollateralPubkey: PublicKey, // 0

@@ -20,7 +20,7 @@ import { AccessType, getAccess } from '../utils/Instructions';
 ///   5. `[signer]` User transfer authority ($authority).
 ///   6. `[]` Clock sysvar.
 ///   7. `[]` Token program id.
-export function RepayObligationLiquidity(
+export function repayObligationLiquidityInstruction (
   transaction: Transaction,
   liquidityAmount: Lamport,
   srcLiquidityPubkey: PublicKey, // 0

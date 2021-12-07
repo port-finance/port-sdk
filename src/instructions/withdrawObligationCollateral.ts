@@ -24,7 +24,7 @@ import { AccessType, getAccess } from '../utils/Instructions';
 ///   10 `[writable, optional]` Staking pool.
 ///   11 `[optional]` staking program id.
 
-export const WithdrawObligationCollateral = (
+export const withdrawObligationCollateralInstruction = (
   transaction: Transaction,
   collateralAmount: Lamport,
   srcCollateralPubkey: PublicKey, // 0

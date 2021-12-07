@@ -24,7 +24,7 @@ import { LendingInstruction } from './instruction';
 ///   7. `[signer]` Obligation owner.
 ///   8. `[]` Clock sysvar.
 ///   9. `[]` Token program id.
-export const BorrowObligationLiquidity = (
+export const borrowObligationLiquidityInstruction = (
   transaction: Transaction,
   liquidityAmount: Lamport,
   srcLiquidityPubkey: PublicKey, // 0

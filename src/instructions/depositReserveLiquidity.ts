@@ -27,7 +27,7 @@ import { Lamport } from '../models/Lamport';
 ///   7. `[signer]` User transfer authority ($authority).
 ///   8. `[]` Clock sysvar.
 ///   9. `[]` Token program id.
-export const DepositReserveLiquidity = (
+export const depositReserveLiquidityInstruction = (
   transaction: Transaction,
   liquidityAmount: Lamport,
   srcLiquidityPubkey: PublicKey, // 0

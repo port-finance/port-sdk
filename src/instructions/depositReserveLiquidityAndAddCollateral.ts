@@ -31,7 +31,7 @@ import { AccessType, getAccess } from '../utils/Instructions';
 ///   13 `[writable, optional]` Stake account.
 ///   14 `[writable, optional]` Staking pool.
 ///   15 `[optional]` staking program id.
-export const DepositReserveLiquidityAndAddCollateral = (
+export const depositReserveLiquidityAndAddCollateralInstruction = (
   transaction: Transaction,
   liquidityAmount: Lamport,
   srcLiquidityPubkey: PublicKey, // 0

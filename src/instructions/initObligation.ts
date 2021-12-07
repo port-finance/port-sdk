@@ -20,7 +20,7 @@ import { AccessType, getAccess } from '../utils/Instructions';
 ///   3. `[]` Clock sysvar.
 ///   4. `[]` Rent sysvar.
 ///   5. `[]` Token program id.
-export function InitObligation(
+export function initObligationInstruction (
   transaction: Transaction,
   obligationPubkey: PublicKey, // 0
   lendingMarketPubkey: PublicKey, // 1
