@@ -128,7 +128,7 @@ export class Port {
             },
             {
               memcmp: {
-                offset: ReserveLayout.offset('lendingMarket'),
+                offset: ReserveLayout.offsetOf('lendingMarket'),
                 bytes: this.lendingMarket.toBase58(),
               },
             },
