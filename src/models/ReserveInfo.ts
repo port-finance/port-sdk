@@ -1,32 +1,32 @@
-import { ReserveId } from "./ReserveId";
-import { Asset } from "./Asset";
-import { Share } from "./Share";
-import { ExchangeRatio } from "./ExchangeRatio";
-import { ReserveUtilizationRatio } from "./ReserveUtilizationRatio";
-import { BorrowApy } from "./BorrowApy";
-import { ReserveBorrowRate } from "./ReserveBorrowRate";
-import Big from "big.js";
-import { AssetId } from "./AssetId";
-import { SupplyApy } from "./SupplyApy";
-import { LoanToValueRatio } from "./LoanToValueRatio";
+import {ReserveId} from './ReserveId';
+import {Asset} from './Asset';
+import {Share} from './Share';
+import {ExchangeRatio} from './ExchangeRatio';
+import {ReserveUtilizationRatio} from './ReserveUtilizationRatio';
+import {BorrowApy} from './BorrowApy';
+import {ReserveBorrowRate} from './ReserveBorrowRate';
+import Big from 'big.js';
+import {AssetId} from './AssetId';
+import {SupplyApy} from './SupplyApy';
+import {LoanToValueRatio} from './LoanToValueRatio';
 import {
   ReserveCollateral,
   ReserveConfig,
   ReserveData,
   ReserveLiquidity,
-} from "../structs/ReserveData";
-import { Wads } from "./Wads";
-import { ShareId } from "./ShareId";
-import { OracleId } from "./OracleId";
-import { MarketId } from "./MarketId";
-import { Balance } from "./Balance";
-import { BalanceId } from "./BalanceId";
-import { Percentage } from "./Percentage";
-import { AssetPrice } from "./AssetPrice";
-import { AssetQuantityContext } from "./AssetQuantityContext";
-import { AssetValue } from "./AssetValue";
-import { ParsedAccount } from "../parsers/ParsedAccount";
-import { PublicKey } from "@solana/web3.js";
+} from '../structs/ReserveData';
+import {Wads} from './Wads';
+import {ShareId} from './ShareId';
+import {OracleId} from './OracleId';
+import {MarketId} from './MarketId';
+import {Balance} from './Balance';
+import {BalanceId} from './BalanceId';
+import {Percentage} from './Percentage';
+import {AssetPrice} from './AssetPrice';
+import {AssetQuantityContext} from './AssetQuantityContext';
+import {AssetValue} from './AssetValue';
+import {ParsedAccount} from '../parsers/ParsedAccount';
+import {PublicKey} from '@solana/web3.js';
 
 export class ReserveInfo {
   private readonly reserveId: ReserveId;
@@ -34,22 +34,22 @@ export class ReserveInfo {
   readonly asset: ReserveAssetInfo;
   readonly share: ReserveTokenInfo;
   readonly params: ReserveParams;
-  readonly staking_pool: PublicKey | null;
+  readonly stakingPool: PublicKey | null;
 
   constructor(
-    reserveId: ReserveId,
-    marketId: MarketId,
-    asset: ReserveAssetInfo,
-    share: ReserveTokenInfo,
-    params: ReserveParams,
-    staking_pool: PublicKey | null
+      reserveId: ReserveId,
+      marketId: MarketId,
+      asset: ReserveAssetInfo,
+      share: ReserveTokenInfo,
+      params: ReserveParams,
+      stakingPool: PublicKey | null,
   ) {
     this.reserveId = reserveId;
     this.marketId = marketId;
     this.asset = asset;
     this.share = share;
     this.params = params;
-    this.staking_pool = staking_pool;
+    this.stakingPool = stakingPool;
   }
 
   public static fromRaw(account: ParsedAccount<ReserveData>): ReserveInfo {
@@ -58,20 +58,18 @@ export class ReserveInfo {
     const asset = ReserveAssetInfo.fromRaw(account.data.liquidity);
     const token = ReserveTokenInfo.fromRaw(account.data.collateral);
     const params = ReserveParams.fromRaw(
-      asset.getAssetId(),
-      account.data.config
+        asset.getAssetId(),
+        account.data.config,
     );
-    const reserve_staking_pool =
-      account.data.stakingPoolOption === 0
-        ? null
-        : account.data.stakingPool;
+    const reserveStakingPool =
+      account.data.config.stakingPoolOption === 0 ? null : account.data.config.stakingPool;
     return new ReserveInfo(
-      id,
-      marketId,
-      asset,
-      token,
-      params,
-      reserve_staking_pool
+        id,
+        marketId,
+        asset,
+        token,
+        params,
+        reserveStakingPool,
     );
   }
 
@@ -109,11 +107,11 @@ export class ReserveInfo {
 
   public getMarketCap(): AssetValue {
     return new AssetValue(
-      this.getAssetId(),
-      this.getTotalAsset().toValue(
-        this.getMarkPrice(),
-        this.getQuantityContext()
-      )
+        this.getAssetId(),
+        this.getTotalAsset().toValue(
+            this.getMarkPrice(),
+            this.getQuantityContext(),
+        ),
     );
   }
 
@@ -123,11 +121,11 @@ export class ReserveInfo {
 
   public getAvailableAssetValue(): AssetValue {
     return new AssetValue(
-      this.getAssetId(),
-      this.getAvailableAsset().toValue(
-        this.getMarkPrice(),
-        this.getQuantityContext()
-      )
+        this.getAssetId(),
+        this.getAvailableAsset().toValue(
+            this.getMarkPrice(),
+            this.getQuantityContext(),
+        ),
     );
   }
 
@@ -137,11 +135,11 @@ export class ReserveInfo {
 
   public getBorrowedAssetValue(): AssetValue {
     return new AssetValue(
-      this.getAssetId(),
-      this.getBorrowedAsset().toValue(
-        this.getMarkPrice(),
-        this.getQuantityContext()
-      )
+        this.getAssetId(),
+        this.getBorrowedAsset().toValue(
+            this.getMarkPrice(),
+            this.getQuantityContext(),
+        ),
     );
   }
 
@@ -223,12 +221,12 @@ export class ReserveInfo {
 
       const minBorrowRateRaw = minBorrowRate.getUnchecked();
       const normalizedFactor = utilizationRatioRaw.div(
-        optimalUtilizationRatioRaw
+          optimalUtilizationRatioRaw,
       );
       const borrowRateDiff = optimalBorrowRateRaw.sub(minBorrowRateRaw);
       return new BorrowApy(
-        assetId,
-        normalizedFactor.mul(borrowRateDiff).add(minBorrowRateRaw)
+          assetId,
+          normalizedFactor.mul(borrowRateDiff).add(minBorrowRateRaw),
       );
     }
 
@@ -239,13 +237,13 @@ export class ReserveInfo {
 
     const maxBorrowRateRaw = maxBorrowRate.getUnchecked();
     const normalizedFactor = utilizationRatioRaw
-      .sub(optimalUtilizationRatioRaw)
-      .div(new Big(1).sub(optimalUtilizationRatioRaw));
+        .sub(optimalUtilizationRatioRaw)
+        .div(new Big(1).sub(optimalUtilizationRatioRaw));
     const borrowRateDiff = maxBorrowRateRaw.sub(optimalBorrowRateRaw);
 
     return new BorrowApy(
-      assetId,
-      normalizedFactor.mul(borrowRateDiff).add(optimalBorrowRateRaw)
+        assetId,
+        normalizedFactor.mul(borrowRateDiff).add(optimalBorrowRateRaw),
     );
   }
 }
@@ -260,13 +258,13 @@ export class ReserveAssetInfo {
   private readonly quantityContext: AssetQuantityContext;
 
   constructor(
-    assetId: AssetId,
-    oracleId: OracleId | null,
-    feeBalanceId: BalanceId,
-    balance: Balance<Asset>,
-    borrowed: Asset,
-    markPrice: AssetPrice,
-    quantityContext: AssetQuantityContext
+      assetId: AssetId,
+      oracleId: OracleId | null,
+      feeBalanceId: BalanceId,
+      balance: Balance<Asset>,
+      borrowed: Asset,
+      markPrice: AssetPrice,
+      quantityContext: AssetQuantityContext,
   ) {
     this.assetId = assetId;
     this.oracleId = oracleId;
@@ -287,19 +285,19 @@ export class ReserveAssetInfo {
     const lamport = new Asset(assetId, new Big(raw.availableAmount.toString()));
     const balance = new Balance(balanceId, lamport);
     const borrowed = new Asset(
-      assetId,
-      new Wads(raw.borrowedAmountWads).toBig()
+        assetId,
+        new Wads(raw.borrowedAmountWads).toBig(),
     );
     const markPrice = AssetPrice.of(assetId, new Wads(raw.marketPrice).toBig());
     const quantityContext = AssetQuantityContext.fromDecimals(raw.mintDecimals);
     return new ReserveAssetInfo(
-      assetId,
-      oracleId,
-      feeBalanceId,
-      balance,
-      borrowed,
-      markPrice,
-      quantityContext
+        assetId,
+        oracleId,
+        feeBalanceId,
+        balance,
+        borrowed,
+        markPrice,
+        quantityContext,
     );
   }
 
@@ -380,13 +378,13 @@ export class ReserveParams {
   liquidationPenalty: Percentage;
 
   constructor(
-    loanToValueRatio: LoanToValueRatio,
-    optimalUtilizationRatio: ReserveUtilizationRatio,
-    optimalBorrowRate: ReserveBorrowRate,
-    minBorrowRate: ReserveBorrowRate,
-    maxBorrowRate: ReserveBorrowRate,
-    liquidationThreshold: Percentage,
-    liquidationPenalty: Percentage
+      loanToValueRatio: LoanToValueRatio,
+      optimalUtilizationRatio: ReserveUtilizationRatio,
+      optimalBorrowRate: ReserveBorrowRate,
+      minBorrowRate: ReserveBorrowRate,
+      maxBorrowRate: ReserveBorrowRate,
+      liquidationThreshold: Percentage,
+      liquidationPenalty: Percentage,
   ) {
     this.loanToValueRatio = loanToValueRatio;
     this.optimalUtilizationRatio = optimalUtilizationRatio;
@@ -399,39 +397,39 @@ export class ReserveParams {
 
   static fromRaw(assetId: AssetId, config: ReserveConfig): ReserveParams {
     const loanToValueRatio = new LoanToValueRatio(
-      assetId,
-      new Big(config.loanToValueRatio).div(100)
+        assetId,
+        new Big(config.loanToValueRatio).div(100),
     );
     const optimalUtilizationRatio = new ReserveUtilizationRatio(
-      assetId,
-      new Big(config.optimalUtilizationRate).div(100)
+        assetId,
+        new Big(config.optimalUtilizationRate).div(100),
     );
     const optimalBorrowRate = new ReserveBorrowRate(
-      assetId,
-      new Big(config.optimalBorrowRate).div(100)
+        assetId,
+        new Big(config.optimalBorrowRate).div(100),
     );
     const minBorrowRate = new ReserveBorrowRate(
-      assetId,
-      new Big(config.minBorrowRate).div(100)
+        assetId,
+        new Big(config.minBorrowRate).div(100),
     );
     const maxBorrowRate = new ReserveBorrowRate(
-      assetId,
-      new Big(config.minBorrowRate).div(100)
+        assetId,
+        new Big(config.minBorrowRate).div(100),
     );
     const liquidationThreshold = new Percentage(
-      new Big(config.liquidationThreshold).div(100)
+        new Big(config.liquidationThreshold).div(100),
     );
     const liquidationPenalty = new Percentage(
-      new Big(config.liquidationBonus).div(100)
+        new Big(config.liquidationBonus).div(100),
     );
     return new ReserveParams(
-      loanToValueRatio,
-      optimalUtilizationRatio,
-      optimalBorrowRate,
-      minBorrowRate,
-      maxBorrowRate,
-      liquidationThreshold,
-      liquidationPenalty
+        loanToValueRatio,
+        optimalUtilizationRatio,
+        optimalBorrowRate,
+        minBorrowRate,
+        maxBorrowRate,
+        liquidationThreshold,
+        liquidationPenalty,
     );
   }
 }

@@ -149,6 +149,15 @@ export class Profile {
                 min: 1_000, // min 0.001 pSOL
               }),
           ),
+          new AssetConfig(
+              AssetId.fromBase58('7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs'),
+              ReserveId.fromBase58('AtooWNBQRrg94ZeNdx9nk5HMSzHyXVbVvsdPXtbcMG1J'),
+              new AssetDisplayConfig('Wormhole Ethereum', 'whETH'),
+              AssetPriceConfig.fromDecimals(6),
+              new AssetDepositConfig({
+                min: 1_000, // min 0.001 pSOL
+              }),
+          ),
         ],
     );
   }

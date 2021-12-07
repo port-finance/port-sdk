@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /** @internal */
 export enum LendingInstruction {
   InitLendingMarket = 0,
@@ -15,4 +16,5 @@ export enum LendingInstruction {
   LiquidateObligation = 12,
   FlashLoan = 13,
   DepositReserveLiquidityAndAddCollateral = 14,
+  UpdateReserve = 16,
 }

@@ -1,5 +1,9 @@
-import {Connection} from '@solana/web3.js';
-import {RESERVE_DATA_SIZE, ReserveData} from './structs/ReserveData';
+import {Connection, PublicKey} from '@solana/web3.js';
+import {
+  RESERVE_DATA_SIZE,
+  ReserveData,
+  ReserveLayout,
+} from './structs/ReserveData';
 import {ReserveParser as reserveParser} from './parsers/ReserveParser';
 import {ReserveInfo} from './models/ReserveInfo';
 import {ParsedAccount} from './parsers/ParsedAccount';
@@ -26,25 +30,40 @@ import {
 import {StakingPoolContext} from './models/StakingPoolContext';
 import {stakingPoolParser} from './parsers/StakingPoolParser';
 import {StakingPoolInfo} from './models/StakingPoolInfo';
+import {DEFAULT_PORT_LENDING_MARKET} from './constants';
+import {LendingMarket} from './models/LendingMarket';
 
 export class Port {
-  private readonly connection: Connection;
-  private readonly profile: Profile;
+  public readonly connection: Connection;
+  public readonly profile: Profile;
+  public readonly lendingMarket: PublicKey;
+  public lendingMarketData?: LendingMarket;
+  public reserveContext?: ReserveContext;
 
-  constructor(connection: Connection, profile: Profile) {
+  constructor(connection: Connection, profile: Profile, lendingMarket) {
     this.connection = connection;
     this.profile = profile;
+    this.lendingMarket = lendingMarket;
   }
 
-  public static forMainNet(connection?: Connection): Port {
-    return new Port(
-        connection || new Connection('https://port-finance.rpcpool.com'),
-        Profile.forMainNet(),
-    );
+  public static forMainNet({
+    connection = new Connection('https://api.mainnet-beta.solana.com'),
+    profile = Profile.forMainNet(),
+    lendingMarket = DEFAULT_PORT_LENDING_MARKET,
+  }: {
+    connection?: Connection;
+    profile?: Profile;
+    lendingMarket?: PublicKey;
+  }): Port {
+    return new Port(connection, profile, lendingMarket);
   }
 
   public getProfile(): Profile {
     return this.profile;
+  }
+
+  public async load(): Promise<void> {
+    this.reserveContext = await this.getReserveContext();
   }
 
   public async getTotalMarketCap(): Promise<QuoteValue> {
@@ -107,6 +126,12 @@ export class Port {
             {
               dataSize: RESERVE_DATA_SIZE,
             },
+            {
+              memcmp: {
+                offset: ReserveLayout.offset('lendingMarket'),
+                bytes: this.lendingMarket.toBase58(),
+              },
+            },
           ],
         },
     );
@@ -162,5 +187,33 @@ export class Port {
           PortBalance.fromRaw(p as ParsedAccount<PortBalanceData>, allReserves),
         ) as PortBalance[];
     return parsed;
+  }
+
+  public async getStakingPool(
+      stakingPoolKey: PublicKey,
+  ): Promise<StakingPoolInfo> {
+    const raw = await this.connection.getAccountInfo(stakingPoolKey);
+    if (!raw) {
+      return Promise.reject(new Error('no reserve found'));
+    }
+    return StakingPoolInfo.fromRaw(
+      stakingPoolParser({
+        pubkey: stakingPoolKey,
+        account: raw,
+      }) as ParsedAccount<StakingPoolProto>,
+    );
+  }
+
+  public async getReserve(reserveKey: PublicKey): Promise<ReserveInfo> {
+    const raw = await this.connection.getAccountInfo(reserveKey);
+    if (!raw) {
+      return Promise.reject(new Error('no reserve found'));
+    }
+    return ReserveInfo.fromRaw(
+      reserveParser({
+        pubkey: reserveKey,
+        account: raw,
+      }) as ParsedAccount<ReserveData>,
+    );
   }
 }
