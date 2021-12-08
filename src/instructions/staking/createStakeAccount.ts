@@ -1,7 +1,8 @@
 import { PublicKey, SYSVAR_RENT_PUBKEY, TransactionInstruction } from '@solana/web3.js';
 import * as BufferLayout from 'buffer-layout';
+import { PORT_STAKING } from 'src/constants';
 import { AccessType, getAccess } from 'src/utils/Instructions';
-import { StakingInstructions } from './instructions';
+import { StakingInstructions } from './instruction';
 
 /// Accounts expected by this instruction:
 ///
@@ -11,9 +12,9 @@ import { StakingInstructions } from './instructions';
 ///   3. `[]` Rent sysvar.
 
 export function createStakeAccountInstruction(
-  transaction: Transaction,
   stakeAccountPubkey: PublicKey, // 0
   stakingPoolPubkey: PublicKey, // 1
+  stakeAccountOwnerPubkey: PublicKey, // 2
 ): TransactionInstruction {
   const dataLayout = BufferLayout.struct([BufferLayout.u8('instruction')]);
   const data = Buffer.alloc(dataLayout.span);
@@ -25,14 +26,13 @@ export function createStakeAccountInstruction(
   const keys = [
     getAccess(stakeAccountPubkey, AccessType.WRITE),
     getAccess(stakingPoolPubkey, AccessType.READ),
-    transaction.getWalletId().getAccess(AccessType.READ),
+    getAccess(stakeAccountOwnerPubkey, AccessType.READ),
     getAccess(SYSVAR_RENT_PUBKEY, AccessType.READ)
   ];
 
-  const programId = transaction.getStakingProgramId();
-  if (!programId) {
-    throw new Error('Missing staking program ID');
-  }
-
-  return new TransactionInstruction({ keys, programId, data });
+  return new TransactionInstruction({ 
+    keys, 
+    programId: PORT_STAKING,
+    data 
+  });
 }

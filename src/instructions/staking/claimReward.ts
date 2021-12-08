@@ -1,8 +1,9 @@
 import {PublicKey, SYSVAR_CLOCK_PUBKEY, TransactionInstruction} from '@solana/web3.js';
 import {TOKEN_PROGRAM_ID} from '@solana/spl-token';
 import * as BufferLayout from 'buffer-layout';
-import { StakingInstructions } from './instructions';
+import { StakingInstructions } from './instruction';
 import { AccessType, getAccess } from 'src/utils/Instructions';
+import { PORT_STAKING } from 'src/constants';
 
 /// Claim all unclaimed Reward from a stake account
 ///
@@ -16,7 +17,7 @@ import { AccessType, getAccess } from 'src/utils/Instructions';
 ///   6. `[]` Clock sysvar.
 ///   7. `[]` Token program.
 export function claimRewardInstruction(
-  transaction: Transaction,
+  stakeAccountOwnerPubkey: PublicKey, // 0
   stakeAccountPubkey: PublicKey, // 1
   stakingPoolPubkey: PublicKey, // 2
   rewardTokenPoolPubkey: PublicKey, // 3,
@@ -30,7 +31,7 @@ export function claimRewardInstruction(
   );
 
   const keys = [
-    transaction.getWalletId().getAccess(AccessType.SIGNER),
+    getAccess(stakeAccountOwnerPubkey, AccessType.SIGNER),
     getAccess(stakeAccountPubkey, AccessType.WRITE),
     getAccess(stakingPoolPubkey, AccessType.WRITE),
     getAccess(rewardTokenPoolPubkey, AccessType.WRITE),
@@ -39,10 +40,9 @@ export function claimRewardInstruction(
     getAccess(TOKEN_PROGRAM_ID, AccessType.READ)
   ];
 
-  const programId = transaction.getStakingProgramId();
-  if (!programId) {
-    throw new Error('Missing staking program ID');
-  }
-
-  return new TransactionInstruction({ keys, programId, data });
+  return new TransactionInstruction({ 
+    keys, 
+    programId: PORT_STAKING,
+    data 
+  });
 }

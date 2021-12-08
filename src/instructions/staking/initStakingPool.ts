@@ -9,7 +9,7 @@ import BN from "bn.js";
 
 import * as Layout from "src/utils/layout";
 import { PORT_STAKING } from "src/constants"
-import { StakingInstructions } from "./instructions";
+import { StakingInstructions } from "./instruction";
 import { AccessType, getAccess } from "src/utils/Instructions";
 
 
