@@ -7,7 +7,8 @@ import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import * as BufferLayout from "buffer-layout";
 import { LendingInstruction } from "./instruction";
 import { AccessType, getAccess } from "src/utils/Instructions";
-import { ReserveConfig, ReserveConfigLayout } from "..";
+import { ReserveConfig, ReserveConfigLayout } from "src/structs/ReserveData";
+import { PORT_LENDING } from "src/constants";
 
 /// Update configuration for an existing market reserve.
 ///
@@ -20,7 +21,6 @@ import { ReserveConfig, ReserveConfigLayout } from "..";
 ///   4. `[]` Rent sysvar.
 ///   5. `[]` Token program id.
 export const updateReserveInstruction = (
-  transaction: Transaction,
   config: ReserveConfig,
   reservePubkey: PublicKey, // 0
   lendingMarketPubkey: PublicKey, // 1
@@ -50,7 +50,7 @@ export const updateReserveInstruction = (
 
   return new TransactionInstruction({
     keys,
-    programId: transaction.getLendingProgramId(),
+    programId: PORT_LENDING,
     data,
   });
 };

@@ -9,6 +9,7 @@ import * as Layout from 'src/utils/layout';
 import {TOKEN_PROGRAM_ID} from '@solana/spl-token';
 import {LendingInstruction} from './instruction';
 import {PORT_LENDING} from 'src/constants';
+import { AccessType, getAccess } from 'src/utils/Instructions';
 
 // / Redeem collateral from a reserve in exchange for liquidity.
 // /
@@ -51,16 +52,16 @@ export const redeemReserveCollateralInstruction = (
   );
 
   const keys = [
-    {pubkey: sourceCollateral, isSigner: false, isWritable: true},
-    {pubkey: destinationLiquidity, isSigner: false, isWritable: true},
-    {pubkey: reserve, isSigner: false, isWritable: true},
-    {pubkey: reserveCollateralMint, isSigner: false, isWritable: true},
-    {pubkey: reserveLiquiditySupply, isSigner: false, isWritable: true},
-    {pubkey: lendingMarket, isSigner: false, isWritable: false},
-    {pubkey: lendingMarketAuthority, isSigner: false, isWritable: false},
-    {pubkey: transferAuthority, isSigner: true, isWritable: false},
-    {pubkey: SYSVAR_CLOCK_PUBKEY, isSigner: false, isWritable: false},
-    {pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false},
+    getAccess(sourceCollateral, AccessType.WRITE),
+    getAccess(destinationLiquidity, AccessType.WRITE),
+    getAccess(reserve, AccessType.WRITE),
+    getAccess(reserveCollateralMint, AccessType.WRITE),
+    getAccess(reserveLiquiditySupply, AccessType.WRITE),
+    getAccess(lendingMarket, AccessType.READ),
+    getAccess(lendingMarketAuthority, AccessType.READ),
+    getAccess(transferAuthority, AccessType.SIGNER),
+    getAccess(SYSVAR_CLOCK_PUBKEY, AccessType.READ),
+    getAccess(TOKEN_PROGRAM_ID, AccessType.READ)
   ];
 
   return new TransactionInstruction({

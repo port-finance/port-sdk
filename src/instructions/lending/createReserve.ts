@@ -12,6 +12,7 @@ import {LendingInstruction} from './instruction';
 import * as BufferLayout from 'buffer-layout';
 import * as Layout from 'src/utils/layout';
 import BN from 'bn.js';
+import {AccessType, getAccess} from 'src/utils/Instructions';
 
 interface Data {
   instruction: number;
@@ -29,6 +30,28 @@ const DataLayout = BufferLayout.struct<Data>([
   ReserveConfigLayout,
 ]);
 
+/// Initializes a new lending market reserve.
+///
+/// Accounts expected by this instruction:
+///
+///   0. `[writable]` Source liquidity token account.
+///                     $authority can transfer $liquidity_amount.
+///   1. `[writable]` Destination collateral token account - uninitialized.
+///   2. `[writable]` Reserve account - uninitialized.
+///   3. `[]` Reserve liquidity SPL Token mint.
+///   4. `[writable]` Reserve liquidity supply SPL Token account - uninitialized.
+///   5. `[writable]` Reserve liquidity fee receiver - uninitialized.
+///   6. `[writable]` Reserve collateral SPL Token mint - uninitialized.
+///   7. `[writable]` Reserve collateral token supply - uninitialized.
+///   8 `[]` Lending market account.
+///   9 `[]` Derived lending market authority.
+///   10 `[signer]` Lending market owner.
+///   11 `[signer]` User transfer authority ($authority).
+///   12 `[]` Clock sysvar.
+///   13 `[]` Rent sysvar.
+///   14 `[]` Token program id.
+///   15 `[optional]` Oracle price account, pyth or switchboard.
+///           This will be used as the reserve liquidity oracle account.
 export const initReserveInstruction = (
     liquidityAmount: number | BN,
     option: number,
@@ -61,22 +84,25 @@ export const initReserveInstruction = (
   );
 
   const keys = [
-    {pubkey: sourceLiquidity, isSigner: false, isWritable: true},
-    {pubkey: destinationCollateral, isSigner: false, isWritable: true},
-    {pubkey: reserve, isSigner: false, isWritable: true},
-    {pubkey: liquidityMint, isSigner: false, isWritable: false},
-    {pubkey: liquiditySupply, isSigner: false, isWritable: true},
-    {pubkey: liquidityFeeReceiver, isSigner: false, isWritable: true},
-    {pubkey: collateralMint, isSigner: false, isWritable: true},
-    {pubkey: collateralSupply, isSigner: false, isWritable: true},
-    {pubkey: lendingMarket, isSigner: false, isWritable: true},
-    {pubkey: lendingMarketAuthority, isSigner: false, isWritable: false},
-    {pubkey: lendingMarketOwner, isSigner: true, isWritable: false},
-    {pubkey: transferAuthority, isSigner: true, isWritable: false},
-    {pubkey: SYSVAR_CLOCK_PUBKEY, isSigner: false, isWritable: false},
-    {pubkey: SYSVAR_RENT_PUBKEY, isSigner: false, isWritable: false},
-    {pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false},
+    getAccess(sourceLiquidity, AccessType.WRITE),
+    getAccess(destinationCollateral, AccessType.WRITE),
+    getAccess(reserve, AccessType.WRITE),
+    getAccess(liquidityMint, AccessType.READ),
+    getAccess(liquiditySupply, AccessType.WRITE),
+    getAccess(liquidityFeeReceiver, AccessType.WRITE),
+    getAccess(collateralMint, AccessType.WRITE),
+    getAccess(collateralSupply, AccessType.WRITE),
+    getAccess(lendingMarket, AccessType.READ),
+    getAccess(lendingMarketAuthority, AccessType.READ),
+    getAccess(lendingMarketOwner, AccessType.SIGNER),
+    getAccess(transferAuthority, AccessType.SIGNER),
+    getAccess(SYSVAR_CLOCK_PUBKEY, AccessType.READ),
+    getAccess(SYSVAR_RENT_PUBKEY, AccessType.READ),
+    getAccess(TOKEN_PROGRAM_ID, AccessType.READ)    
   ];
+  if (pythPrice) {
+    keys.push(getAccess(pythPrice, AccessType.READ))
+  }
 
   return new TransactionInstruction({
     keys,

@@ -1,7 +1,6 @@
 export * from "./borrowObligationLiquidity";
 export * from "./createLendingMarket";
 export * from "./createReserve";
-export * from "./createStakingPool";
 export * from "./depositObligationCollateral";
 export * from "./depositReserveLiquidity";
 export * from "./depositReserveLiquidityAndAddCollateral";

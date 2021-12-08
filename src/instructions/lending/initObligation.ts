@@ -9,6 +9,7 @@ import * as BufferLayout from 'buffer-layout';
 
 import { LendingInstruction } from './instruction';
 import { AccessType, getAccess } from 'src/utils/Instructions';
+import { PORT_LENDING } from 'src/constants';
 
 /// Initializes a new lending market obligation.
 ///
@@ -21,9 +22,9 @@ import { AccessType, getAccess } from 'src/utils/Instructions';
 ///   4. `[]` Rent sysvar.
 ///   5. `[]` Token program id.
 export function initObligationInstruction (
-  transaction: Transaction,
   obligationPubkey: PublicKey, // 0
   lendingMarketPubkey: PublicKey, // 1
+  obligationOwnerPubkey: PublicKey, // 2
 ): TransactionInstruction {
   const dataLayout = BufferLayout.struct([BufferLayout.u8('instruction')]);
   const data = Buffer.alloc(dataLayout.span);
@@ -35,7 +36,7 @@ export function initObligationInstruction (
   const keys = [
     getAccess(obligationPubkey, AccessType.WRITE),
     getAccess(lendingMarketPubkey, AccessType.READ),
-    transaction.getWalletId().getAccess(AccessType.SIGNER),
+    getAccess(obligationOwnerPubkey, AccessType.SIGNER),
     getAccess(SYSVAR_CLOCK_PUBKEY, AccessType.READ),
     getAccess(SYSVAR_RENT_PUBKEY, AccessType.READ),
     getAccess(TOKEN_PROGRAM_ID, AccessType.READ)
@@ -43,7 +44,7 @@ export function initObligationInstruction (
 
   return new TransactionInstruction({
     keys,
-    programId: transaction.getLendingProgramId(),
+    programId: PORT_LENDING,
     data,
   });
 }

@@ -7,6 +7,7 @@ import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import * as BufferLayout from "buffer-layout";
 import { LendingInstruction } from "./instruction";
 import { AccessType, getAccess } from "src/utils/Instructions";
+import { PORT_LENDING } from "src/constants";
 
 /// Withdraw fee from a reserve.
 /// Accounts expected by this instruction:
@@ -20,7 +21,6 @@ import { AccessType, getAccess } from "src/utils/Instructions";
 ///   6. `[]` Rent sysvar.
 ///   7. `[]` Token program id.
 export const withdrawFeeInstruction = (
-  transaction: Transaction,
   reservePubkey: PublicKey, // 0
   lendingMarketPubkey: PublicKey, // 1
   lendingMarketAuthorityPubkey: PublicKey, // 2
@@ -51,7 +51,7 @@ export const withdrawFeeInstruction = (
 
   return new TransactionInstruction({
     keys,
-    programId: transaction.getLendingProgramId(),
+    programId: PORT_LENDING,
     data,
   });
 };

@@ -3,8 +3,9 @@ import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import * as BufferLayout from 'buffer-layout';
 import * as Layout from 'src/utils/layout'
 import { LendingInstruction } from './instruction';
-import { Lamport } from 'src/models/Lamport';
 import { AccessType, getAccess } from 'src/utils/Instructions';
+import BN from 'bn.js';
+import { PORT_LENDING, PORT_STAKING } from 'src/constants';
 
 /// Withdraw collateral from an obligation. Requires a refreshed obligation and reserve.
 ///
@@ -25,14 +26,14 @@ import { AccessType, getAccess } from 'src/utils/Instructions';
 ///   11 `[optional]` staking program id.
 
 export const withdrawObligationCollateralInstruction = (
-  transaction: Transaction,
-  collateralAmount: Lamport,
+  collateralAmount: number | BN,
   srcCollateralPubkey: PublicKey, // 0
   dstCollateralPubkey: PublicKey, // 1
   withdrawReservePubkey: PublicKey, // 2
   obligationPubkey: PublicKey, // 3
   lendingMarketPubkey: PublicKey, // 4
   lendingMarketAuthorityPubkey: PublicKey, // 5
+  obligationOwnerPubkey: PublicKey, // 6
   optStakeAccountPubkey?: PublicKey, // 9
   optStakingPoolPubkey?: PublicKey, // 10
 ): TransactionInstruction => {
@@ -44,7 +45,7 @@ export const withdrawObligationCollateralInstruction = (
   dataLayout.encode(
     {
       instruction: LendingInstruction.WithdrawObligationCollateral,
-      collateralAmount: collateralAmount.toU64(),
+      collateralAmount: new BN(collateralAmount),
     },
     data,
   );
@@ -56,23 +57,22 @@ export const withdrawObligationCollateralInstruction = (
     getAccess(obligationPubkey, AccessType.WRITE),
     getAccess(lendingMarketPubkey, AccessType.READ),
     getAccess(lendingMarketAuthorityPubkey, AccessType.READ),
-    transaction.getWalletId().getAccess(AccessType.SIGNER),
+    getAccess(obligationOwnerPubkey, AccessType.SIGNER),
     getAccess(SYSVAR_CLOCK_PUBKEY, AccessType.READ),
     getAccess(TOKEN_PROGRAM_ID, AccessType.READ)
   ];
 
-  const stakingProgramId = transaction.getStakingProgramId();
-  if (optStakeAccountPubkey && optStakingPoolPubkey && stakingProgramId) {
+  if (optStakeAccountPubkey && optStakingPoolPubkey) {
     keys.push(
       getAccess(optStakeAccountPubkey, AccessType.WRITE),
       getAccess(optStakingPoolPubkey, AccessType.WRITE),
-      stakingProgramId.getAccess(AccessType.READ),
+      getAccess(PORT_STAKING, AccessType.READ),
     );
   }
 
   return new TransactionInstruction({
     keys,
-    programId: transaction.getLendingProgramId(),
+    programId: PORT_LENDING,
     data,
   });
 };

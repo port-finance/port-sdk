@@ -4,8 +4,10 @@ import {
   SYSVAR_RENT_PUBKEY,
   TransactionInstruction,
 } from '@solana/web3.js';
+import {Buffer} from 'buffer';
 import * as BufferLayout from 'buffer-layout';
 import {PORT_LENDING} from 'src/constants';
+import {AccessType, getAccess} from 'src/utils/Instructions';
 import * as Layout from 'src/utils/layout';
 import {LendingInstruction} from './instruction';
 
@@ -21,6 +23,13 @@ const DataLayout = BufferLayout.struct<Data>([
   BufferLayout.blob(32, 'quoteCurrency'),
 ]);
 
+/// Initializes a new lending market.
+///
+/// Accounts expected by this instruction:
+///
+///   0. `[writable]` Lending market account - uninitialized.
+///   1. `[]` Rent sysvar.
+///   2. `[]` Token program id.
 export const initLendingMarketInstruction = (
     owner: PublicKey,
     quoteCurrency: Buffer,
@@ -37,9 +46,9 @@ export const initLendingMarketInstruction = (
   );
 
   const keys = [
-    {pubkey: lendingMarket, isSigner: false, isWritable: true},
-    {pubkey: SYSVAR_RENT_PUBKEY, isSigner: false, isWritable: false},
-    {pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false},
+    getAccess(lendingMarket, AccessType.WRITE),
+    getAccess(SYSVAR_RENT_PUBKEY, AccessType.READ),
+    getAccess(TOKEN_PROGRAM_ID, AccessType.READ)
   ];
 
   return new TransactionInstruction({

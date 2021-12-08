@@ -9,6 +9,8 @@ import * as BufferLayout from 'buffer-layout';
 import * as Layout from 'src/utils/layout'
 import { LendingInstruction } from './instruction';
 import { AccessType, getAccess } from 'src/utils/Instructions';
+import BN from 'bn.js';
+import { PORT_LENDING, PORT_STAKING } from 'src/constants';
 
 /// Combines DepositReserveLiquidity and DepositObligationCollateral
 ///
@@ -32,8 +34,7 @@ import { AccessType, getAccess } from 'src/utils/Instructions';
 ///   14 `[writable, optional]` Staking pool.
 ///   15 `[optional]` staking program id.
 export const depositReserveLiquidityAndAddCollateralInstruction = (
-  transaction: Transaction,
-  liquidityAmount: Lamport,
+  liquidityAmount: number | BN,
   srcLiquidityPubkey: PublicKey, // 0
   dstCollateralPubkey: PublicKey, // 1
   reservePubkey: PublicKey, // 2
@@ -43,6 +44,7 @@ export const depositReserveLiquidityAndAddCollateralInstruction = (
   lendingMarketAuthorityPubkey: PublicKey, // 6
   dstDepositCollateralPubkey: PublicKey, // 7
   obligationPubkey: PublicKey, // 8
+  obligationOwnerPubkey: PublicKey, // 9
   transferAuthorityPubkey: PublicKey, // 10
   optStakeAccountPubkey: PublicKey, // 13
   optStakingPoolPubkey: PublicKey, // 14
@@ -56,7 +58,7 @@ export const depositReserveLiquidityAndAddCollateralInstruction = (
     {
       instruction:
         LendingInstruction.DepositReserveLiquidityAndAddCollateral,
-      liquidityAmount: liquidityAmount.toU64(),
+      liquidityAmount: new BN(liquidityAmount)
     },
     data,
   );
@@ -71,24 +73,23 @@ export const depositReserveLiquidityAndAddCollateralInstruction = (
     getAccess(lendingMarketAuthorityPubkey, AccessType.READ),
     getAccess(dstDepositCollateralPubkey, AccessType.WRITE),
     getAccess(obligationPubkey, AccessType.WRITE),
-    transaction.getWalletId().getAccess(AccessType.SIGNER),
+    getAccess(obligationOwnerPubkey, AccessType.SIGNER),
     getAccess(transferAuthorityPubkey, AccessType.SIGNER),
     getAccess(SYSVAR_CLOCK_PUBKEY, AccessType.READ),
     getAccess(TOKEN_PROGRAM_ID, AccessType.READ),
   ];
 
-  const stakingProgramId = transaction.getStakingProgramId();
-  if (optStakeAccountPubkey && optStakingPoolPubkey && stakingProgramId) {
+  if (optStakeAccountPubkey && optStakingPoolPubkey) {
     keys.push(
       getAccess(optStakeAccountPubkey, AccessType.WRITE),
       getAccess(optStakingPoolPubkey, AccessType.WRITE),
-      stakingProgramId.getAccess(AccessType.READ),
+      getAccess(PORT_STAKING, AccessType.READ),
     );
   }
 
   return new TransactionInstruction({
     keys,
-    programId: transaction.getLendingProgramId(),
+    programId: PORT_LENDING,
     data,
   });
 };

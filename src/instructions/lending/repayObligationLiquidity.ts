@@ -2,9 +2,10 @@ import {PublicKey, SYSVAR_CLOCK_PUBKEY, TransactionInstruction,} from '@solana/w
 import {TOKEN_PROGRAM_ID} from '@solana/spl-token';
 import * as BufferLayout from 'buffer-layout';
 import * as Layout from 'src/utils/layout'
-import { Lamport } from 'src/models/Lamport';
 import { LendingInstruction } from './instruction';
 import { AccessType, getAccess } from 'src/utils/Instructions';
+import BN from 'bn.js';
+import { PORT_LENDING } from 'src/constants';
 
 /// Repay borrowed liquidity to a reserve. Requires a refreshed obligation and reserve.
 ///
@@ -21,8 +22,7 @@ import { AccessType, getAccess } from 'src/utils/Instructions';
 ///   6. `[]` Clock sysvar.
 ///   7. `[]` Token program id.
 export function repayObligationLiquidityInstruction (
-  transaction: Transaction,
-  liquidityAmount: Lamport,
+  liquidityAmount: number | BN,
   srcLiquidityPubkey: PublicKey, // 0
   dstLiquiditySupplyPubkey: PublicKey, // 1
   repayReservePubkey: PublicKey, // 2
@@ -38,7 +38,7 @@ export function repayObligationLiquidityInstruction (
   dataLayout.encode(
     {
       instruction: LendingInstruction.RepayObligationLiquidity,
-      liquidityAmount: liquidityAmount.toU64(),
+      liquidityAmount: new BN(liquidityAmount),
     },
     data,
   );
@@ -56,7 +56,7 @@ export function repayObligationLiquidityInstruction (
 
   return new TransactionInstruction({
     keys,
-    programId: transaction.getLendingProgramId(),
+    programId: PORT_LENDING,
     data,
   });
 }

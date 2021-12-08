@@ -9,7 +9,8 @@ import * as Layout from 'src/utils/layout'
 import { LendingInstruction } from './instruction';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { AccessType, getAccess } from 'src//utils/Instructions';
-import { Lamport } from 'src/models/Lamport';
+import BN from 'bn.js';
+import { PORT_LENDING } from 'src/constants';
 
 /// Deposit liquidity into a reserve in exchange for collateral. Collateral represents a share
 /// of the reserve liquidity pool.
@@ -28,8 +29,7 @@ import { Lamport } from 'src/models/Lamport';
 ///   8. `[]` Clock sysvar.
 ///   9. `[]` Token program id.
 export const depositReserveLiquidityInstruction = (
-  transaction: Transaction,
-  liquidityAmount: Lamport,
+  liquidityAmount: number | BN,
   srcLiquidityPubkey: PublicKey, // 0
   dstCollateralPubkey: PublicKey, // 1
   reservePubkey: PublicKey, // 2
@@ -47,7 +47,7 @@ export const depositReserveLiquidityInstruction = (
   dataLayout.encode(
     {
       instruction: LendingInstruction.DepositReserveLiquidity,
-      liquidityAmount: liquidityAmount.toU64(),
+      liquidityAmount: new BN(liquidityAmount)
     },
     data,
   );
@@ -67,7 +67,7 @@ export const depositReserveLiquidityInstruction = (
 
   return new TransactionInstruction({
     keys,
-    programId: transaction.getLendingProgramId(),
+    programId: PORT_LENDING,
     data,
   });
 };

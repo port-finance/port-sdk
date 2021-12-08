@@ -3,9 +3,10 @@ import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import * as BufferLayout from 'buffer-layout';
 import * as Layout from 'src/utils/layout'
 import { AccessType } from 'src/utils/Instructions';
-import { Lamport } from 'src/models/Lamport';
 import { getAccess } from 'src/utils/Instructions';
 import { LendingInstruction } from './instruction';
+import BN from 'bn.js';
+import { PORT_LENDING } from 'src/constants';
 
 /// Borrow liquidity from a reserve by depositing collateral tokens. Requires a refreshed
 /// obligation and reserve.
@@ -25,15 +26,15 @@ import { LendingInstruction } from './instruction';
 ///   8. `[]` Clock sysvar.
 ///   9. `[]` Token program id.
 export const borrowObligationLiquidityInstruction = (
-  transaction: Transaction,
-  liquidityAmount: Lamport,
+  liquidityAmount: number | BN,
   srcLiquidityPubkey: PublicKey, // 0
   dstLiquidityPubkey: PublicKey, // 1
   borrowReservePubkey: PublicKey, // 2
   borrowReserveFeeReceiverPubkey: PublicKey, // 3
-  obligationPubkey, // 4, TODO: need some abstraction?
-  lendingMarketPubkey, // 5
+  obligationPubkey: PublicKey, // 4
+  lendingMarketPubkey: PublicKey, // 5
   marketAuthorityPubkey: PublicKey, // 6
+  obligationOwner: PublicKey, // 7
 ): TransactionInstruction => {
   const dataLayout = BufferLayout.struct([
     BufferLayout.u8('instruction'),
@@ -43,7 +44,7 @@ export const borrowObligationLiquidityInstruction = (
   dataLayout.encode(
     {
       instruction: LendingInstruction.BorrowObligationLiquidity,
-      liquidityAmount: liquidityAmount.toU64(),
+      liquidityAmount: new BN(liquidityAmount),
     },
     data,
   );
@@ -56,14 +57,14 @@ export const borrowObligationLiquidityInstruction = (
     getAccess(obligationPubkey, AccessType.WRITE),
     getAccess(lendingMarketPubkey, AccessType.READ),
     getAccess(marketAuthorityPubkey, AccessType.READ),
-    transaction.getWalletId().getAccess(AccessType.SIGNER),
+    getAccess(obligationOwner, AccessType.SIGNER),
     getAccess(SYSVAR_CLOCK_PUBKEY, AccessType.READ),
     getAccess(TOKEN_PROGRAM_ID, AccessType.READ)
   ];
 
   return new TransactionInstruction({
     keys,
-    programId: transaction.getLendingProgramId(),
+    programId: PORT_LENDING,
     data,
   });
 };
