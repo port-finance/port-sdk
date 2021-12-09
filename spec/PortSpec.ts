@@ -12,7 +12,7 @@ describe("Port", function () {
   let context: ReserveContext;
 
   beforeAll(async function () {
-    port = Port.forMainNet();
+    port = Port.forMainNet({});
     context = await port.getReserveContext();
   });
 
