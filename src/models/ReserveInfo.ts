@@ -26,7 +26,7 @@ import {AssetPrice} from './AssetPrice';
 import {AssetQuantityContext} from './AssetQuantityContext';
 import {AssetValue} from './AssetValue';
 import {ParsedAccount} from '../parsers/ParsedAccount';
-import {PublicKey, Transaction, TransactionInstruction} from '@solana/web3.js';
+import {PublicKey, TransactionInstruction} from '@solana/web3.js';
 import BN from 'bn.js';
 import { borrowObligationLiquidityInstruction, depositObligationCollateralInstruction, depositReserveLiquidityInstruction, refreshReserveInstruction } from '..';
 import { PORT_LENDING } from '../constants';
