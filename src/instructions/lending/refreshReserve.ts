@@ -24,7 +24,7 @@ const DataLayout = BufferLayout.struct<Data>([BufferLayout.u8("instruction")]);
 ///             Must be the Pyth price account specified at InitReserve.
 export const refreshReserveInstruction = (
   reserve: PublicKey,
-  oracle: PublicKey,
+  oracle: PublicKey | null,
 ): TransactionInstruction => {
   const data = Buffer.alloc(DataLayout.span);
   DataLayout.encode({ instruction: LendingInstruction.RefreshReserve }, data);
@@ -32,10 +32,15 @@ export const refreshReserveInstruction = (
   const keys = [
     getAccess(reserve, AccessType.WRITE),
     getAccess(SYSVAR_CLOCK_PUBKEY, AccessType.READ),
-    getAccess(oracle, AccessType.READ),
-    ];
+  ];
 
-    return new TransactionInstruction({
+  if (oracle) {
+    keys.push(
+      getAccess(oracle, AccessType.READ),
+    );
+  }
+
+  return new TransactionInstruction({
     keys,
     programId: PORT_LENDING,
     data,
