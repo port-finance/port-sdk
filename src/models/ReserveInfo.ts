@@ -26,7 +26,10 @@ import {AssetPrice} from './AssetPrice';
 import {AssetQuantityContext} from './AssetQuantityContext';
 import {AssetValue} from './AssetValue';
 import {ParsedAccount} from '../parsers/ParsedAccount';
-import {PublicKey} from '@solana/web3.js';
+import {PublicKey, Transaction, TransactionInstruction} from '@solana/web3.js';
+import BN from 'bn.js';
+import { borrowObligationLiquidityInstruction, depositObligationCollateralInstruction, depositReserveLiquidityInstruction, refreshReserveInstruction } from '..';
+import { PORT_LENDING } from '../constants';
 
 export class ReserveInfo {
   private readonly reserveId: ReserveId;
@@ -245,6 +248,114 @@ export class ReserveInfo {
         assetId,
         normalizedFactor.mul(borrowRateDiff).add(optimalBorrowRateRaw),
     );
+  }
+
+  public async getMarketAuthority(): Promise<[PublicKey, number]> {
+    return await PublicKey.findProgramAddress(
+        [this.getMarketId().key.toBuffer()],
+        PORT_LENDING,
+    );
+  }
+
+  public async depositReserve(
+      {
+        amount,
+        userLiquidityWallet,
+        destinationCollateralWallet,
+        userTransferAuthority,
+      }:{
+      amount: BN;
+      userLiquidityWallet: PublicKey;
+      destinationCollateralWallet: PublicKey;
+      userTransferAuthority: PublicKey;
+      },
+  ): Promise<TransactionInstruction[]> {
+    const [authority] = await this.getMarketAuthority();
+    const ixs: TransactionInstruction[] = [];
+
+    ixs.push(
+        refreshReserveInstruction(
+            this.getReserveId().key,
+            this.getOracleId()?.key ?? null,
+        ),
+        depositReserveLiquidityInstruction(
+            amount,
+            userLiquidityWallet,
+            destinationCollateralWallet,
+            this.getReserveId().key,
+            this.getAssetBalanceId().key,
+            this.getShareBalanceId().key,
+            this.getMarketId().key,
+            authority,
+            userTransferAuthority,
+        ),
+    );
+    return ixs;
+  }
+
+  public async depositObligationCollateral(
+      {
+        amount,
+        userCollateralWallet,
+        obligation,
+        userTransferAuthority,
+      }:{
+      amount: BN;
+      userCollateralWallet: PublicKey;
+      obligation: PublicKey;
+      userTransferAuthority: PublicKey;
+      },
+  ): Promise<TransactionInstruction[]> {
+    const [authority] = await this.getMarketAuthority();
+    const ixs: TransactionInstruction[] = [];
+
+    ixs.push(
+        depositObligationCollateralInstruction(
+            amount,
+            userCollateralWallet,
+            this.getShareBalanceId().key,
+            this.getReserveId().key,
+            obligation,
+            this.getShareBalanceId().key,
+            this.getMarketId().key,
+            authority,
+            userTransferAuthority,
+        ),
+    );
+    return ixs;
+  }
+
+  public async borrowObligationLiquidity(
+      {
+        amount,
+        userWallet,
+        owner,
+        obligation,
+      }:{
+      amount: BN;
+      userWallet: PublicKey;
+      obligation: PublicKey;
+      owner: PublicKey;
+      userTransferAuthority: PublicKey;
+      },
+  ): Promise<TransactionInstruction[]> {
+    const [authority] = await this.getMarketAuthority();
+    const ixs: TransactionInstruction[] = [];
+
+    ixs.push(
+        borrowObligationLiquidityInstruction(
+            amount,
+            this.getAssetBalanceId().key,
+            userWallet,
+            this.getReserveId().key,
+            this.getFeeBalanceId().key,
+            obligation,
+            this.getMarketId().key,
+            authority,
+            owner,
+        ),
+    );
+    return ixs;
   }
 }
 
