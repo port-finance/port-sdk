@@ -28,6 +28,7 @@ import {AssetValue} from './AssetValue';
 import {ParsedAccount} from '../parsers/ParsedAccount';
 import {PublicKey} from '@solana/web3.js';
 
+// abstract a reserve
 export class ReserveInfo {
   private readonly reserveId: ReserveId;
   readonly marketId: MarketId;
