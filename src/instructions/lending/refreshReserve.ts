@@ -4,7 +4,8 @@ import {
   TransactionInstruction,
 } from "@solana/web3.js";
 import * as BufferLayout from "buffer-layout";
-import { PORT_LENDING } from "../constants";
+import { PORT_LENDING } from "../../constants";
+import { AccessType, getAccess } from "../../utils/Instructions";
 import { LendingInstruction } from "./instruction";
 
 interface Data {
@@ -13,19 +14,30 @@ interface Data {
 
 const DataLayout = BufferLayout.struct<Data>([BufferLayout.u8("instruction")]);
 
+/// Accrue interest and update market price of liquidity on a reserve.
+///
+/// Accounts expected by this instruction:
+///
+///   0. `[writable]` Reserve account.
+///   1. `[]` Clock sysvar.
+///   2. `[]` Reserve liquidity oracle account.
+///             Must be the Pyth price account specified at InitReserve.
 export const refreshReserveInstruction = (
   reserve: PublicKey,
-  oracle: PublicKey | null
+  oracle: PublicKey | null,
 ): TransactionInstruction => {
   const data = Buffer.alloc(DataLayout.span);
   DataLayout.encode({ instruction: LendingInstruction.RefreshReserve }, data);
 
   const keys = [
-    { pubkey: reserve, isSigner: false, isWritable: true },
-    { pubkey: SYSVAR_CLOCK_PUBKEY, isSigner: false, isWritable: false },
+    getAccess(reserve, AccessType.WRITE),
+    getAccess(SYSVAR_CLOCK_PUBKEY, AccessType.READ),
   ];
+
   if (oracle) {
-    keys.push({ pubkey: oracle, isSigner: false, isWritable: false });
+    keys.push(
+      getAccess(oracle, AccessType.READ),
+    );
   }
 
   return new TransactionInstruction({

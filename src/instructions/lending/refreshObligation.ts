@@ -4,7 +4,8 @@ import {
   TransactionInstruction,
 } from "@solana/web3.js";
 import * as BufferLayout from "buffer-layout";
-import { PORT_LENDING } from "../constants";
+import { PORT_LENDING } from "../../constants";
+import { AccessType, getAccess } from "../../utils/Instructions";
 import { LendingInstruction } from "./instruction";
 
 interface Data {
@@ -13,6 +14,16 @@ interface Data {
 
 const DataLayout = BufferLayout.struct<Data>([BufferLayout.u8("instruction")]);
 
+/// Refresh an obligation's accrued interest and collateral and liquidity prices. Requires
+/// refreshed reserves, as all obligation collateral deposit reserves in order, followed by all
+/// liquidity borrow reserves in order.
+///
+/// Accounts expected by this instruction:
+///
+///   0. `[writable]` Obligation account.
+///   1. `[]` Clock sysvar.
+///   .. `[]` Collateral deposit reserve accounts - refreshed, all, in order.
+///   .. `[]` Liquidity borrow reserve accounts - refreshed, all, in order.
 export const refreshObligationInstruction = (
   obligation: PublicKey,
   depositReserves: PublicKey[],
@@ -25,16 +36,16 @@ export const refreshObligationInstruction = (
   );
 
   const keys = [
-    { pubkey: obligation, isSigner: false, isWritable: true },
-    { pubkey: SYSVAR_CLOCK_PUBKEY, isSigner: false, isWritable: false },
+    getAccess(obligation, AccessType.WRITE),
+    getAccess(SYSVAR_CLOCK_PUBKEY, AccessType.READ),
   ];
 
   for (const depositReserve of depositReserves) {
-    keys.push({ pubkey: depositReserve, isSigner: false, isWritable: false });
+    keys.push(getAccess(depositReserve, AccessType.READ));
   }
 
   for (const borrowReserve of borrowReserves) {
-    keys.push({ pubkey: borrowReserve, isSigner: false, isWritable: false });
+    keys.push(getAccess(borrowReserve, AccessType.READ));
   }
 
   return new TransactionInstruction({

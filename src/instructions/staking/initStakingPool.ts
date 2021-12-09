@@ -5,9 +5,13 @@ import {
   TransactionInstruction,
 } from "@solana/web3.js";
 import * as BufferLayout from "buffer-layout";
-import * as Layout from "../utils/layout";
-import { PORT_STAKING } from "../constants";
 import BN from "bn.js";
+
+import * as Layout from "../../utils/layout";
+import { PORT_STAKING } from "../../constants"
+import { StakingInstructions } from "./instruction";
+import { AccessType, getAccess } from "../../utils/Instructions";
+
 
 interface Data {
   instruction: number;
@@ -29,7 +33,16 @@ const DataLayout = BufferLayout.struct<Data>([
   Layout.publicKey("adminAuthority"),
 ]);
 
-export const initStakingPool = (
+/// Accounts expected by this instruction:
+///   0. `[signer]` Transfer reward token authority.
+///   1. `[writable]` Reward token supply.
+///   2. `[writable]` Reward token pool - uninitialized.
+///   3. `[writable]` Staking pool - uninitialized.
+///   4. `[]` Reward token mint.
+///   5. `[]` Staking program derived that owns reward token pool.
+///   6. `[]` Rent sysvar .
+///   7. `[]` Token program.
+export const initStakingPoolInstruction = (
   supply: number | BN,
   duration: number | BN,
   earliestRewardTime: number | BN,
@@ -46,7 +59,7 @@ export const initStakingPool = (
   const data = Buffer.alloc(DataLayout.span);
   DataLayout.encode(
     {
-      instruction: 0,
+      instruction: StakingInstructions.InitStakingPool,
       supply: new BN(supply),
       duration: new BN(duration),
       earliestRewardTime: new BN(earliestRewardTime),
@@ -59,16 +72,16 @@ export const initStakingPool = (
 
   const keys = [
     // signer
-    { pubkey: transferRewardSupply, isSigner: true, isWritable: false },
+    getAccess(transferRewardSupply, AccessType.SIGNER),
     // write accounts
-    { pubkey: rewardTokenSupply, isSigner: false, isWritable: true },
-    { pubkey: rewardTokenPool, isSigner: false, isWritable: true },
-    { pubkey: stakingPool, isSigner: false, isWritable: true },
+    getAccess(rewardTokenSupply, AccessType.WRITE),
+    getAccess(rewardTokenPool, AccessType.WRITE),
+    getAccess(stakingPool, AccessType.WRITE),
     // read accounts
-    { pubkey: rewardTokenMint, isSigner: false, isWritable: false },
-    { pubkey: derivedStakingProgram, isSigner: false, isWritable: false },
-    { pubkey: SYSVAR_RENT_PUBKEY, isSigner: false, isWritable: false },
-    { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
+    getAccess(rewardTokenMint, AccessType.READ),
+    getAccess(derivedStakingProgram, AccessType.READ),
+    getAccess(SYSVAR_RENT_PUBKEY, AccessType.READ),
+    getAccess(TOKEN_PROGRAM_ID, AccessType.READ)
   ];
 
   return new TransactionInstruction({
