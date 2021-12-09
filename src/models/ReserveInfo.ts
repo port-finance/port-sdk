@@ -284,7 +284,7 @@ export class ReserveInfo {
             destinationCollateralWallet,
             this.getReserveId().key,
             this.getAssetBalanceId().key,
-            this.getShareBalanceId().key,
+            this.getShareId().key,
             this.getMarketId().key,
             authority,
             userTransferAuthority,
