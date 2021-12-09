@@ -7,10 +7,10 @@ import {
 import * as BufferLayout from "buffer-layout";
 import BN from "bn.js";
 
-import * as Layout from "src/utils/layout";
-import { PORT_STAKING } from "src/constants"
+import * as Layout from "../../utils/layout";
+import { PORT_STAKING } from "../../constants"
 import { StakingInstructions } from "./instruction";
-import { AccessType, getAccess } from "src/utils/Instructions";
+import { AccessType, getAccess } from "../../utils/Instructions";
 
 
 interface Data {

@@ -6,9 +6,9 @@ import {
 } from '@solana/web3.js';
 import {Buffer} from 'buffer';
 import * as BufferLayout from 'buffer-layout';
-import {PORT_LENDING} from 'src/constants';
-import {AccessType, getAccess} from 'src/utils/Instructions';
-import * as Layout from 'src/utils/layout';
+import {PORT_LENDING} from '../../constants';
+import {AccessType, getAccess} from '../../utils/Instructions';
+import * as Layout from '../../utils/layout';
 import {LendingInstruction} from './instruction';
 
 interface Data {

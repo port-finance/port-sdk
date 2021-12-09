@@ -2,8 +2,8 @@ import {PublicKey, SYSVAR_CLOCK_PUBKEY, TransactionInstruction} from '@solana/we
 import {TOKEN_PROGRAM_ID} from '@solana/spl-token';
 import * as BufferLayout from 'buffer-layout';
 import { StakingInstructions } from './instruction';
-import { AccessType, getAccess } from 'src/utils/Instructions';
-import { PORT_STAKING } from 'src/constants';
+import { AccessType, getAccess } from '../../utils/Instructions';
+import { PORT_STAKING } from '../../constants';
 
 /// Claim all unclaimed Reward from a stake account
 ///

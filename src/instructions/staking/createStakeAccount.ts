@@ -1,7 +1,7 @@
 import { PublicKey, SYSVAR_RENT_PUBKEY, TransactionInstruction } from '@solana/web3.js';
 import * as BufferLayout from 'buffer-layout';
-import { PORT_STAKING } from 'src/constants';
-import { AccessType, getAccess } from 'src/utils/Instructions';
+import { PORT_STAKING } from '../../constants';
+import { AccessType, getAccess } from '../../utils/Instructions';
 import { StakingInstructions } from './instruction';
 
 /// Accounts expected by this instruction:

@@ -6,9 +6,9 @@ import {
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import * as BufferLayout from "buffer-layout";
 import { LendingInstruction } from "./instruction";
-import { AccessType, getAccess } from "src/utils/Instructions";
-import { ReserveConfig, ReserveConfigLayout } from "src/structs/ReserveData";
-import { PORT_LENDING } from "src/constants";
+import { AccessType, getAccess } from "../../utils/Instructions";
+import { ReserveConfig, ReserveConfigLayout } from "../../structs/ReserveData";
+import { PORT_LENDING } from "../../constants";
 
 /// Update configuration for an existing market reserve.
 ///

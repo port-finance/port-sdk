@@ -6,13 +6,13 @@ import {
   TransactionInstruction,
 } from '@solana/web3.js';
 import BigNumber from 'bignumber.js';
-import {PORT_LENDING} from 'src/constants';
-import {ReserveConfig, ReserveConfigLayout} from 'src/structs/ReserveData';
+import {PORT_LENDING} from '../../constants';
+import {ReserveConfig, ReserveConfigLayout} from '../../structs/ReserveData';
 import {LendingInstruction} from './instruction';
 import * as BufferLayout from 'buffer-layout';
-import * as Layout from 'src/utils/layout';
+import * as Layout from '../../utils/layout';
 import BN from 'bn.js';
-import {AccessType, getAccess} from 'src/utils/Instructions';
+import {AccessType, getAccess} from '../../utils/Instructions';
 
 interface Data {
   instruction: number;
@@ -98,10 +98,10 @@ export const initReserveInstruction = (
     getAccess(transferAuthority, AccessType.SIGNER),
     getAccess(SYSVAR_CLOCK_PUBKEY, AccessType.READ),
     getAccess(SYSVAR_RENT_PUBKEY, AccessType.READ),
-    getAccess(TOKEN_PROGRAM_ID, AccessType.READ)    
+    getAccess(TOKEN_PROGRAM_ID, AccessType.READ),
   ];
-  if (pythPrice) {
-    keys.push(getAccess(pythPrice, AccessType.READ))
+  if (pythPrice && option === 0) {
+    keys.push(getAccess(pythPrice, AccessType.READ));
   }
 
   return new TransactionInstruction({

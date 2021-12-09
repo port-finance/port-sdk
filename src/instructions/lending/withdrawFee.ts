@@ -6,8 +6,8 @@ import {
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import * as BufferLayout from "buffer-layout";
 import { LendingInstruction } from "./instruction";
-import { AccessType, getAccess } from "src/utils/Instructions";
-import { PORT_LENDING } from "src/constants";
+import { AccessType, getAccess } from "../../utils/Instructions";
+import { PORT_LENDING } from "../../constants";
 
 /// Withdraw fee from a reserve.
 /// Accounts expected by this instruction:

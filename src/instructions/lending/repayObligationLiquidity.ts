@@ -1,11 +1,11 @@
 import {PublicKey, SYSVAR_CLOCK_PUBKEY, TransactionInstruction,} from '@solana/web3.js';
 import {TOKEN_PROGRAM_ID} from '@solana/spl-token';
 import * as BufferLayout from 'buffer-layout';
-import * as Layout from 'src/utils/layout'
+import * as Layout from '../../utils/layout'
 import { LendingInstruction } from './instruction';
-import { AccessType, getAccess } from 'src/utils/Instructions';
+import { AccessType, getAccess } from '../../utils/Instructions';
 import BN from 'bn.js';
-import { PORT_LENDING } from 'src/constants';
+import { PORT_LENDING } from '../../constants';
 
 /// Repay borrowed liquidity to a reserve. Requires a refreshed obligation and reserve.
 ///
