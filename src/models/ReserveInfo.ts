@@ -312,6 +312,10 @@ export class ReserveInfo {
     const ixs: TransactionInstruction[] = [];
 
     ixs.push(
+        refreshReserveInstruction(
+          this.getReserveId().key,
+          this.getOracleId()?.key ?? null,
+        ),
         depositObligationCollateralInstruction(
             amount,
             userCollateralWallet,
