@@ -10,5 +10,9 @@ parserOptions:
 plugins:
   - '@typescript-eslint'
 rules:
-  max-len: [2, {"code": 120, "tabWidth": 4, "ignoreUrls": true}]
-  require-jsdoc: [0]
+  max-len: ["error", {"code": 120, "tabWidth": 4, "ignoreUrls": true}]
+  require-jsdoc: "off"
+  valid-jsdoc: "off"
+  new-cap: "warn"
+  no-unused-vars: "off"
+  "@typescript-eslint/no-unused-vars": "error"
