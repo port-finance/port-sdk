@@ -298,11 +298,13 @@ export class ReserveInfo {
         amount,
         userCollateralWallet,
         obligation,
+        obligationOwner,
         userTransferAuthority,
       }:{
       amount: BN;
       userCollateralWallet: PublicKey;
       obligation: PublicKey;
+      obligationOwner: PublicKey;
       userTransferAuthority: PublicKey;
       },
   ): Promise<TransactionInstruction[]> {
@@ -316,9 +318,9 @@ export class ReserveInfo {
             this.getShareBalanceId().key,
             this.getReserveId().key,
             obligation,
-            this.getShareBalanceId().key,
             this.getMarketId().key,
             authority,
+            obligationOwner,
             userTransferAuthority,
         ),
     );
