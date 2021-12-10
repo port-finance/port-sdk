@@ -1,8 +1,8 @@
-import Big, { BigSource } from "big.js";
-import BN from "bn.js";
-import { Wads } from "./Wads";
-import { Value } from "./Value";
-import { ValueRatio } from "./ValueRatio";
+import Big, {BigSource} from 'big.js';
+import BN from 'bn.js';
+import {Wads} from './Wads';
+import {Value} from './Value';
+import {ValueRatio} from './ValueRatio';
 
 export class QuoteValue extends Value<QuoteValue> {
   private static VALUE_ZERO = new QuoteValue(0);

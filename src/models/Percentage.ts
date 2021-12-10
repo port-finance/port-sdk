@@ -1,5 +1,5 @@
-import Big, { BigSource } from "big.js";
-import { Decimal } from "./Decimal";
+import Big, {BigSource} from 'big.js';
+import {Decimal} from './Decimal';
 
 export class Percentage extends Decimal<Percentage> {
   private static PCT_ZERO = new Percentage(0);
@@ -34,9 +34,10 @@ export class Percentage extends Decimal<Percentage> {
   }
 
   public print(): string {
-    return this.raw.mul(100).round(2, 1).toString() + "%"; // RoundHalfUp
+    return this.raw.mul(100).round(2, 1).toString() + '%'; // RoundHalfUp
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected isCompatibleWith(that: Percentage): boolean {
     return true;
   }

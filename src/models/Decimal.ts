@@ -1,4 +1,4 @@
-import Big, { BigSource, Comparison } from "big.js";
+import Big, {BigSource, Comparison} from 'big.js';
 
 export abstract class Decimal<D extends Decimal<D>> {
   protected static BIG_ZERO = new Big(0);

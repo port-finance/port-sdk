@@ -1,45 +1,45 @@
-import { AccountInfo, PublicKey } from "@solana/web3.js";
-import BN from "bn.js";
-import * as BufferLayout from "buffer-layout";
-import * as Layout from "../utils/layout";
-import { LastUpdate } from "./LastUpdate";
+import {AccountInfo, PublicKey} from '@solana/web3.js';
+import BN from 'bn.js';
+import * as BufferLayout from 'buffer-layout';
+import * as Layout from '../utils/layout';
+import {LastUpdate} from './LastUpdate';
 
 export const OBLIGATION_DATA_SIZE = 916;
 
 export const ObligationLayout: typeof BufferLayout.Structure =
   BufferLayout.struct([
-    BufferLayout.u8("version"),
+    BufferLayout.u8('version'),
 
     BufferLayout.struct(
-      [Layout.uint64("slot"), BufferLayout.u8("stale")],
-      "lastUpdate"
+        [Layout.uint64('slot'), BufferLayout.u8('stale')],
+        'lastUpdate',
     ),
 
-    Layout.publicKey("lendingMarket"),
-    Layout.publicKey("owner"),
-    Layout.uint128("depositedValue"),
-    Layout.uint128("borrowedValue"),
-    Layout.uint128("allowedBorrowValue"),
-    Layout.uint128("unhealthyBorrowValue"),
+    Layout.publicKey('lendingMarket'),
+    Layout.publicKey('owner'),
+    Layout.uint128('depositedValue'),
+    Layout.uint128('borrowedValue'),
+    Layout.uint128('allowedBorrowValue'),
+    Layout.uint128('unhealthyBorrowValue'),
 
-    BufferLayout.u8("depositsLen"),
-    BufferLayout.u8("borrowsLen"),
-    BufferLayout.blob(776, "dataFlat"),
+    BufferLayout.u8('depositsLen'),
+    BufferLayout.u8('borrowsLen'),
+    BufferLayout.blob(776, 'dataFlat'),
   ]);
 
 export const ObligationCollateralLayout: typeof BufferLayout.Structure =
   BufferLayout.struct([
-    Layout.publicKey("depositReserve"),
-    Layout.uint64("depositedAmount"),
-    Layout.uint128("marketValue"),
+    Layout.publicKey('depositReserve'),
+    Layout.uint64('depositedAmount'),
+    Layout.uint128('marketValue'),
   ]);
 
 export const ObligationLiquidityLayout: typeof BufferLayout.Structure =
   BufferLayout.struct([
-    Layout.publicKey("borrowReserve"),
-    Layout.uint128("cumulativeBorrowRateWads"),
-    Layout.uint128("borrowedAmountWads"),
-    Layout.uint128("marketValue"),
+    Layout.publicKey('borrowReserve'),
+    Layout.uint128('cumulativeBorrowRateWads'),
+    Layout.uint128('borrowedAmountWads'),
+    Layout.uint128('marketValue'),
   ]);
 
 export const isObligation = (info: AccountInfo<Buffer>) => {

@@ -1,7 +1,7 @@
-import { AssetId } from "./AssetId";
-import { ReserveInfo } from "./ReserveInfo";
-import { ReserveId } from "./ReserveId";
-import { ShareId } from "./ShareId";
+import {AssetId} from './AssetId';
+import {ReserveInfo} from './ReserveInfo';
+import {ReserveId} from './ReserveId';
+import {ShareId} from './ShareId';
 
 export class ReserveContext {
   private readonly reserves: ReserveInfo[];
@@ -10,10 +10,10 @@ export class ReserveContext {
   private readonly byShareId: Map<string, ReserveInfo>;
 
   private constructor(
-    reserves: ReserveInfo[],
-    byReserveId: Map<string, ReserveInfo>,
-    byAssetId: Map<string, ReserveInfo>,
-    byShareId: Map<string, ReserveInfo>
+      reserves: ReserveInfo[],
+      byReserveId: Map<string, ReserveInfo>,
+      byAssetId: Map<string, ReserveInfo>,
+      byShareId: Map<string, ReserveInfo>,
   ) {
     this.reserves = reserves;
     this.byReserveId = byReserveId;
@@ -26,13 +26,13 @@ export class ReserveContext {
     const byAssetId = new Map<string, ReserveInfo>();
     const byShareId = new Map<string, ReserveInfo>();
     reserves.forEach((reserve) =>
-      byReserveId.set(reserve.getReserveId().toString(), reserve)
+      byReserveId.set(reserve.getReserveId().toString(), reserve),
     );
     reserves.forEach((reserve) =>
-      byAssetId.set(reserve.getAssetId().toString(), reserve)
+      byAssetId.set(reserve.getAssetId().toString(), reserve),
     );
     reserves.forEach((reserve) =>
-      byShareId.set(reserve.getShareId().toString(), reserve)
+      byShareId.set(reserve.getShareId().toString(), reserve),
     );
     return new ReserveContext(reserves, byReserveId, byAssetId, byShareId);
   }

@@ -1,4 +1,4 @@
-import BufferLayout from "buffer-layout";
+import BufferLayout from 'buffer-layout';
 import {
   ObligationCollateralLayout,
   ObligationLayout,
@@ -7,9 +7,9 @@ import {
   PortBalanceData,
   PortBalanceLoanData,
   ProtoObligation,
-} from "../structs/PortBalanceData";
-import { RawAccount } from "./RawAccount";
-import { Parser } from "./Parser";
+} from '../structs/PortBalanceData';
+import {RawAccount} from './RawAccount';
+import {Parser} from './Parser';
 
 export const PortBalanceParser: Parser<PortBalanceData> = (raw: RawAccount) => {
   const pubkey = raw.pubkey;
@@ -33,21 +33,21 @@ export const PortBalanceParser: Parser<PortBalanceData> = (raw: RawAccount) => {
   }
 
   const depositsBuffer = dataFlat.slice(
-    0,
-    depositsLen * ObligationCollateralLayout.span
+      0,
+      depositsLen * ObligationCollateralLayout.span,
   );
   const deposits = BufferLayout.seq(
-    ObligationCollateralLayout,
-    depositsLen
+      ObligationCollateralLayout,
+      depositsLen,
   ).decode(depositsBuffer) as PortBalanceCollateralData[];
 
   const borrowsBuffer = dataFlat.slice(
-    depositsBuffer.length,
-    depositsBuffer.length + borrowsLen * ObligationLiquidityLayout.span
+      depositsBuffer.length,
+      depositsBuffer.length + borrowsLen * ObligationLiquidityLayout.span,
   );
   const borrows = BufferLayout.seq(
-    ObligationLiquidityLayout,
-    borrowsLen
+      ObligationLiquidityLayout,
+      borrowsLen,
   ).decode(borrowsBuffer) as PortBalanceLoanData[];
 
   const data = {

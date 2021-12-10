@@ -1,5 +1,5 @@
-import { ReserveId } from "./ReserveId";
-import { ReserveInfo } from "./ReserveInfo";
+import {ReserveId} from './ReserveId';
+import {ReserveInfo} from './ReserveInfo';
 
 export class ReserveWhitelist {
   private readonly reserveIds: ReserveId[];

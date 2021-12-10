@@ -1,14 +1,14 @@
-import { PortId } from "./PortId";
-import { Collateral } from "./Collateral";
-import { Loan } from "./Loan";
-import { ReserveId } from "./ReserveId";
-import { Margin } from "./Margin";
-import { ReserveContext } from "./ReserveContext";
-import { MarginRatio } from "./MarginRatio";
-import { ParsedAccount } from "../parsers/ParsedAccount";
-import { PortBalanceData } from "../structs/PortBalanceData";
-import { PublicKey } from "@solana/web3.js";
-import Big from "big.js";
+import {PortId} from './PortId';
+import {Collateral} from './Collateral';
+import {Loan} from './Loan';
+import {ReserveId} from './ReserveId';
+import {Margin} from './Margin';
+import {ReserveContext} from './ReserveContext';
+import {MarginRatio} from './MarginRatio';
+import {ParsedAccount} from '../parsers/ParsedAccount';
+import {PortBalanceData} from '../structs/PortBalanceData';
+import {PublicKey} from '@solana/web3.js';
+import Big from 'big.js';
 
 export class PortBalance {
   static DATA_SIZE = 916;
@@ -23,14 +23,14 @@ export class PortBalance {
   private readonly depositedValue: Big;
 
   constructor(
-    portId: PortId,
-    collaterals: Collateral[],
-    loans: Loan[],
-    loanMargin: Margin,
-    initialMargin: Margin,
-    maintenanceMargin: Margin,
-    depositedValue: Big,
-    owner: PublicKey
+      portId: PortId,
+      collaterals: Collateral[],
+      loans: Loan[],
+      loanMargin: Margin,
+      initialMargin: Margin,
+      maintenanceMargin: Margin,
+      depositedValue: Big,
+      owner: PublicKey,
   ) {
     this.portId = portId;
     this.collaterals = collaterals;
@@ -43,43 +43,43 @@ export class PortBalance {
   }
 
   public static fromRaw(
-    raw: ParsedAccount<PortBalanceData>,
-    reserves: ReserveContext
+      raw: ParsedAccount<PortBalanceData>,
+      reserves: ReserveContext,
   ): PortBalance {
     const portId = new PortId(raw.pubkey);
     const collaterals = raw.data.deposits
-      .map((c) => {
-        const reserveId = new ReserveId(c.depositReserve);
-        const reserve = reserves.getReserveByReserveId(reserveId);
-        if (!reserve) {
-          return undefined;
-        }
-        return Collateral.fromRaw(c, reserve.getShareId());
-      })
-      .filter(Boolean) as Collateral[];
+        .map((c) => {
+          const reserveId = new ReserveId(c.depositReserve);
+          const reserve = reserves.getReserveByReserveId(reserveId);
+          if (!reserve) {
+            return undefined;
+          }
+          return Collateral.fromRaw(c, reserve.getShareId());
+        })
+        .filter(Boolean) as Collateral[];
     const loans = raw.data.borrows
-      .map((l) => {
-        const reserveId = new ReserveId(l.borrowReserve);
-        const reserve = reserves.getReserveByReserveId(reserveId);
-        if (!reserve) {
-          return undefined;
-        }
-        return Loan.fromRaw(l, reserve.getAssetId());
-      })
-      .filter(Boolean) as Loan[];
+        .map((l) => {
+          const reserveId = new ReserveId(l.borrowReserve);
+          const reserve = reserves.getReserveByReserveId(reserveId);
+          if (!reserve) {
+            return undefined;
+          }
+          return Loan.fromRaw(l, reserve.getAssetId());
+        })
+        .filter(Boolean) as Loan[];
     const loanMargin = Margin.fromWads(raw.data.borrowedValue);
     const initialMargin = Margin.fromWads(raw.data.allowedBorrowValue);
     const maintenanceMargin = Margin.fromWads(raw.data.unhealthyBorrowValue);
     const depositedValue = new Big(raw.data.depositedValue.toString());
     return new PortBalance(
-      portId,
-      collaterals,
-      loans,
-      loanMargin,
-      initialMargin,
-      maintenanceMargin,
-      depositedValue,
-      raw.data.owner
+        portId,
+        collaterals,
+        loans,
+        loanMargin,
+        initialMargin,
+        maintenanceMargin,
+        depositedValue,
+        raw.data.owner,
     );
   }
 
@@ -89,7 +89,7 @@ export class PortBalance {
 
   public getCollateral(reserveId: ReserveId): Collateral | undefined {
     return this.getCollaterals().find((c) =>
-      c.getReserveId().equals(reserveId)
+      c.getReserveId().equals(reserveId),
     );
   }
 

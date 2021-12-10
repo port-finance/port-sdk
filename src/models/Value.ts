@@ -1,13 +1,13 @@
-import { BigSource } from "big.js";
-import { Decimal } from "./Decimal";
-import { AssetPrice } from "./AssetPrice";
-import { Asset } from "./Asset";
-import { AssetQuantityContext } from "./AssetQuantityContext";
+import {BigSource} from 'big.js';
+import {Decimal} from './Decimal';
+import {AssetPrice} from './AssetPrice';
+import {Asset} from './Asset';
+import {AssetQuantityContext} from './AssetQuantityContext';
 
 export abstract class Value<V extends Value<V>> extends Decimal<V> {
-  private static FORMATTER = Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
+  private static FORMATTER = Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
   });
 
   protected constructor(raw: BigSource) {
@@ -31,6 +31,7 @@ export abstract class Value<V extends Value<V>> extends Decimal<V> {
     return this.print();
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected isCompatibleWith(that: V): boolean {
     return true;
   }

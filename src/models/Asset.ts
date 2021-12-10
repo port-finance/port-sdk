@@ -1,25 +1,25 @@
-import Big, { BigSource } from "big.js";
+import Big, {BigSource} from 'big.js';
 
-import { AssetId } from "./AssetId";
-import { Lamport } from "./Lamport";
-import { Connection } from "@solana/web3.js";
-import { SupplyApy } from "./SupplyApy";
-import { QuoteValue } from "./QuoteValue";
-import { AssetPrice } from "./AssetPrice";
-import { AssetQuantityContext } from "./AssetQuantityContext";
-import { AssetConfig } from "./AssetConfig";
+import {AssetId} from './AssetId';
+import {Lamport} from './Lamport';
+import {Connection} from '@solana/web3.js';
+import {SupplyApy} from './SupplyApy';
+import {QuoteValue} from './QuoteValue';
+import {AssetPrice} from './AssetPrice';
+import {AssetQuantityContext} from './AssetQuantityContext';
+import {AssetConfig} from './AssetConfig';
 
 export class Asset extends Lamport<AssetId, Asset> {
   public static MIN_NATIVE_LAMPORT = Asset.native(new Big(5_000_000));
 
   private static readonly SIGNIFICANT_DIGITS = 6;
   private static readonly LARGE_THRESHOLD = new Big(10).pow(6).toNumber();
-  private static readonly FORMATTER_NORMAL = new Intl.NumberFormat("en-US", {
-    style: "decimal",
+  private static readonly FORMATTER_NORMAL = new Intl.NumberFormat('en-US', {
+    style: 'decimal',
     maximumSignificantDigits: Asset.SIGNIFICANT_DIGITS,
   });
-  private static readonly FORMATTER_LARGE = new Intl.NumberFormat("en-US", {
-    style: "decimal",
+  private static readonly FORMATTER_LARGE = new Intl.NumberFormat('en-US', {
+    style: 'decimal',
     maximumFractionDigits: 0,
   });
 
@@ -28,9 +28,9 @@ export class Asset extends Lamport<AssetId, Asset> {
   }
 
   public static fromString(
-    str: string,
-    assetId: AssetId,
-    context: AssetQuantityContext
+      str: string,
+      assetId: AssetId,
+      context: AssetQuantityContext,
   ): Asset {
     const increment = context.multiplier;
     const value = new Big(str).mul(increment).round(0, 0);
@@ -50,8 +50,8 @@ export class Asset extends Lamport<AssetId, Asset> {
   }
 
   static async fetchMinRentExempt(
-    connection: Connection,
-    dataLength: number
+      connection: Connection,
+      dataLength: number,
   ): Promise<Asset> {
     const raw = await connection.getMinimumBalanceForRentExemption(dataLength);
     const value = new Big(raw);
@@ -67,8 +67,8 @@ export class Asset extends Lamport<AssetId, Asset> {
   }
 
   public toValue(
-    price: AssetPrice,
-    quantityContext: AssetQuantityContext
+      price: AssetPrice,
+      quantityContext: AssetQuantityContext,
   ): QuoteValue {
     console.assert(this.mintId.equals(price.assetId));
     if (!price) {
@@ -101,13 +101,13 @@ export class Asset extends Lamport<AssetId, Asset> {
   public print(context: AssetQuantityContext, config?: AssetConfig): string {
     const num = this.toNumber(context);
     const formatted =
-      num > Asset.LARGE_THRESHOLD
-        ? Asset.FORMATTER_LARGE.format(num)
-        : Asset.FORMATTER_NORMAL.format(num);
+      num > Asset.LARGE_THRESHOLD ?
+        Asset.FORMATTER_LARGE.format(num) :
+        Asset.FORMATTER_NORMAL.format(num);
     if (!config) {
       return formatted;
     }
-    return formatted + " " + config.display.getSymbol();
+    return formatted + ' ' + config.display.getSymbol();
   }
 
   protected withValue(value: BigSource): Asset {

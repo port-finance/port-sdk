@@ -30,28 +30,28 @@ const DataLayout = BufferLayout.struct<Data>([
   ReserveConfigLayout,
 ]);
 
-/// Initializes a new lending market reserve.
-///
-/// Accounts expected by this instruction:
-///
-///   0. `[writable]` Source liquidity token account.
-///                     $authority can transfer $liquidity_amount.
-///   1. `[writable]` Destination collateral token account - uninitialized.
-///   2. `[writable]` Reserve account - uninitialized.
-///   3. `[]` Reserve liquidity SPL Token mint.
-///   4. `[writable]` Reserve liquidity supply SPL Token account - uninitialized.
-///   5. `[writable]` Reserve liquidity fee receiver - uninitialized.
-///   6. `[writable]` Reserve collateral SPL Token mint - uninitialized.
-///   7. `[writable]` Reserve collateral token supply - uninitialized.
-///   8 `[]` Lending market account.
-///   9 `[]` Derived lending market authority.
-///   10 `[signer]` Lending market owner.
-///   11 `[signer]` User transfer authority ($authority).
-///   12 `[]` Clock sysvar.
-///   13 `[]` Rent sysvar.
-///   14 `[]` Token program id.
-///   15 `[optional]` Oracle price account, pyth or switchboard.
-///           This will be used as the reserve liquidity oracle account.
+// Initializes a new lending market reserve.
+//
+// Accounts expected by this instruction:
+//
+//   0. `[writable]` Source liquidity token account.
+//                     $authority can transfer $liquidity_amount.
+//   1. `[writable]` Destination collateral token account - uninitialized.
+//   2. `[writable]` Reserve account - uninitialized.
+//   3. `[]` Reserve liquidity SPL Token mint.
+//   4. `[writable]` Reserve liquidity supply SPL Token account - uninitialized.
+//   5. `[writable]` Reserve liquidity fee receiver - uninitialized.
+//   6. `[writable]` Reserve collateral SPL Token mint - uninitialized.
+//   7. `[writable]` Reserve collateral token supply - uninitialized.
+//   8 `[]` Lending market account.
+//   9 `[]` Derived lending market authority.
+//   10 `[signer]` Lending market owner.
+//   11 `[signer]` User transfer authority ($authority).
+//   12 `[]` Clock sysvar.
+//   13 `[]` Rent sysvar.
+//   14 `[]` Token program id.
+//   15 `[optional]` Oracle price account, pyth or switchboard.
+//           This will be used as the reserve liquidity oracle account.
 export const initReserveInstruction = (
     liquidityAmount: number | BN,
     option: number,

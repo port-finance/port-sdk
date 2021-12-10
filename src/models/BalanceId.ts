@@ -1,7 +1,7 @@
-import { PublicKey } from "@solana/web3.js";
+import {PublicKey} from '@solana/web3.js';
 
-import { Id } from "./Id";
-import { WalletId } from "./WalletId";
+import {Id} from './Id';
+import {WalletId} from './WalletId';
 
 export class BalanceId extends Id {
   readonly native: boolean;

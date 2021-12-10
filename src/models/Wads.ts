@@ -1,5 +1,5 @@
-import BN from "bn.js";
-import Big from "big.js";
+import BN from 'bn.js';
+import Big from 'big.js';
 
 const WAD_MULTIPLIER = new Big(10).pow(18);
 

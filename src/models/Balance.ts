@@ -1,6 +1,6 @@
-import { BalanceId } from "./BalanceId";
-import { Lamport } from "./Lamport";
-import { MintId } from "./MintId";
+import {BalanceId} from './BalanceId';
+import {Lamport} from './Lamport';
+import {MintId} from './MintId';
 
 export class Balance<L extends Lamport<any, any>> {
   private readonly balanceId: BalanceId;
