@@ -1,8 +1,8 @@
-import { PublicKey } from "@solana/web3.js";
+import {PublicKey} from '@solana/web3.js';
 
-import { NATIVE_MINT } from "@solana/spl-token";
-import { MintId } from "./MintId";
-import { MintType } from "./MintType";
+import {NATIVE_MINT} from '@solana/spl-token';
+import {MintId} from './MintId';
+import {MintType} from './MintType';
 
 export class AssetId extends MintId {
   private constructor(key: PublicKey) {

@@ -23,13 +23,13 @@ const DataLayout = BufferLayout.struct<Data>([
   BufferLayout.blob(32, 'quoteCurrency'),
 ]);
 
-/// Initializes a new lending market.
-///
-/// Accounts expected by this instruction:
-///
-///   0. `[writable]` Lending market account - uninitialized.
-///   1. `[]` Rent sysvar.
-///   2. `[]` Token program id.
+// Initializes a new lending market.
+//
+// Accounts expected by this instruction:
+//
+//   0. `[writable]` Lending market account - uninitialized.
+//   1. `[]` Rent sysvar.
+//   2. `[]` Token program id.
 export const initLendingMarketInstruction = (
     owner: PublicKey,
     quoteCurrency: Buffer,
@@ -48,7 +48,7 @@ export const initLendingMarketInstruction = (
   const keys = [
     getAccess(lendingMarket, AccessType.WRITE),
     getAccess(SYSVAR_RENT_PUBKEY, AccessType.READ),
-    getAccess(TOKEN_PROGRAM_ID, AccessType.READ)
+    getAccess(TOKEN_PROGRAM_ID, AccessType.READ),
   ];
 
   return new TransactionInstruction({

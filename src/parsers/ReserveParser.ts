@@ -1,6 +1,6 @@
-import { ReserveData, ReserveLayout } from "../structs/ReserveData";
-import { Parser } from "./Parser";
-import { RawAccount } from "./RawAccount";
+import {ReserveData, ReserveLayout} from '../structs/ReserveData';
+import {Parser} from './Parser';
+import {RawAccount} from './RawAccount';
 
 export const ReserveParser: Parser<ReserveData> = (raw: RawAccount) => {
   const pubkey = raw.pubkey;
@@ -11,5 +11,5 @@ export const ReserveParser: Parser<ReserveData> = (raw: RawAccount) => {
     return;
   }
 
-  return { pubkey, data };
+  return {pubkey, data};
 };

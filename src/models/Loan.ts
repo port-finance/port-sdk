@@ -1,9 +1,9 @@
-import { ReserveId } from "./ReserveId";
-import { Asset } from "./Asset";
-import { AssetId } from "./AssetId";
-import { Wads } from "./Wads";
-import { QuoteValue } from "./QuoteValue";
-import { PortBalanceLoanData } from "../structs/PortBalanceData";
+import {ReserveId} from './ReserveId';
+import {Asset} from './Asset';
+import {AssetId} from './AssetId';
+import {Wads} from './Wads';
+import {QuoteValue} from './QuoteValue';
+import {PortBalanceLoanData} from '../structs/PortBalanceData';
 
 export class Loan {
   private readonly reserveId: ReserveId;
@@ -11,9 +11,9 @@ export class Loan {
   private readonly recordedValue: QuoteValue;
 
   private constructor(
-    reserveId: ReserveId,
-    lamport: Asset,
-    recordedValue: QuoteValue
+      reserveId: ReserveId,
+      lamport: Asset,
+      recordedValue: QuoteValue,
   ) {
     this.reserveId = reserveId;
     this.asset = lamport;
@@ -22,8 +22,8 @@ export class Loan {
 
   public static fromRaw(raw: PortBalanceLoanData, assetId: AssetId): Loan {
     const lamport = new Asset(
-      assetId,
-      new Wads(raw.borrowedAmountWads).toBig()
+        assetId,
+        new Wads(raw.borrowedAmountWads).toBig(),
     );
     const recordedValue = QuoteValue.fromWads(raw.marketValue);
     return new Loan(new ReserveId(raw.borrowReserve), lamport, recordedValue);

@@ -1,5 +1,5 @@
-import { QuoteValue } from "./QuoteValue";
-import { AssetId } from "./AssetId";
+import {QuoteValue} from './QuoteValue';
+import {AssetId} from './AssetId';
 
 export class AssetValue {
   private readonly assetId: AssetId;

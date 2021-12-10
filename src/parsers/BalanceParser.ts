@@ -1,7 +1,7 @@
-import { PublicKey } from "@solana/web3.js";
-import { AccountInfo, AccountLayout, u64 } from "@solana/spl-token";
-import { Parser } from "./Parser";
-import { RawAccount } from "./RawAccount";
+import {PublicKey} from '@solana/web3.js';
+import {AccountInfo, AccountLayout, u64} from '@solana/spl-token';
+import {Parser} from './Parser';
+import {RawAccount} from './RawAccount';
 
 export type BalanceData = AccountInfo;
 
@@ -10,7 +10,7 @@ export const balanceParser: Parser<BalanceData> = (raw: RawAccount) => {
   const buffer = Buffer.from(raw.account.data);
   const data = deserialize(buffer);
 
-  return { pubkey, data };
+  return {pubkey, data};
 };
 
 function deserialize(data: Buffer): BalanceData {

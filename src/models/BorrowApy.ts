@@ -1,6 +1,6 @@
-import { AssetId } from "./AssetId";
-import { BigSource } from "big.js";
-import { Ratio } from "./Ratio";
+import {AssetId} from './AssetId';
+import {BigSource} from 'big.js';
+import {Ratio} from './Ratio';
 
 export class BorrowApy extends Ratio {
   private readonly assetId: AssetId;

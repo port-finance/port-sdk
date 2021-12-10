@@ -1,4 +1,4 @@
-import Big, { BigSource } from "big.js";
+import Big, {BigSource} from 'big.js';
 
 export class AssetDepositConfig {
   private readonly min?: Big;

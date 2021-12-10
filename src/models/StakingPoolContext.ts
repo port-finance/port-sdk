@@ -1,13 +1,13 @@
-import { StakingPoolInfo } from "./StakingPoolInfo";
-import { PublicKey } from "@solana/web3.js";
+import {StakingPoolInfo} from './StakingPoolInfo';
+import {PublicKey} from '@solana/web3.js';
 
 export class StakingPoolContext {
   private readonly stakingPools: StakingPoolInfo[];
   private readonly byStakingPoolId: Map<string, StakingPoolInfo>;
 
   private constructor(
-    reserves: StakingPoolInfo[],
-    byReserveId: Map<string, StakingPoolInfo>
+      reserves: StakingPoolInfo[],
+      byReserveId: Map<string, StakingPoolInfo>,
   ) {
     this.stakingPools = reserves;
     this.byStakingPoolId = byReserveId;
@@ -16,7 +16,7 @@ export class StakingPoolContext {
   public static index(stakingPools: StakingPoolInfo[]): StakingPoolContext {
     const byReserveId = new Map<string, StakingPoolInfo>();
     stakingPools.forEach((reserve) =>
-      byReserveId.set(reserve.getStakingPoolId().toBase58(), reserve)
+      byReserveId.set(reserve.getStakingPoolId().toBase58(), reserve),
     );
     return new StakingPoolContext(stakingPools, byReserveId);
   }

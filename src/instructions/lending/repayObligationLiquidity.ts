@@ -1,34 +1,34 @@
-import {PublicKey, SYSVAR_CLOCK_PUBKEY, TransactionInstruction,} from '@solana/web3.js';
+import {PublicKey, SYSVAR_CLOCK_PUBKEY, TransactionInstruction} from '@solana/web3.js';
 import {TOKEN_PROGRAM_ID} from '@solana/spl-token';
 import * as BufferLayout from 'buffer-layout';
-import * as Layout from '../../utils/layout'
-import { LendingInstruction } from './instruction';
-import { AccessType, getAccess } from '../../utils/Instructions';
+import * as Layout from '../../utils/layout';
+import {LendingInstruction} from './instruction';
+import {AccessType, getAccess} from '../../utils/Instructions';
 import BN from 'bn.js';
-import { PORT_LENDING } from '../../constants';
+import {PORT_LENDING} from '../../constants';
 
-/// Repay borrowed liquidity to a reserve. Requires a refreshed obligation and reserve.
-///
-/// Accounts expected by this instruction:
-///
-///   0. `[writable]` Source liquidity token account.
-///                     Minted by repay reserve liquidity mint.
-///                     $authority can transfer $liquidity_amount.
-///   1. `[writable]` Destination repay reserve liquidity supply SPL Token account.
-///   2. `[writable]` Repay reserve account - refreshed.
-///   3. `[writable]` Obligation account - refreshed.
-///   4. `[]` Lending market account.
-///   5. `[signer]` User transfer authority ($authority).
-///   6. `[]` Clock sysvar.
-///   7. `[]` Token program id.
-export function repayObligationLiquidityInstruction (
-  liquidityAmount: number | BN,
-  srcLiquidityPubkey: PublicKey, // 0
-  dstLiquiditySupplyPubkey: PublicKey, // 1
-  repayReservePubkey: PublicKey, // 2
-  obligationPubkey: PublicKey, // 3
-  lendingMarketPubkey: PublicKey, // 4
-  transferAuthorityPubkey: PublicKey, // 5
+// Repay borrowed liquidity to a reserve. Requires a refreshed obligation and reserve.
+//
+// Accounts expected by this instruction:
+//
+//   0. `[writable]` Source liquidity token account.
+//                     Minted by repay reserve liquidity mint.
+//                     $authority can transfer $liquidity_amount.
+//   1. `[writable]` Destination repay reserve liquidity supply SPL Token account.
+//   2. `[writable]` Repay reserve account - refreshed.
+//   3. `[writable]` Obligation account - refreshed.
+//   4. `[]` Lending market account.
+//   5. `[signer]` User transfer authority ($authority).
+//   6. `[]` Clock sysvar.
+//   7. `[]` Token program id.
+export function repayObligationLiquidityInstruction(
+    liquidityAmount: number | BN,
+    srcLiquidityPubkey: PublicKey, // 0
+    dstLiquiditySupplyPubkey: PublicKey, // 1
+    repayReservePubkey: PublicKey, // 2
+    obligationPubkey: PublicKey, // 3
+    lendingMarketPubkey: PublicKey, // 4
+    transferAuthorityPubkey: PublicKey, // 5
 ): TransactionInstruction {
   const dataLayout = BufferLayout.struct([
     BufferLayout.u8('instruction'),
@@ -36,11 +36,11 @@ export function repayObligationLiquidityInstruction (
   ]);
   const data = Buffer.alloc(dataLayout.span);
   dataLayout.encode(
-    {
-      instruction: LendingInstruction.RepayObligationLiquidity,
-      liquidityAmount: new BN(liquidityAmount),
-    },
-    data,
+      {
+        instruction: LendingInstruction.RepayObligationLiquidity,
+        liquidityAmount: new BN(liquidityAmount),
+      },
+      data,
   );
 
   const keys = [
@@ -51,7 +51,7 @@ export function repayObligationLiquidityInstruction (
     getAccess(lendingMarketPubkey, AccessType.READ),
     getAccess(transferAuthorityPubkey, AccessType.SIGNER),
     getAccess(SYSVAR_CLOCK_PUBKEY, AccessType.READ),
-    getAccess(TOKEN_PROGRAM_ID, AccessType.READ)
+    getAccess(TOKEN_PROGRAM_ID, AccessType.READ),
   ];
 
   return new TransactionInstruction({

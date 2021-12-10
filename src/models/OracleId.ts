@@ -1,6 +1,6 @@
-import { PublicKey } from "@solana/web3.js";
+import {PublicKey} from '@solana/web3.js';
 
-import { Id } from "./Id";
+import {Id} from './Id';
 
 export class OracleId extends Id {
   constructor(key: PublicKey) {

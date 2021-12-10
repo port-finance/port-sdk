@@ -1,5 +1,5 @@
-import { Ratio } from "./Ratio";
-import { BigSource } from "big.js";
+import {Ratio} from './Ratio';
+import {BigSource} from 'big.js';
 
 export class MarginRatio extends Ratio {
   private static MARGIN_RATIO_NA = new MarginRatio();

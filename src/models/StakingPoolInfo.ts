@@ -1,9 +1,9 @@
-import BN from "bn.js";
-import { PublicKey } from "@solana/web3.js";
-import { StakingPoolProto } from "../structs/StakingPoolData";
-import { ParsedAccount } from "../parsers/ParsedAccount";
-import Big from "big.js";
-import { Wads } from "./Wads";
+import BN from 'bn.js';
+import {PublicKey} from '@solana/web3.js';
+import {StakingPoolProto} from '../structs/StakingPoolData';
+import {ParsedAccount} from '../parsers/ParsedAccount';
+import Big from 'big.js';
+import {Wads} from './Wads';
 
 export class StakingPoolInfo {
   private readonly stakingPoolId: PublicKey;
@@ -19,17 +19,17 @@ export class StakingPoolInfo {
   private readonly poolSize: BN;
 
   private constructor(
-    stakingPoolId: PublicKey,
-    rewardTokenPool: PublicKey,
-    ownerAuthority: PublicKey,
-    adminAuthority: PublicKey,
-    lastUpdate: BN,
-    endTime: BN,
-    duration: BN,
-    earliestRewardClaimTime: BN,
-    ratePerSlot: Big,
-    cumulativeRate: Big,
-    poolSize: BN
+      stakingPoolId: PublicKey,
+      rewardTokenPool: PublicKey,
+      ownerAuthority: PublicKey,
+      adminAuthority: PublicKey,
+      lastUpdate: BN,
+      endTime: BN,
+      duration: BN,
+      earliestRewardClaimTime: BN,
+      ratePerSlot: Big,
+      cumulativeRate: Big,
+      poolSize: BN,
   ) {
     this.stakingPoolId = stakingPoolId;
     this.rewardTokenPool = rewardTokenPool;
@@ -48,17 +48,17 @@ export class StakingPoolInfo {
     const info = raw.data;
 
     return new StakingPoolInfo(
-      raw.pubkey,
-      info.rewardTokenPool,
-      info.ownerAuthority,
-      info.adminAuthority,
-      info.lastUpdate,
-      info.endTime,
-      info.duration,
-      info.earliestRewardClaimTime,
-      new Wads(info.ratePerSlot).toBig(),
-      new Wads(info.cumulativeRate).toBig(),
-      info.poolSize
+        raw.pubkey,
+        info.rewardTokenPool,
+        info.ownerAuthority,
+        info.adminAuthority,
+        info.lastUpdate,
+        info.endTime,
+        info.duration,
+        info.earliestRewardClaimTime,
+        new Wads(info.ratePerSlot).toBig(),
+        new Wads(info.cumulativeRate).toBig(),
+        info.poolSize,
     );
   }
 
@@ -119,12 +119,12 @@ export class StakingPoolInfo {
     currentSlot = BN.min(currentSlot, this.getEndTime());
     const slotDiff = currentSlot.sub(this.getLastUpdate());
     if (slotDiff.isNeg()) {
-      throw new Error("Slot older than last update");
+      throw new Error('Slot older than last update');
     }
 
     const rateDiff = this.getRatePerSlot()
-      .mul(new Big(slotDiff.toString()))
-      .div(new Big(poolSize.toString()));
+        .mul(new Big(slotDiff.toString()))
+        .div(new Big(poolSize.toString()));
     return this.getCumulativeRate().plus(rateDiff);
   }
 }

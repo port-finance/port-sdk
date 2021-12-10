@@ -1,4 +1,4 @@
-import { ReserveInfo } from "./ReserveInfo";
+import {ReserveInfo} from './ReserveInfo';
 
 export class LendingMarket {
   reserves: ReserveInfo[];
