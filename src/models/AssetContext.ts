@@ -1,3 +1,4 @@
+import {ReserveId} from '.';
 import {AssetConfig} from './AssetConfig';
 import {AssetId} from './AssetId';
 
@@ -35,13 +36,16 @@ export class AssetContext {
     return Array.from(this.cache.values());
   }
 
-  public getConfig(assetId: AssetId): AssetConfig {
+  public findConfig(assetId: AssetId): AssetConfig | undefined {
     const key = assetId.toString();
-    const result = this.cache.get(key);
-    if (!result) {
-      throw Error('Unknown Asset: ' + assetId);
-    }
+    return this.cache.get(key);
+  }
 
-    return result;
+  public findConfigBySymbol(symbol: string): AssetConfig | undefined {
+    return this.bySymbol.get(symbol);
+  }
+
+  public findConfigByReserveId(reserveId: ReserveId): AssetConfig | undefined {
+    return this.byReserveId.get(reserveId.toString());
   }
 }
