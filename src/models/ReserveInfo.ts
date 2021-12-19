@@ -28,8 +28,13 @@ import {AssetValue} from './AssetValue';
 import {ParsedAccount} from '../parsers/ParsedAccount';
 import {PublicKey, TransactionInstruction} from '@solana/web3.js';
 import BN from 'bn.js';
-import { borrowObligationLiquidityInstruction, depositObligationCollateralInstruction, depositReserveLiquidityInstruction, refreshReserveInstruction } from '..';
-import { PORT_LENDING } from '../constants';
+import {
+  borrowObligationLiquidityInstruction,
+  depositObligationCollateralInstruction,
+  depositReserveLiquidityInstruction,
+  refreshReserveInstruction,
+} from '../instructions';
+import {PORT_LENDING} from '../constants';
 
 // abstract a reserve
 export class ReserveInfo {
@@ -314,8 +319,8 @@ export class ReserveInfo {
 
     ixs.push(
         refreshReserveInstruction(
-          this.getReserveId().key,
-          this.getOracleId()?.key ?? null,
+            this.getReserveId().key,
+            this.getOracleId()?.key ?? null,
         ),
         depositObligationCollateralInstruction(
             amount,
