@@ -5,6 +5,7 @@ import {Asset} from './Asset';
 import {AssetQuantityContext} from './AssetQuantityContext';
 
 export abstract class Value<V extends Value<V>> extends Decimal<V> {
+  // eslint-disable-next-line new-cap
   private static FORMATTER = Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',

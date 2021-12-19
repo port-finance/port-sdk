@@ -21,6 +21,7 @@ function deserialize(data: Buffer): BalanceData {
 
   if (accountInfo.delegateOption === 0) {
     accountInfo.delegate = null;
+    // eslint-disable-next-line new-cap
     accountInfo.delegatedAmount = new u64(0);
   } else {
     accountInfo.delegate = new PublicKey(accountInfo.delegate);

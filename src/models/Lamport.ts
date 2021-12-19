@@ -30,6 +30,7 @@ export abstract class Lamport<
   }
 
   public toU64(): u64 {
+    // eslint-disable-next-line new-cap
     return new u64(this.raw.toFixed(0, 0)); // RoundDown
   }
 
