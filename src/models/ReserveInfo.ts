@@ -32,6 +32,7 @@ import {
   borrowObligationLiquidityInstruction,
   depositObligationCollateralInstruction,
   depositReserveLiquidityInstruction,
+  redeemReserveCollateralInstruction,
   refreshReserveInstruction,
 } from '../instructions';
 import {PORT_LENDING} from '../constants';
@@ -365,6 +366,38 @@ export class ReserveInfo {
             this.getMarketId().key,
             authority,
             owner,
+        ),
+    );
+    return ixs;
+  }
+
+  public async redeemCollateral(
+      {
+        amount,
+        userCollateralWallet,
+        destinationLiquidityWallet,
+        userTransferAuthority,
+      }:{
+    amount: BN;
+    userCollateralWallet: PublicKey;
+    destinationLiquidityWallet: PublicKey;
+    userTransferAuthority: PublicKey;
+    },
+  ): Promise<TransactionInstruction[]> {
+    const [authority] = await this.getMarketAuthority();
+    const ixs: TransactionInstruction[] = [];
+
+    ixs.push(
+        redeemReserveCollateralInstruction(
+            amount,
+            userCollateralWallet,
+            destinationLiquidityWallet,
+            this.getReserveId().key,
+            this.getShareId().key,
+            this.getAssetBalanceId().key,
+            this.getMarketId().key,
+            authority,
+            userTransferAuthority,
         ),
     );
     return ixs;
