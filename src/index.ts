@@ -1,4 +1,4 @@
-export {Port} from './Port';
+export * from '.';
 export * from './instructions';
 export * from './models';
 export * from './parsers';
