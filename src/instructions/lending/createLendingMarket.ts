@@ -5,19 +5,19 @@ import {
   TransactionInstruction,
 } from '@solana/web3.js';
 import {Buffer} from 'buffer';
-import * as BufferLayout from 'buffer-layout';
+import * as BufferLayout from '@solana/buffer-layout';
 import {PORT_LENDING} from '../../constants';
 import {AccessType, getAccess} from '../../utils/Instructions';
-import * as Layout from '../../utils/layout';
+import * as Layout from '../../serialization/layout';
 import {LendingInstruction} from './instruction';
 
-interface Data {
-  instruction: number;
-  owner: PublicKey;
-  quoteCurrency: Buffer;
-}
+// interface Data {
+//   instruction: number;
+//   owner: PublicKey;
+//   quoteCurrency: Buffer;
+// }
 
-const DataLayout = BufferLayout.struct<Data>([
+const DataLayout = BufferLayout.struct([
   BufferLayout.u8('instruction'),
   Layout.publicKey('owner'),
   BufferLayout.blob(32, 'quoteCurrency'),

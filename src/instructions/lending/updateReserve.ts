@@ -4,7 +4,7 @@ import {
   TransactionInstruction,
 } from '@solana/web3.js';
 import {TOKEN_PROGRAM_ID} from '@solana/spl-token';
-import * as BufferLayout from 'buffer-layout';
+import * as BufferLayout from '@solana/buffer-layout';
 import {LendingInstruction} from './instruction';
 import {AccessType, getAccess} from '../../utils/Instructions';
 import {ReserveConfig, ReserveConfigLayout} from '../../structs/ReserveData';
@@ -29,7 +29,8 @@ export const updateReserveInstruction = (
 ): TransactionInstruction => {
   const dataLayout = BufferLayout.struct([
     BufferLayout.u8('instruction'),
-    ReserveConfigLayout,
+    // eslint-disable-next-line new-cap
+    ReserveConfigLayout('config'),
   ]);
   const data = Buffer.alloc(dataLayout.span);
   dataLayout.encode(

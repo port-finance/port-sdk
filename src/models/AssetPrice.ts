@@ -1,30 +1,38 @@
-import {AssetId} from './AssetId';
-import {BigSource} from 'big.js';
-import {Decimal} from './Decimal';
+import Big, {BigSource} from 'big.js';
+import {Decimal, Percentage} from './basic';
 import {AssetConfig} from './AssetConfig';
+import {MintId} from './MintId';
 
 export class AssetPrice extends Decimal<AssetPrice> {
-  readonly assetId: AssetId;
+  private readonly mintId: MintId;
 
-  private constructor(assetId: AssetId, value: BigSource) {
+  private constructor(mintId: MintId, value: BigSource) {
     super(value);
-    this.assetId = assetId;
+    this.mintId = mintId;
   }
 
-  public static of(assetId: AssetId, value: BigSource): AssetPrice {
-    return new AssetPrice(assetId, value);
+  public static of(mintId: MintId, value: BigSource): AssetPrice {
+    return new AssetPrice(mintId, value);
+  }
+
+  public getMintId(): MintId {
+    return this.mintId;
+  }
+
+  public addFee(pct: Percentage): AssetPrice {
+    return this.multiply(new Big(1).add(pct.getRaw()));
   }
 
   public print(config: AssetConfig): string {
-    const decimals = config.price.getDecimals();
+    const decimals = config.getPriceDecimals();
     return '$' + this.raw.round(decimals, 1).toFixed(decimals); // RoundHalfUp
   }
 
-  protected isCompatibleWith(that: AssetPrice): boolean {
-    return this.assetId.equals(that.assetId);
+  public replaceWithValue(value: BigSource): AssetPrice {
+    return new AssetPrice(this.getMintId(), value);
   }
 
-  protected withValue(value: BigSource): AssetPrice {
-    return new AssetPrice(this.assetId, value);
+  protected isCompatibleWith(that: AssetPrice): boolean {
+    return this.getMintId().equals(that.getMintId());
   }
 }

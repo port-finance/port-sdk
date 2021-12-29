@@ -1,6 +1,6 @@
 import {PublicKey, SYSVAR_CLOCK_PUBKEY, TransactionInstruction} from '@solana/web3.js';
 import {TOKEN_PROGRAM_ID} from '@solana/spl-token';
-import * as BufferLayout from 'buffer-layout';
+import * as BufferLayout from '@solana/buffer-layout';
 import {StakingInstructions} from './instruction';
 import {AccessType, getAccess} from '../../utils/Instructions';
 import {PORT_STAKING} from '../../constants';

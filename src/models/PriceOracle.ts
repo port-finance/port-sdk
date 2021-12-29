@@ -1,5 +1,5 @@
 import {AssetPrice} from './AssetPrice';
-import {AssetId} from './AssetId';
+import {MintId} from './MintId';
 
 export class PriceOracle {
   private readonly cache: Map<string, AssetPrice>;
@@ -10,12 +10,12 @@ export class PriceOracle {
 
   public static index(prices: AssetPrice[]): PriceOracle {
     const cache = new Map<string, AssetPrice>();
-    prices.forEach((price) => cache.set(price.assetId.toString(), price));
+    prices.forEach((price) => cache.set(price.getMintId().toString(), price));
     return new PriceOracle(cache);
   }
 
-  public getPrice(assetId: AssetId): AssetPrice | undefined {
-    const key = assetId.toString();
+  public getPrice(mintId: MintId): AssetPrice | undefined {
+    const key = mintId.toString();
     return this.cache.get(key);
   }
 }

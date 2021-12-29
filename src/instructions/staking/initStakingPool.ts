@@ -4,26 +4,26 @@ import {
   SYSVAR_RENT_PUBKEY,
   TransactionInstruction,
 } from '@solana/web3.js';
-import * as BufferLayout from 'buffer-layout';
+import * as BufferLayout from '@solana/buffer-layout';
 import BN from 'bn.js';
 
-import * as Layout from '../../utils/layout';
+import * as Layout from '../../serialization/layout';
 import {PORT_STAKING} from '../../constants';
 import {StakingInstructions} from './instruction';
 import {AccessType, getAccess} from '../../utils/Instructions';
 
 
-interface Data {
-  instruction: number;
-  supply: number;
-  duration: number;
-  earliestRewardTime: number;
-  bumpSeed: number;
-  poolOwnerAuthority: PublicKey;
-  adminAuthority: PublicKey;
-}
+// interface Data {
+//   instruction: number;
+//   supply: number;
+//   duration: number;
+//   earliestRewardTime: number;
+//   bumpSeed: number;
+//   poolOwnerAuthority: PublicKey;
+//   adminAuthority: PublicKey;
+// }
 
-const DataLayout = BufferLayout.struct<Data>([
+const DataLayout = BufferLayout.struct([
   BufferLayout.u8('instruction'),
   Layout.uint64('supply'),
   Layout.uint64('duration'),

@@ -5,30 +5,22 @@ import {
   SYSVAR_RENT_PUBKEY,
   TransactionInstruction,
 } from '@solana/web3.js';
-import BigNumber from 'bignumber.js';
 import {PORT_LENDING} from '../../constants';
-import {ReserveConfig, ReserveConfigLayout} from '../../structs/ReserveData';
+import {ReserveConfigProtoLayout, ReserveConfigProto} from '../../structs/ReserveData';
 import {LendingInstruction} from './instruction';
-import * as BufferLayout from 'buffer-layout';
-import * as Layout from '../../utils/layout';
+import * as BufferLayout from '@solana/buffer-layout';
+import * as Layout from '../../serialization/layout';
 import BN from 'bn.js';
 import {AccessType, getAccess} from '../../utils/Instructions';
 
-interface Data {
-  instruction: number;
-  liquidityAmount: bigint;
-  option: number;
-  marketPrice: BigNumber;
-  config: ReserveConfig;
-}
+// interface Data {
+//   instruction: number;
+//   liquidityAmount: bigint;
+//   option: number;
+//   marketPrice: BN;
+//   config: ReserveConfigProto;
+// }
 
-const DataLayout = BufferLayout.struct<Data>([
-  BufferLayout.u8('instruction'),
-  Layout.uint64('liquidityAmount'),
-  BufferLayout.u32('option'),
-  Layout.uint128('marketPrice'),
-  ReserveConfigLayout,
-]);
 
 // Initializes a new lending market reserve.
 //
@@ -56,7 +48,7 @@ export const initReserveInstruction = (
     liquidityAmount: number | BN,
     option: number,
     price: BN,
-    config: ReserveConfig,
+    config: ReserveConfigProto,
     sourceLiquidity: PublicKey,
     destinationCollateral: PublicKey,
     reserve: PublicKey,
@@ -71,14 +63,22 @@ export const initReserveInstruction = (
     lendingMarketOwner: PublicKey,
     transferAuthority: PublicKey,
 ): TransactionInstruction => {
-  const data = Buffer.alloc(DataLayout.span);
-  DataLayout.encode(
+  const dataLayout = BufferLayout.struct([
+    BufferLayout.u8('instruction'),
+    Layout.uint64('liquidityAmount'),
+    BufferLayout.u32('option'),
+    Layout.uint128('marketPrice'),
+    // eslint-disable-next-line new-cap
+    ReserveConfigProtoLayout('config'),
+  ]);
+  const data = Buffer.alloc(dataLayout.span);
+  dataLayout.encode(
       {
         instruction: LendingInstruction.InitReserve,
         option,
         marketPrice: new BN(price),
         liquidityAmount: new BN(liquidityAmount),
-        config,
+        config: {...config},
       },
       data,
   );

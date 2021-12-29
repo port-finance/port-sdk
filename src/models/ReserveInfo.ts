@@ -1,50 +1,36 @@
+/* eslint-disable new-cap */
 import {ReserveId} from './ReserveId';
 import {Asset} from './Asset';
 import {Share} from './Share';
-import {ExchangeRatio} from './ExchangeRatio';
+import {AssetExchangeRate} from './AssetExchangeRate';
 import {ReserveUtilizationRatio} from './ReserveUtilizationRatio';
-import {BorrowApy} from './BorrowApy';
 import {ReserveBorrowRate} from './ReserveBorrowRate';
 import Big from 'big.js';
-import {AssetId} from './AssetId';
-import {SupplyApy} from './SupplyApy';
-import {LoanToValueRatio} from './LoanToValueRatio';
-import {
-  ReserveCollateral,
-  ReserveConfig,
-  ReserveData,
-  ReserveLiquidity,
-} from '../structs/ReserveData';
-import {Wads} from './Wads';
-import {ShareId} from './ShareId';
+import {MintId} from './MintId';
+import {Apy} from './Apy';
 import {OracleId} from './OracleId';
 import {MarketId} from './MarketId';
-import {Balance} from './Balance';
-import {BalanceId} from './BalanceId';
-import {Percentage} from './Percentage';
+import {TokenAccountId} from './TokenAccountId';
+import {Percentage} from './basic';
 import {AssetPrice} from './AssetPrice';
-import {AssetQuantityContext} from './AssetQuantityContext';
+import {QuantityContext} from './QuantityContext';
 import {AssetValue} from './AssetValue';
-import {ParsedAccount} from '../parsers/ParsedAccount';
-import {PublicKey, TransactionInstruction} from '@solana/web3.js';
-import BN from 'bn.js';
-import {
-  borrowObligationLiquidityInstruction,
-  depositObligationCollateralInstruction,
-  depositReserveLiquidityInstruction,
-  redeemReserveCollateralInstruction,
-  refreshReserveInstruction,
-} from '../instructions';
-import {PORT_LENDING} from '../constants';
+import {Parsed} from '../serialization/Parsed';
+import {ReserveCollateral, ReserveConfig, ReserveData, ReserveLayout, ReserveLiquidity} from '../structs';
+import {RawData} from '../serialization/RawData';
+import {StakingPoolId} from './staking/StakingPoolId';
+import {ExchangeRate} from './ExchangeRate';
 
-// abstract a reserve
-export class ReserveInfo {
+export class ReserveInfo implements Parsed<ReserveId> {
   private readonly reserveId: ReserveId;
   readonly marketId: MarketId;
   readonly asset: ReserveAssetInfo;
   readonly share: ReserveTokenInfo;
   readonly params: ReserveParams;
-  readonly stakingPool: PublicKey | null;
+  private readonly stakingPoolId: StakingPoolId | undefined;
+
+  // tricky
+  readonly proto: ReserveData;
 
   constructor(
       reserveId: ReserveId,
@@ -52,35 +38,44 @@ export class ReserveInfo {
       asset: ReserveAssetInfo,
       share: ReserveTokenInfo,
       params: ReserveParams,
-      stakingPool: PublicKey | null,
+      stakingPoolId: StakingPoolId | undefined,
+      proto: ReserveData,
   ) {
     this.reserveId = reserveId;
     this.marketId = marketId;
     this.asset = asset;
     this.share = share;
     this.params = params;
-    this.stakingPool = stakingPool;
+    this.stakingPoolId = stakingPoolId;
+    this.proto = proto;
   }
 
-  public static fromRaw(account: ParsedAccount<ReserveData>): ReserveInfo {
-    const id = new ReserveId(account.pubkey);
-    const marketId = MarketId.of(account.data.lendingMarket);
-    const asset = ReserveAssetInfo.fromRaw(account.data.liquidity);
-    const token = ReserveTokenInfo.fromRaw(account.data.collateral);
-    const params = ReserveParams.fromRaw(
-        asset.getAssetId(),
-        account.data.config,
-    );
-    const reserveStakingPool =
-      account.data.config.stakingPoolOption === 0 ? null : account.data.config.stakingPool;
+  public static fromRaw(raw: RawData): ReserveInfo {
+    const buffer = raw.account.data;
+    const proto = ReserveLayout.decode(buffer) as ReserveData;
+
+    const marketId = MarketId.of(proto.lendingMarket);
+    const asset = ReserveAssetInfo.fromRaw(proto.liquidity);
+    const token = ReserveTokenInfo.fromRaw(proto.collateral);
+    const params = ReserveParams.fromRaw(asset.getMintId(), proto.config);
+    const stakingPoolId = proto.config.stakingPoolId;
     return new ReserveInfo(
-        id,
+        ReserveId.of(raw.pubkey),
         marketId,
         asset,
         token,
         params,
-        reserveStakingPool,
+        stakingPoolId,
+        proto,
     );
+  }
+
+  getProto(): ReserveData {
+    return this.proto;
+  }
+
+  getId(): ReserveId {
+    return this.getReserveId();
   }
 
   public getReserveId(): ReserveId {
@@ -91,37 +86,36 @@ export class ReserveInfo {
     return this.marketId;
   }
 
-  public getAssetId(): AssetId {
-    return this.asset.getAssetId();
+  public getAssetMintId(): MintId {
+    return this.asset.getMintId();
   }
 
-  public getAssetBalanceId(): BalanceId {
-    return this.asset.getBalanceId();
+  public getAssetBalanceId(): TokenAccountId {
+    return this.asset.getSplAccountId();
   }
 
-  public getShareId(): ShareId {
-    return this.share.getShareId();
+  public getShareMintId(): MintId {
+    return this.share.getMintId();
   }
 
-  public getShareBalanceId(): BalanceId {
-    return this.share.getShareBalanceId();
+  public getShareBalanceId(): TokenAccountId {
+    return this.share.getSplAccountId();
   }
 
   public getOracleId(): OracleId | null {
     return this.asset.getOracleId();
   }
 
-  public getFeeBalanceId(): BalanceId {
-    return this.asset.getFeeBalanceId();
+  public getFeeBalanceId(): TokenAccountId {
+    return this.asset.getFeeAccountId();
   }
 
-  public getMarketCap(): AssetValue {
+  // new input arg
+  public getMarketCap(price?: AssetPrice): AssetValue {
+    const asset = this.getTotalAsset();
     return new AssetValue(
-        this.getAssetId(),
-        this.getTotalAsset().toValue(
-            this.getMarkPrice(),
-            this.getQuantityContext(),
-        ),
+        asset,
+        asset.toValue(price ?? this.getMarkPrice(), this.getQuantityContext()),
     );
   }
 
@@ -129,13 +123,12 @@ export class ReserveInfo {
     return this.getAvailableAsset().add(this.getBorrowedAsset());
   }
 
-  public getAvailableAssetValue(): AssetValue {
+  // new input arg
+  public getAvailableAssetValue(price?: AssetPrice): AssetValue {
+    const asset = this.getAvailableAsset();
     return new AssetValue(
-        this.getAssetId(),
-        this.getAvailableAsset().toValue(
-            this.getMarkPrice(),
-            this.getQuantityContext(),
-        ),
+        asset,
+        asset.toValue(price ?? this.getMarkPrice(), this.getQuantityContext()),
     );
   }
 
@@ -143,13 +136,12 @@ export class ReserveInfo {
     return this.asset.getAvailableAsset();
   }
 
-  public getBorrowedAssetValue(): AssetValue {
+  // new input arg
+  public getBorrowedAssetValue(price?: AssetPrice): AssetValue {
+    const asset = this.getBorrowedAsset();
     return new AssetValue(
-        this.getAssetId(),
-        this.getBorrowedAsset().toValue(
-            this.getMarkPrice(),
-            this.getQuantityContext(),
-        ),
+        asset,
+        asset.toValue(price ?? this.getMarkPrice(), this.getQuantityContext()),
     );
   }
 
@@ -157,7 +149,7 @@ export class ReserveInfo {
     return this.asset.getBorrowedAsset();
   }
 
-  public getQuantityContext(): AssetQuantityContext {
+  public getQuantityContext(): QuantityContext {
     return this.asset.getQuantityContext();
   }
 
@@ -165,56 +157,56 @@ export class ReserveInfo {
     return this.asset.getMarkPrice();
   }
 
-  public getExchangeRatio(): ExchangeRatio {
+  public getExchangeRatio(): AssetExchangeRate {
     const asset = this.getTotalAsset();
     const share = this.share.getIssuedShare();
 
-    const assetId = asset.getAssetId();
-    const shareId = share.getShareId();
+    const assetMintId = asset.getMintId();
+    const shareMintId = share.getMintId();
     if (asset.isZero()) {
-      return new ExchangeRatio(shareId, assetId);
+      return new AssetExchangeRate(shareMintId, assetMintId);
     }
-    const ratio = share.getRaw().div(asset.getRaw());
-    return new ExchangeRatio(shareId, assetId, ratio);
+    const ratio = Percentage.fromOneBased(share.getRaw().div(asset.getRaw()));
+    return new AssetExchangeRate(shareMintId, assetMintId, ratio);
   }
 
   public getUtilizationRatio(): ReserveUtilizationRatio {
     const total = this.getTotalAsset();
     if (total.isZero()) {
-      return ReserveUtilizationRatio.na(total.mintId);
+      return ReserveUtilizationRatio.na(total.getMintId());
     }
 
-    const pct = this.getBorrowedAsset().getRaw().div(total.getRaw());
-    return new ReserveUtilizationRatio(total.mintId, pct);
+    const pct = Percentage.fromOneBased(
+        this.getBorrowedAsset().getRaw().div(total.getRaw()),
+    );
+    return new ReserveUtilizationRatio(total.getMintId(), pct);
   }
 
-  public getSupplyApy(): SupplyApy {
+  public getSupplyApy(): Apy {
     const utilizationRatio = this.getUtilizationRatio();
     const borrowApy = this.getBorrowApy();
-    const assetId = utilizationRatio.getAssetId();
 
     if (!utilizationRatio.isPresent() || !borrowApy.isPresent()) {
-      return SupplyApy.na(assetId);
+      return Apy.na();
     }
 
     const utilizationRatioRaw = utilizationRatio.getUnchecked();
     const borrowApyRaw = borrowApy.getUnchecked();
-    return new SupplyApy(assetId, utilizationRatioRaw.mul(borrowApyRaw));
+    return Apy.of(utilizationRatioRaw.mul(borrowApyRaw));
   }
 
-  public getBorrowApy(): BorrowApy {
+  public getBorrowApy(): Apy {
     const params = this.params;
     const utilizationRatio = this.getUtilizationRatio();
     const optimalUtilizationRatio = params.optimalUtilizationRatio;
     const optimalBorrowRate = params.optimalBorrowRate;
-    const assetId = utilizationRatio.getAssetId();
 
     if (
       !utilizationRatio.isPresent() ||
       !optimalUtilizationRatio.isPresent() ||
       !optimalBorrowRate.isPresent()
     ) {
-      return BorrowApy.na(assetId);
+      return Apy.na();
     }
 
     const utilizationRatioRaw = utilizationRatio.getUnchecked();
@@ -226,7 +218,7 @@ export class ReserveInfo {
     ) {
       const minBorrowRate = params.minBorrowRate;
       if (!minBorrowRate.isPresent()) {
-        return BorrowApy.na(assetId);
+        return Apy.na();
       }
 
       const minBorrowRateRaw = minBorrowRate.getUnchecked();
@@ -234,15 +226,12 @@ export class ReserveInfo {
           optimalUtilizationRatioRaw,
       );
       const borrowRateDiff = optimalBorrowRateRaw.sub(minBorrowRateRaw);
-      return new BorrowApy(
-          assetId,
-          normalizedFactor.mul(borrowRateDiff).add(minBorrowRateRaw),
-      );
+      return Apy.of(normalizedFactor.mul(borrowRateDiff).add(minBorrowRateRaw));
     }
 
     const maxBorrowRate = params.maxBorrowRate;
     if (!maxBorrowRate.isPresent()) {
-      return BorrowApy.na(assetId);
+      return Apy.na();
     }
 
     const maxBorrowRateRaw = maxBorrowRate.getUnchecked();
@@ -251,230 +240,91 @@ export class ReserveInfo {
         .div(new Big(1).sub(optimalUtilizationRatioRaw));
     const borrowRateDiff = maxBorrowRateRaw.sub(optimalBorrowRateRaw);
 
-    return new BorrowApy(
-        assetId,
+    return Apy.of(
         normalizedFactor.mul(borrowRateDiff).add(optimalBorrowRateRaw),
     );
   }
 
-  public async getMarketAuthority(): Promise<[PublicKey, number]> {
-    return await PublicKey.findProgramAddress(
-        [this.getMarketId().key.toBuffer()],
-        PORT_LENDING,
-    );
-  }
-
-  public async depositReserve(
-      {
-        amount,
-        userLiquidityWallet,
-        destinationCollateralWallet,
-        userTransferAuthority,
-      }:{
-      amount: BN;
-      userLiquidityWallet: PublicKey;
-      destinationCollateralWallet: PublicKey;
-      userTransferAuthority: PublicKey;
-      },
-  ): Promise<TransactionInstruction[]> {
-    const [authority] = await this.getMarketAuthority();
-    const ixs: TransactionInstruction[] = [];
-
-    ixs.push(
-        refreshReserveInstruction(
-            this.getReserveId().key,
-            this.getOracleId()?.key ?? null,
-        ),
-        depositReserveLiquidityInstruction(
-            amount,
-            userLiquidityWallet,
-            destinationCollateralWallet,
-            this.getReserveId().key,
-            this.getAssetBalanceId().key,
-            this.getShareId().key,
-            this.getMarketId().key,
-            authority,
-            userTransferAuthority,
-        ),
-    );
-    return ixs;
-  }
-
-  public async depositObligationCollateral(
-      {
-        amount,
-        userCollateralWallet,
-        obligation,
-        obligationOwner,
-        userTransferAuthority,
-      }:{
-      amount: BN;
-      userCollateralWallet: PublicKey;
-      obligation: PublicKey;
-      obligationOwner: PublicKey;
-      userTransferAuthority: PublicKey;
-      },
-  ): Promise<TransactionInstruction[]> {
-    const [authority] = await this.getMarketAuthority();
-    const ixs: TransactionInstruction[] = [];
-
-    ixs.push(
-        refreshReserveInstruction(
-            this.getReserveId().key,
-            this.getOracleId()?.key ?? null,
-        ),
-        depositObligationCollateralInstruction(
-            amount,
-            userCollateralWallet,
-            this.getShareBalanceId().key,
-            this.getReserveId().key,
-            obligation,
-            this.getMarketId().key,
-            authority,
-            obligationOwner,
-            userTransferAuthority,
-        ),
-    );
-    return ixs;
-  }
-
-  public async borrowObligationLiquidity(
-      {
-        amount,
-        userWallet,
-        owner,
-        obligation,
-      }:{
-      amount: BN;
-      userWallet: PublicKey;
-      obligation: PublicKey;
-      owner: PublicKey;
-      userTransferAuthority: PublicKey;
-      },
-  ): Promise<TransactionInstruction[]> {
-    const [authority] = await this.getMarketAuthority();
-    const ixs: TransactionInstruction[] = [];
-
-    ixs.push(
-        borrowObligationLiquidityInstruction(
-            amount,
-            this.getAssetBalanceId().key,
-            userWallet,
-            this.getReserveId().key,
-            this.getFeeBalanceId().key,
-            obligation,
-            this.getMarketId().key,
-            authority,
-            owner,
-        ),
-    );
-    return ixs;
-  }
-
-  public async redeemCollateral(
-      {
-        amount,
-        userCollateralWallet,
-        destinationLiquidityWallet,
-        userTransferAuthority,
-      }:{
-    amount: BN;
-    userCollateralWallet: PublicKey;
-    destinationLiquidityWallet: PublicKey;
-    userTransferAuthority: PublicKey;
-    },
-  ): Promise<TransactionInstruction[]> {
-    const [authority] = await this.getMarketAuthority();
-    const ixs: TransactionInstruction[] = [];
-
-    ixs.push(
-        redeemReserveCollateralInstruction(
-            amount,
-            userCollateralWallet,
-            destinationLiquidityWallet,
-            this.getReserveId().key,
-            this.getShareId().key,
-            this.getAssetBalanceId().key,
-            this.getMarketId().key,
-            authority,
-            userTransferAuthority,
-        ),
-    );
-    return ixs;
+  public getStakingPoolId(): StakingPoolId | undefined {
+    return this.stakingPoolId;
   }
 }
 
 export class ReserveAssetInfo {
-  private readonly assetId: AssetId;
+  private readonly mintId: MintId;
   private readonly oracleId: OracleId | null;
-  private readonly feeBalanceId: BalanceId;
-  private readonly balance: Balance<Asset>;
+  private readonly feeAccountId: TokenAccountId;
+  private readonly supplyAccountId: TokenAccountId;
+  private readonly available: Asset;
   private readonly borrowed: Asset;
   private readonly markPrice: AssetPrice;
-  private readonly quantityContext: AssetQuantityContext;
+  private readonly cumulativeBorrowRate: ExchangeRate;
+  private readonly quantityContext: QuantityContext;
 
   constructor(
-      assetId: AssetId,
+      mintId: MintId,
       oracleId: OracleId | null,
-      feeBalanceId: BalanceId,
-      balance: Balance<Asset>,
+      feeBalanceId: TokenAccountId,
+      supplyAccountId: TokenAccountId,
+      available: Asset,
       borrowed: Asset,
       markPrice: AssetPrice,
-      quantityContext: AssetQuantityContext,
+      cumulativeBorrowRate: ExchangeRate,
+      quantityContext: QuantityContext,
   ) {
-    this.assetId = assetId;
+    this.mintId = mintId;
     this.oracleId = oracleId;
-    this.feeBalanceId = feeBalanceId;
-    this.balance = balance;
+    this.feeAccountId = feeBalanceId;
+    this.supplyAccountId = supplyAccountId;
+    this.available = available;
     this.borrowed = borrowed;
     this.markPrice = markPrice;
+    this.cumulativeBorrowRate = cumulativeBorrowRate;
     this.quantityContext = quantityContext;
   }
 
   public static fromRaw(raw: ReserveLiquidity): ReserveAssetInfo {
-    const assetId = AssetId.fromKey(raw.mintPubkey);
-    const native = assetId.isNative();
+    const mintId = raw.mintPubkey;
     const oracleId =
-      raw.oracleOption === 1 ? AssetId.fromKey(raw.oraclePubkey) : null;
-    const feeBalanceId = new BalanceId(raw.feeReceiver, native);
-    const balanceId = new BalanceId(raw.supplyPubkey, native);
-    const lamport = new Asset(assetId, new Big(raw.availableAmount.toString()));
-    const balance = new Balance(balanceId, lamport);
-    const borrowed = new Asset(
-        assetId,
-        new Wads(raw.borrowedAmountWads).toBig(),
-    );
-    const markPrice = AssetPrice.of(assetId, new Wads(raw.marketPrice).toBig());
-    const quantityContext = AssetQuantityContext.fromDecimals(raw.mintDecimals);
+      raw.oracleOption === 1 ? MintId.of(raw.oraclePubkey) : null;
+    const feeAccountId = raw.feeReceiver;
+    const supplyBalanceId = raw.supplyPubkey;
+    const available = Asset.of(mintId, raw.availableAmount);
+    const borrowed = Asset.of(mintId, raw.borrowedAmountWads);
+    const markPrice = AssetPrice.of(mintId, raw.marketPrice);
+    const cumulativeBorrowRate = raw.cumulativeBorrowRateWads;
+    const quantityContext = QuantityContext.fromDecimals(raw.mintDecimals);
     return new ReserveAssetInfo(
-        assetId,
+        mintId,
         oracleId,
-        feeBalanceId,
-        balance,
+        feeAccountId,
+        supplyBalanceId,
+        available,
         borrowed,
         markPrice,
+        cumulativeBorrowRate,
         quantityContext,
     );
   }
 
-  public getAssetId(): AssetId {
-    return this.assetId;
+  public getMintId(): MintId {
+    return this.mintId;
   }
 
   public getOracleId(): OracleId | null {
     return this.oracleId;
   }
 
-  public getBalanceId(): BalanceId {
-    return this.balance.getBalanceId();
+  public getFeeAccountId(): TokenAccountId {
+    return this.feeAccountId;
   }
 
-  public getFeeBalanceId(): BalanceId {
-    return this.feeBalanceId;
+  public getSplAccountId(): TokenAccountId {
+    return this.supplyAccountId;
   }
 
   public getAvailableAsset(): Asset {
-    return this.balance.getAmount();
+    return this.available;
   }
 
   public getBorrowedAsset(): Asset {
@@ -485,62 +335,65 @@ export class ReserveAssetInfo {
     return this.markPrice;
   }
 
-  public getQuantityContext(): AssetQuantityContext {
+  public getCumulativeBorrowRate(): ExchangeRate {
+    return this.cumulativeBorrowRate;
+  }
+
+  public getQuantityContext(): QuantityContext {
     return this.quantityContext;
   }
 }
 
 export class ReserveTokenInfo {
-  private readonly shareId: ShareId;
-  readonly balance: Balance<Share>;
+  private readonly mintId: MintId;
+  private readonly splAccountId: TokenAccountId;
+  private readonly issuedShare: Share;
 
-  constructor(shareId: ShareId, balance: Balance<Share>) {
-    this.shareId = shareId;
-    this.balance = balance;
+  constructor(mintId: MintId, splAccount: TokenAccountId, issuedShare: Share) {
+    this.mintId = mintId;
+    this.splAccountId = splAccount;
+    this.issuedShare = issuedShare;
   }
 
   public static fromRaw(raw: ReserveCollateral): ReserveTokenInfo {
-    const shareId = new ShareId(raw.mintPubkey);
-    const balanceId = new BalanceId(raw.supplyPubkey, false);
-    const lamport = new Share(shareId, new Big(raw.mintTotalSupply.toString()));
-    const balance = new Balance(balanceId, lamport);
-    return new ReserveTokenInfo(shareId, balance);
+    const mintId = raw.mintPubkey;
+    const splAccountId = raw.supplyPubkey;
+    const issuedShare = Share.of(mintId, raw.mintTotalSupply);
+    return new ReserveTokenInfo(mintId, splAccountId, issuedShare);
   }
 
-  public getShareId(): ShareId {
-    return this.shareId;
+  public getMintId(): MintId {
+    return this.mintId;
   }
 
-  public getShareBalanceId(): BalanceId {
-    return this.getBalance().getBalanceId();
+  public getSplAccountId(): TokenAccountId {
+    return this.splAccountId;
   }
 
   public getIssuedShare(): Share {
-    return this.getBalance().getAmount();
-  }
-
-  public getBalance(): Balance<Share> {
-    return this.balance;
+    return this.issuedShare;
   }
 }
 
 export class ReserveParams {
-  loanToValueRatio: LoanToValueRatio;
+  loanToValueRatio: Percentage;
   optimalUtilizationRatio: ReserveUtilizationRatio;
   optimalBorrowRate: ReserveBorrowRate;
   minBorrowRate: ReserveBorrowRate;
   maxBorrowRate: ReserveBorrowRate;
   liquidationThreshold: Percentage;
   liquidationPenalty: Percentage;
+  borrowFee: Percentage;
 
   constructor(
-      loanToValueRatio: LoanToValueRatio,
+      loanToValueRatio: Percentage,
       optimalUtilizationRatio: ReserveUtilizationRatio,
       optimalBorrowRate: ReserveBorrowRate,
       minBorrowRate: ReserveBorrowRate,
       maxBorrowRate: ReserveBorrowRate,
       liquidationThreshold: Percentage,
       liquidationPenalty: Percentage,
+      borrowFee: Percentage,
   ) {
     this.loanToValueRatio = loanToValueRatio;
     this.optimalUtilizationRatio = optimalUtilizationRatio;
@@ -549,35 +402,24 @@ export class ReserveParams {
     this.maxBorrowRate = maxBorrowRate;
     this.liquidationThreshold = liquidationThreshold;
     this.liquidationPenalty = liquidationPenalty;
+    this.borrowFee = borrowFee;
   }
 
-  static fromRaw(assetId: AssetId, config: ReserveConfig): ReserveParams {
-    const loanToValueRatio = new LoanToValueRatio(
-        assetId,
-        new Big(config.loanToValueRatio).div(100),
-    );
+  static fromRaw(mintId: MintId, config: ReserveConfig): ReserveParams {
+    const loanToValueRatio = config.loanToValueRatio;
     const optimalUtilizationRatio = new ReserveUtilizationRatio(
-        assetId,
-        new Big(config.optimalUtilizationRate).div(100),
+        mintId,
+        config.optimalUtilizationRate,
     );
     const optimalBorrowRate = new ReserveBorrowRate(
-        assetId,
-        new Big(config.optimalBorrowRate).div(100),
+        mintId,
+        config.optimalBorrowRate,
     );
-    const minBorrowRate = new ReserveBorrowRate(
-        assetId,
-        new Big(config.minBorrowRate).div(100),
-    );
-    const maxBorrowRate = new ReserveBorrowRate(
-        assetId,
-        new Big(config.minBorrowRate).div(100),
-    );
-    const liquidationThreshold = new Percentage(
-        new Big(config.liquidationThreshold).div(100),
-    );
-    const liquidationPenalty = new Percentage(
-        new Big(config.liquidationBonus).div(100),
-    );
+    const minBorrowRate = new ReserveBorrowRate(mintId, config.minBorrowRate);
+    const maxBorrowRate = new ReserveBorrowRate(mintId, config.maxBorrowRate);
+    const liquidationThreshold = config.liquidationThreshold;
+    const liquidationPenalty = config.liquidationBonus;
+    const borrowFee = Percentage.fromOneBased(config.fees.borrowFeeWad);
     return new ReserveParams(
         loanToValueRatio,
         optimalUtilizationRatio,
@@ -586,6 +428,8 @@ export class ReserveParams {
         maxBorrowRate,
         liquidationThreshold,
         liquidationPenalty,
+        borrowFee,
     );
   }
 }
+

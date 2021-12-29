@@ -3,16 +3,16 @@ import {
   SYSVAR_CLOCK_PUBKEY,
   TransactionInstruction,
 } from '@solana/web3.js';
-import * as BufferLayout from 'buffer-layout';
+import * as BufferLayout from '@solana/buffer-layout';
 import {PORT_LENDING} from '../../constants';
 import {AccessType, getAccess} from '../../utils/Instructions';
 import {LendingInstruction} from './instruction';
 
-interface Data {
-  instruction: number;
-}
+// interface Data {
+//   instruction: number;
+// }
 
-const DataLayout = BufferLayout.struct<Data>([BufferLayout.u8('instruction')]);
+const DataLayout = BufferLayout.struct([BufferLayout.u8('instruction')]);
 
 // Accrue interest and update market price of liquidity on a reserve.
 //

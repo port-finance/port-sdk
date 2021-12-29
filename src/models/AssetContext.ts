@@ -1,6 +1,6 @@
-import {ReserveId} from '.';
 import {AssetConfig} from './AssetConfig';
-import {AssetId} from './AssetId';
+import {MintId} from './MintId';
+import {ReserveId} from './ReserveId';
 
 export class AssetContext {
   private readonly cache: Map<string, AssetConfig>;
@@ -19,14 +19,14 @@ export class AssetContext {
 
   public static index(configs: AssetConfig[]): AssetContext {
     const cache = new Map<string, AssetConfig>();
-    configs.forEach((config) => cache.set(config.getAssetId().toString(), config));
+    configs.forEach((config) => cache.set(config.getMintId().toString(), config));
     const bySymbol = new Map<string, AssetConfig>();
-    configs.forEach((config) => bySymbol.set(config.getDisplayConfig().getSymbol(), config));
+    configs.forEach((config) => bySymbol.set(config.getSymbol(), config));
     const byReserveId = new Map<string, AssetConfig>();
     for (const config of configs) {
       const reserveId = config.getReserveId();
       if (reserveId) {
-        byReserveId.set(reserveId.toString(), config);
+        byReserveId.set(reserveId.toBase58(), config);
       }
     }
     return new AssetContext(cache, bySymbol, byReserveId);
@@ -36,8 +36,8 @@ export class AssetContext {
     return Array.from(this.cache.values());
   }
 
-  public findConfig(assetId: AssetId): AssetConfig | undefined {
-    const key = assetId.toString();
+  public findConfig(mintId: MintId): AssetConfig | undefined {
+    const key = mintId.toString();
     return this.cache.get(key);
   }
 
@@ -46,6 +46,6 @@ export class AssetContext {
   }
 
   public findConfigByReserveId(reserveId: ReserveId): AssetConfig | undefined {
-    return this.byReserveId.get(reserveId.toString());
+    return this.byReserveId.get(reserveId.toBase58());
   }
 }

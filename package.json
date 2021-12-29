@@ -1,6 +1,6 @@
 {
   "name": "@port.finance/port-sdk",
-  "version": "0.1.69",
+  "version": "0.2.14",
   "license": "MIT",
   "source": "src/index.js",
   "main": "dist/cjs/index.js",
@@ -33,15 +33,15 @@
     "src/"
   ],
   "dependencies": {
+    "@solana/buffer-layout": "^3.0.0",
     "@solana/spl-token": "^0.1.8",
-    "@solana/spl-token-registry": "^0.2.205",
+    "@solana/spl-token-registry": "^0.2.1107",
     "big.js": "^6.1.1",
     "bignumber.js": "^9.0.1",
     "buffer-layout": "1.2.2",
     "prettier": "^2.4.1",
     "tiny-invariant": "^1.2.0",
-    "typescript": "^4.3.5",
-    "user": "^0.0.0"
+    "typescript": "^4.3.5"
   },
   "devDependencies": {
     "@types/big.js": "^6.1.1",

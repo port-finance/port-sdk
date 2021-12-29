@@ -4,8 +4,8 @@ import {
   TransactionInstruction,
 } from '@solana/web3.js';
 
-import * as BufferLayout from 'buffer-layout';
-import * as Layout from '../../utils/layout';
+import * as BufferLayout from '@solana/buffer-layout';
+import * as Layout from '../../serialization/layout';
 import BN from 'bn.js';
 import {TOKEN_PROGRAM_ID} from '@solana/spl-token';
 import {LendingInstruction} from './instruction';

@@ -1,39 +1,43 @@
-import {BigSource} from 'big.js';
-
-import {ShareId} from './ShareId';
-import {ExchangeRatio} from './ExchangeRatio';
+import {MintId} from './MintId';
+import {AssetExchangeRate} from './AssetExchangeRate';
 import {Asset} from './Asset';
-import {Lamport} from './Lamport';
+import {Token, Lamport} from './basic';
+import {TokenAccount} from './TokenAccount';
 
-export class Share extends Lamport<ShareId, Share> {
-  constructor(shareId: ShareId, value: BigSource) {
-    super(shareId, value);
+export class Share extends Token<Share> {
+  private constructor(mintId: MintId, lamport: Lamport) {
+    super(mintId, lamport);
   }
 
-  public static zero(shareId: ShareId): Share {
-    return new Share(shareId, 0);
+  public static zero(mintId: MintId): Share {
+    return Share.of(mintId, Lamport.zero());
   }
 
-  public static max(shareId: ShareId): Share {
-    return new Share(shareId, this.U64_MAX);
+  public static max(mintId: MintId): Share {
+    return Share.of(mintId, Lamport.max());
   }
 
-  public getShareId(): ShareId {
-    return this.mintId;
+  public static fromTokenAccount(account: TokenAccount): Share {
+    return Share.of(account.getMintId(), account.getAmount());
   }
 
-  public toAsset(exchangeRatio: ExchangeRatio): Asset {
-    console.assert(this.mintId.equals(exchangeRatio.getShareId()));
+  public static of(mintId: MintId, lamport: Lamport): Share {
+    return new Share(mintId, lamport);
+  }
+
+  public toAsset(exchangeRatio: AssetExchangeRate): Asset {
+    console.assert(this.getMintId().equals(exchangeRatio.getShareMintId()));
 
     if (!exchangeRatio.isPresent()) {
-      return Asset.zero(exchangeRatio.getAssetId());
+      return Asset.zero(exchangeRatio.getAssetMintId());
     }
 
     const pct = exchangeRatio.getUnchecked();
-    return new Asset(exchangeRatio.getAssetId(), this.raw.div(pct).round(0));
+    const lamport = Lamport.of(this.getRaw().div(pct).round(0));
+    return Asset.of(exchangeRatio.getAssetMintId(), lamport);
   }
 
-  protected withValue(value: BigSource): Share {
-    return new Share(this.mintId, value);
+  protected wrap(value: Lamport): Share {
+    return Share.of(this.getMintId(), value);
   }
 }

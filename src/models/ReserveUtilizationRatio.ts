@@ -1,20 +1,23 @@
-import {AssetId} from './AssetId';
-import {BigSource} from 'big.js';
-import {Ratio} from './Ratio';
+import {MintId} from './MintId';
+import {Ratio, Percentage} from './basic';
 
-export class ReserveUtilizationRatio extends Ratio {
-  private readonly assetId: AssetId;
+export class ReserveUtilizationRatio extends Ratio<ReserveUtilizationRatio> {
+  private readonly mintId: MintId;
 
-  constructor(assetId: AssetId, pct?: BigSource) {
+  constructor(mintId: MintId, pct?: Percentage) {
     super(pct);
-    this.assetId = assetId;
+    this.mintId = mintId;
   }
 
-  public static na(assetId: AssetId): ReserveUtilizationRatio {
-    return new ReserveUtilizationRatio(assetId);
+  public static na(mintId: MintId): ReserveUtilizationRatio {
+    return new ReserveUtilizationRatio(mintId);
   }
 
-  public getAssetId(): AssetId {
-    return this.assetId;
+  public getMintId(): MintId {
+    return this.mintId;
+  }
+
+  protected isCompatibleWith(that: ReserveUtilizationRatio): boolean {
+    return this.mintId.equals(that.mintId);
   }
 }

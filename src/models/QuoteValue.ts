@@ -1,41 +1,62 @@
 import Big, {BigSource} from 'big.js';
-import BN from 'bn.js';
-import {Wads} from './Wads';
 import {Value} from './Value';
 import {ValueRatio} from './ValueRatio';
+import {Percentage, DecimalField} from './basic';
+import {BigType} from '../serialization/BigType';
+import {Field} from '../serialization/Field';
+import {Margin} from './Margin';
 
 export class QuoteValue extends Value<QuoteValue> {
-  private static VALUE_ZERO = new QuoteValue(0);
+  private static readonly QUOTE_VALUE_ZERO = new QuoteValue(0);
 
   private constructor(raw: BigSource) {
     super(raw);
   }
 
-  public static fromWads(wads: BN): QuoteValue {
-    return QuoteValue.of(new Wads(wads).toBig());
-  }
-
   public static of(raw: BigSource): QuoteValue {
-    const big = new Big(raw);
-    if (big.eq(this.BIG_ZERO)) {
-      return this.zero();
+    const result = new QuoteValue(raw);
+    if (result.isZero()) {
+      return QuoteValue.zero();
     }
 
-    return new QuoteValue(big);
+    return result;
   }
 
   public static zero(): QuoteValue {
-    return QuoteValue.VALUE_ZERO;
+    return QuoteValue.QUOTE_VALUE_ZERO;
+  }
+
+  public static field(property: string): Field<QuoteValue> {
+    return new QuoteValueField(property);
+  }
+
+  public toCollateralMargin(loanToValue: Percentage): Margin {
+    return Margin.of(this.getRaw().mul(loanToValue.getRaw()));
+  }
+
+  public toLoanMargin(): Margin {
+    return Margin.of(this.getRaw());
   }
 
   public toRatioAgainst(threshold: QuoteValue): ValueRatio {
     if (threshold.isZero()) {
       return ValueRatio.na();
     }
-    return ValueRatio.of(this.getRaw().div(threshold.raw));
+    const pct = Percentage.fromOneBased(this.getRaw().div(threshold.raw));
+    return ValueRatio.of(pct);
   }
 
-  protected withValue(value: BigSource): QuoteValue {
+  public replaceWithValue(value: BigSource): QuoteValue {
     return new QuoteValue(value);
+  }
+}
+
+class QuoteValueField extends DecimalField<QuoteValue> {
+  public constructor(property: string) {
+    super(BigType.D128, property);
+  }
+
+  protected fromBig(big: Big): QuoteValue {
+    return QuoteValue.of(big);
   }
 }

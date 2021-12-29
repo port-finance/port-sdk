@@ -1,6 +1,8 @@
 import {PublicKey} from '@solana/web3.js';
 
-import {Id} from './Id';
+import {Id} from './basic';
+import {PublicKeyField} from '../serialization/PublicKeyField';
+import {Field} from '../serialization/Field';
 
 export class WalletId extends Id {
   private constructor(key: PublicKey) {
@@ -13,5 +15,19 @@ export class WalletId extends Id {
 
   public static of(key: PublicKey): WalletId {
     return new WalletId(key);
+  }
+
+  public static field(property: string): Field<WalletId> {
+    return new WalletIdField(property);
+  }
+}
+
+class WalletIdField extends PublicKeyField<WalletId> {
+  public constructor(property: string) {
+    super(property);
+  }
+
+  protected fromPublicKey(pubKey: PublicKey): WalletId {
+    return WalletId.of(pubKey);
   }
 }

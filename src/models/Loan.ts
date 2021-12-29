@@ -1,51 +1,44 @@
 import {ReserveId} from './ReserveId';
-import {Asset} from './Asset';
-import {AssetId} from './AssetId';
-import {Wads} from './Wads';
-import {QuoteValue} from './QuoteValue';
-import {PortBalanceLoanData} from '../structs/PortBalanceData';
+import {Lamport} from './basic';
+import {ProfileEntry} from './ProfileEntry';
+import {ExchangeRate} from './ExchangeRate';
+import {ReserveInfo} from './ReserveInfo';
 
-export class Loan {
-  private readonly reserveId: ReserveId;
-  private readonly asset: Asset;
-  private readonly recordedValue: QuoteValue;
+export class Loan extends ProfileEntry<Loan> {
+  private readonly cumulativeBorrowRate: ExchangeRate;
 
-  private constructor(
+  public constructor(
       reserveId: ReserveId,
-      lamport: Asset,
-      recordedValue: QuoteValue,
+      amount: Lamport,
+      cumulativeBorrowRate: ExchangeRate,
   ) {
-    this.reserveId = reserveId;
-    this.asset = lamport;
-    this.recordedValue = recordedValue;
+    super(reserveId, amount);
+    this.cumulativeBorrowRate = cumulativeBorrowRate;
   }
 
-  public static fromRaw(raw: PortBalanceLoanData, assetId: AssetId): Loan {
-    const lamport = new Asset(
-        assetId,
-        new Wads(raw.borrowedAmountWads).toBig(),
+  public static zero(reserve: ReserveInfo): Loan {
+    return new Loan(
+        reserve.getReserveId(),
+        Lamport.zero(),
+        reserve.asset.getCumulativeBorrowRate(),
     );
-    const recordedValue = QuoteValue.fromWads(raw.marketValue);
-    return new Loan(new ReserveId(raw.borrowReserve), lamport, recordedValue);
   }
 
-  public getReserveId(): ReserveId {
-    return this.reserveId;
+  public accrueInterest(newCumulativeBorrowRate: ExchangeRate): Loan {
+    const compoundedInterestRate = newCumulativeBorrowRate.divide(
+        this.cumulativeBorrowRate.getRaw(),
+    );
+    const newAmount = this.getAmount().multiply(
+        compoundedInterestRate.getRaw(),
+    );
+    return new Loan(this.getReserveId(), newAmount, newCumulativeBorrowRate);
   }
 
-  public getAssetId(): AssetId {
-    return this.getAsset().getAssetId();
+  public getCumulativeBorrowRate(): ExchangeRate {
+    return this.cumulativeBorrowRate;
   }
 
-  public isPositive(): boolean {
-    return this.getAsset().isPositive();
-  }
-
-  public getAsset(): Asset {
-    return this.asset;
-  }
-
-  public getRecordedValue(): QuoteValue {
-    return this.recordedValue;
+  protected wrap(value: Lamport): Loan {
+    return new Loan(this.getReserveId(), value, this.cumulativeBorrowRate);
   }
 }

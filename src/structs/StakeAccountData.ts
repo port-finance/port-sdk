@@ -1,15 +1,17 @@
-import {PublicKey} from '@solana/web3.js';
-import BN from 'bn.js';
-import * as BufferLayout from 'buffer-layout';
-import * as Layout from '../utils/layout';
+import * as BufferLayout from '@solana/buffer-layout';
+import {Lamport} from '../models/basic';
+import {ExchangeRate} from '../models/ExchangeRate';
+import {StakingPoolId} from '../models/staking';
+import {WalletId} from '../models/WalletId';
+import {BigType} from '../serialization/BigType';
 
 export const StakeAccountLayout = BufferLayout.struct([
   BufferLayout.u8('version'),
-  Layout.uint128('startRate'),
-  Layout.publicKey('owner'),
-  Layout.publicKey('poolPubkey'),
-  Layout.uint64('depositedAmount'),
-  Layout.uint128('unclaimedRewardWads'),
+  ExchangeRate.field(BigType.D128, 'startRate'),
+  WalletId.field('owner'),
+  StakingPoolId.field('poolPubkey'),
+  Lamport.field(BigType.U64, 'depositedAmount'),
+  Lamport.field(BigType.D128, 'unclaimedRewardWads'),
   BufferLayout.blob(32, 'reserveField1'),
   BufferLayout.blob(32, 'reserveField2'),
   BufferLayout.blob(32, 'reserveField3'),
@@ -18,11 +20,11 @@ export const StakeAccountLayout = BufferLayout.struct([
 
 export interface StakeAccountProto {
   version: number;
-  startRate: BN;
-  owner: PublicKey;
-  poolPubkey: PublicKey;
-  depositedAmount: BN;
-  unclaimedRewardWads: BN;
+  startRate: ExchangeRate;
+  owner: WalletId;
+  poolPubkey: StakingPoolId;
+  depositedAmount: Lamport;
+  unclaimedRewardWads: Lamport;
 }
 
 export const STAKE_ACCOUNT_DATA_SIZE = StakeAccountLayout.span;
