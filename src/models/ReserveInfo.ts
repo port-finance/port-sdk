@@ -16,10 +16,26 @@ import {AssetPrice} from './AssetPrice';
 import {QuantityContext} from './QuantityContext';
 import {AssetValue} from './AssetValue';
 import {Parsed} from '../serialization/Parsed';
-import {ReserveCollateral, ReserveConfig, ReserveData, ReserveLayout, ReserveLiquidity} from '../structs';
+import {PublicKey, TransactionInstruction} from '@solana/web3.js';
+import {
+  borrowObligationLiquidityInstruction,
+  depositObligationCollateralInstruction,
+  depositReserveLiquidityInstruction,
+  redeemReserveCollateralInstruction,
+  refreshReserveInstruction,
+} from '../instructions';
+import {
+  ReserveCollateral,
+  ReserveConfig,
+  ReserveData,
+  ReserveLayout,
+  ReserveLiquidity,
+} from '../structs';
 import {RawData} from '../serialization/RawData';
 import {StakingPoolId} from './staking/StakingPoolId';
 import {ExchangeRate} from './ExchangeRate';
+import {PORT_LENDING} from '../constants';
+import BN from 'bn.js';
 
 export class ReserveInfo implements Parsed<ReserveId> {
   private readonly reserveId: ReserveId;
@@ -248,6 +264,144 @@ export class ReserveInfo implements Parsed<ReserveId> {
   public getStakingPoolId(): StakingPoolId | undefined {
     return this.stakingPoolId;
   }
+
+  // add reserve instructions ,use in Sundial
+  public async getMarketAuthority(): Promise<[PublicKey, number]> {
+    return await PublicKey.findProgramAddress(
+        [this.getMarketId().toBuffer()],
+        PORT_LENDING,
+    );
+  }
+  public async depositReserve({
+    amount,
+    userLiquidityWallet,
+    destinationCollateralWallet,
+    userTransferAuthority,
+  }: {
+    amount: BN;
+    userLiquidityWallet: PublicKey;
+    destinationCollateralWallet: PublicKey;
+    userTransferAuthority: PublicKey;
+  }): Promise<TransactionInstruction[]> {
+    const [authority] = await this.getMarketAuthority();
+    const ixs: TransactionInstruction[] = [];
+
+    ixs.push(
+        refreshReserveInstruction(
+            this.getReserveId(),
+            this.getOracleId() ?? null,
+        ),
+        depositReserveLiquidityInstruction(
+            amount,
+            userLiquidityWallet,
+            destinationCollateralWallet,
+            this.getReserveId(),
+            this.getAssetBalanceId(),
+            this.getShareMintId(),
+            this.getMarketId(),
+            authority,
+            userTransferAuthority,
+        ),
+    );
+    return ixs;
+  }
+
+  public async depositObligationCollateral({
+    amount,
+    userCollateralWallet,
+    obligation,
+    obligationOwner,
+    userTransferAuthority,
+  }: {
+    amount: BN;
+    userCollateralWallet: PublicKey;
+    obligation: PublicKey;
+    obligationOwner: PublicKey;
+    userTransferAuthority: PublicKey;
+  }): Promise<TransactionInstruction[]> {
+    const [authority] = await this.getMarketAuthority();
+    const ixs: TransactionInstruction[] = [];
+
+    ixs.push(
+        refreshReserveInstruction(
+            this.getReserveId(),
+            this.getOracleId() ?? null,
+        ),
+        depositObligationCollateralInstruction(
+            amount,
+            userCollateralWallet,
+            this.getShareBalanceId(),
+            this.getReserveId(),
+            obligation,
+            this.getMarketId(),
+            authority,
+            obligationOwner,
+            userTransferAuthority,
+        ),
+    );
+    return ixs;
+  }
+
+  public async borrowObligationLiquidity({
+    amount,
+    userWallet,
+    owner,
+    obligation,
+  }: {
+    amount: BN;
+    userWallet: PublicKey;
+    obligation: PublicKey;
+    owner: PublicKey;
+    userTransferAuthority: PublicKey;
+  }): Promise<TransactionInstruction[]> {
+    const [authority] = await this.getMarketAuthority();
+    const ixs: TransactionInstruction[] = [];
+
+    ixs.push(
+        borrowObligationLiquidityInstruction(
+            amount,
+            this.getAssetBalanceId(),
+            userWallet,
+            this.getReserveId(),
+            this.getFeeBalanceId(),
+            obligation,
+            this.getMarketId(),
+            authority,
+            owner,
+        ),
+    );
+    return ixs;
+  }
+
+  public async redeemCollateral({
+    amount,
+    userCollateralWallet,
+    destinationLiquidityWallet,
+    userTransferAuthority,
+  }: {
+    amount: BN;
+    userCollateralWallet: PublicKey;
+    destinationLiquidityWallet: PublicKey;
+    userTransferAuthority: PublicKey;
+  }): Promise<TransactionInstruction[]> {
+    const [authority] = await this.getMarketAuthority();
+    const ixs: TransactionInstruction[] = [];
+
+    ixs.push(
+        redeemReserveCollateralInstruction(
+            amount,
+            userCollateralWallet,
+            destinationLiquidityWallet,
+            this.getReserveId(),
+            this.getShareMintId(),
+            this.getAssetBalanceId(),
+            this.getMarketId(),
+            authority,
+            userTransferAuthority,
+        ),
+    );
+    return ixs;
+  }
 }
 
 export class ReserveAssetInfo {
@@ -432,4 +586,3 @@ export class ReserveParams {
     );
   }
 }
-
