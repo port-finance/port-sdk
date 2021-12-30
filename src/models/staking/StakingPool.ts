@@ -11,6 +11,7 @@ import {Share} from '../Share';
 import {AssetPrice} from '../AssetPrice';
 import {PORT_QUANTITY_CONTEXT} from '../../constants';
 import {StakingPoolLayout, StakingPoolProto} from '../../structs';
+import {AuthorityId} from '../AuthorityId';
 
 const SLOT_PER_SECOND = 2;
 const SLOT_PER_YEAR = SLOT_PER_SECOND * 3600 * 24 * 365;
@@ -26,6 +27,10 @@ export class StakingPool implements Parsed<StakingPoolId> {
   private readonly cumulativeRate: ExchangeRate;
   private readonly poolSize: Lamport;
 
+  // use in api-server
+  private readonly ownerAuthority: AuthorityId;
+  private readonly adminAuthority: AuthorityId;
+
   private constructor(
       stakingPoolId: StakingPoolId,
       rewardTokenPool: TokenAccountId,
@@ -36,6 +41,8 @@ export class StakingPool implements Parsed<StakingPoolId> {
       ratePerSlot: ExchangeRate,
       cumulativeRate: ExchangeRate,
       poolSize: Lamport,
+      ownerAuthority: AuthorityId,
+      adminAuthority: AuthorityId,
   ) {
     this.stakingPoolId = stakingPoolId;
     this.rewardTokenPool = rewardTokenPool;
@@ -46,6 +53,8 @@ export class StakingPool implements Parsed<StakingPoolId> {
     this.ratePerSlot = ratePerSlot;
     this.cumulativeRate = cumulativeRate;
     this.poolSize = poolSize;
+    this.ownerAuthority = ownerAuthority;
+    this.adminAuthority = adminAuthority;
   }
 
   public static fromRaw(raw: RawData): StakingPool {
@@ -62,7 +71,17 @@ export class StakingPool implements Parsed<StakingPoolId> {
         info.ratePerSlot,
         info.cumulativeRate,
         info.poolSize,
+        info.ownerAuthority,
+        info.adminAuthority,
     );
+  }
+
+  public getOwnerAuthorityId(): AuthorityId {
+    return this.ownerAuthority;
+  }
+
+  public getAdminAuthorityId(): AuthorityId {
+    return this.adminAuthority;
   }
 
   public getId(): StakingPoolId {

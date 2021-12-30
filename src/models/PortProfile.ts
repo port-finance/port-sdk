@@ -16,6 +16,8 @@ import {
   PortProfileLoanData,
   ProtoObligation,
 } from '../structs';
+import {PublicKey} from '@solana/web3.js';
+import {QuoteValue} from './QuoteValue';
 
 export class PortProfile implements Parsed<PortProfileId> {
   private readonly profileId: PortProfileId;
@@ -25,6 +27,10 @@ export class PortProfile implements Parsed<PortProfileId> {
   private readonly initialMargin: Margin;
   private readonly maintenanceMargin: Margin;
 
+  // use in api-server
+  private readonly owner: PublicKey | undefined;
+  private readonly depositedValue: QuoteValue | undefined;
+
   private constructor(
       profileId: PortProfileId,
       collaterals: Collateral[],
@@ -32,6 +38,8 @@ export class PortProfile implements Parsed<PortProfileId> {
       loanMargin: Margin,
       initialMargin: Margin,
       maintenanceMargin: Margin,
+      owner?:PublicKey,
+      depositedValue?:QuoteValue,
   ) {
     this.profileId = profileId;
     this.collaterals = collaterals;
@@ -39,6 +47,8 @@ export class PortProfile implements Parsed<PortProfileId> {
     this.loanMargin = loanMargin;
     this.initialMargin = initialMargin;
     this.maintenanceMargin = maintenanceMargin;
+    this.owner = owner;
+    this.depositedValue = depositedValue;
   }
 
   public static newAccount(profileId: PortProfileId): PortProfile {
@@ -71,6 +81,8 @@ export class PortProfile implements Parsed<PortProfileId> {
     const loanMargin = proto.borrowedValue;
     const initialMargin = proto.allowedBorrowValue;
     const maintenanceMargin = proto.unhealthyBorrowValue;
+    const depositedValue = proto.depositedValue;
+    const owner = proto.owner;
     return new PortProfile(
         profileId,
         collaterals,
@@ -78,7 +90,17 @@ export class PortProfile implements Parsed<PortProfileId> {
         loanMargin,
         initialMargin,
         maintenanceMargin,
+        owner,
+        depositedValue,
     );
+  }
+
+  public getDepositedValue(): QuoteValue | undefined {
+    return this.depositedValue;
+  }
+
+  public getOwner(): PublicKey | undefined {
+    return this.owner;
   }
 
   public getId(): PortProfileId {
