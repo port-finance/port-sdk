@@ -273,6 +273,9 @@ export const MAINNET_PORT: AssetConfig = new AssetConfig(
         '#796CFC',
     ),
     AssetPriceConfig.fromDecimals(4),
+    new AssetDepositConfig(
+        ReserveId.fromBase58('4GXmyhMB9uUGjv4pfGfTRY1zJxoUY1CFXYvuFp7Maj1L'),
+    ),
 );
 
 export const MAINNET_PSOL: AssetConfig = new AssetConfig(
