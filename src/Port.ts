@@ -4,6 +4,7 @@ import {
   ReserveLayout,
   STAKING_POOL_DATA_SIZE,
   PORT_PROFILE_DATA_SIZE,
+  ObligationLayout,
 } from './structs';
 import {ReserveInfo,
   ReserveContext,
@@ -84,7 +85,8 @@ export class Port {
         {filters: [
           {
             memcmp: {
-              offset: 1 + 8 + 1 + 32,
+              // offset: 1 + 8 + 1 + 32,
+              offset: ObligationLayout.offsetOf('owner')!,
               bytes: walletId.toBase58(),
             },
           },
