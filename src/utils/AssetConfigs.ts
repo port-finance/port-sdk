@@ -365,6 +365,20 @@ export const MAINNET_WHETH: AssetConfig = new AssetConfig(
     ),
 );
 
+export const MAINNET_FIDA: AssetConfig = new AssetConfig(
+    MintId.fromBase58('EchesyfXePKdLtoiZSL8pBe8Myagyy8ZRqsACNCFGnvp'),
+    new AssetDisplayConfig(
+        'Wormhole Ethereum',
+        'whETH',
+        // require('../assets/markets/ETH.png').default,
+        '#34C5A7',
+    ),
+    AssetPriceConfig.fromDecimals(5),
+    new AssetDepositConfig(
+        ReserveId.fromBase58('Bten75q82AMWmrRp77DgsphtSbUjHYhL7Mx5bx6SR4iA'),
+    ),
+);
+
 export const MAINNET_PPUSDC: AssetConfig = new AssetConfig(
     MintId.fromBase58('6cKnRJskSTonD6kZiWt2Fy3NB6ZND6CbgA3vHiZ1kHEU'),
     new AssetDisplayConfig(
