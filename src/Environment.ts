@@ -11,7 +11,7 @@ export class Environment {
   private readonly tokenProgramPk: PublicKey;
   private readonly assetContext: AssetContext;
 
-  private constructor(
+  constructor(
       env: ENV,
       lendingProgramPk: PublicKey,
       stakingProgramPk: PublicKey | undefined,

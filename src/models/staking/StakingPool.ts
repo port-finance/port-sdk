@@ -19,12 +19,15 @@ const SLOT_PER_YEAR = SLOT_PER_SECOND * 3600 * 24 * 365;
 export class StakingPool implements Parsed<StakingPoolId> {
   private readonly stakingPoolId: StakingPoolId;
   private readonly rewardTokenPool: TokenAccountId;
+  private readonly subRewardTokenPool?: TokenAccountId;
   private readonly lastUpdate: Slot;
   private readonly endTime: Slot;
   private readonly earliestRewardClaimTime: Slot;
   private readonly duration: Slot;
   private readonly ratePerSlot: ExchangeRate;
+  private readonly subRatePerSlot?: ExchangeRate;
   private readonly cumulativeRate: ExchangeRate;
+  private readonly subCumulativeRate?: ExchangeRate;
   private readonly poolSize: Lamport;
 
   // use in api-server
@@ -43,6 +46,9 @@ export class StakingPool implements Parsed<StakingPoolId> {
       poolSize: Lamport,
       ownerAuthority: AuthorityId,
       adminAuthority: AuthorityId,
+      subRewardTokenPool?: TokenAccountId,
+      subRatePerSlot?: ExchangeRate,
+      subCumulativeRate?: ExchangeRate,
   ) {
     this.stakingPoolId = stakingPoolId;
     this.rewardTokenPool = rewardTokenPool;
@@ -55,6 +61,9 @@ export class StakingPool implements Parsed<StakingPoolId> {
     this.poolSize = poolSize;
     this.ownerAuthority = ownerAuthority;
     this.adminAuthority = adminAuthority;
+    this.subRewardTokenPool = subRewardTokenPool;
+    this.subRatePerSlot = subRatePerSlot;
+    this.subCumulativeRate = subCumulativeRate;
   }
 
   public static fromRaw(raw: RawData): StakingPool {
@@ -73,6 +82,9 @@ export class StakingPool implements Parsed<StakingPoolId> {
         info.poolSize,
         info.ownerAuthority,
         info.adminAuthority,
+        info.subRewardTokenPoolOption === 1 ? info.subRewardTokenPool : undefined,
+        info.subCumulativeRateOption === 1 ? info.subCumulativeRate : undefined,
+        info.subRatePerSlotOption === 1 ? info.subRatePerSlot : undefined,
     );
   }
 
@@ -96,6 +108,10 @@ export class StakingPool implements Parsed<StakingPoolId> {
     return this.rewardTokenPool;
   }
 
+  public getSubRewardTokenPool(): TokenAccountId | undefined {
+    return this.subRewardTokenPool;
+  }
+
   public getLastUpdate(): Slot {
     return this.lastUpdate;
   }
@@ -116,7 +132,15 @@ export class StakingPool implements Parsed<StakingPoolId> {
     return this.ratePerSlot;
   }
 
+  public getSubRatePerSlot(): ExchangeRate | undefined {
+    return this.subRatePerSlot;
+  }
+
   public getCumulativeRate(): ExchangeRate {
+    return this.cumulativeRate;
+  }
+
+  public getSubCumulativeRate(): ExchangeRate | undefined {
     return this.cumulativeRate;
   }
 
@@ -147,6 +171,24 @@ export class StakingPool implements Parsed<StakingPoolId> {
   }
 
   public getRewardApy(reserve: ReserveInfo, price: AssetPrice): Apy {
+    return this.getRewardApyInner(reserve, price, this.getRatePerSlot());
+  }
+
+  public getSubRewardApy(
+      reserve: ReserveInfo,
+      price: AssetPrice,
+  ): Apy | undefined {
+    const subRatePerSlot = this.getSubRatePerSlot();
+    return subRatePerSlot !== undefined ?
+      this.getRewardApyInner(reserve, price, subRatePerSlot) :
+      undefined;
+  }
+
+  private getRewardApyInner(
+      reserve: ReserveInfo,
+      price: AssetPrice,
+      ratePerSlot: ExchangeRate,
+  ): Apy {
     const poolSize = this.getPoolSize();
     if (!poolSize.isPositive()) {
       return Apy.na();
@@ -159,7 +201,7 @@ export class StakingPool implements Parsed<StakingPoolId> {
         reserve.getQuantityContext(),
     );
 
-    const raw = this.getRatePerSlot()
+    const raw = ratePerSlot
         .getRaw()
         .mul(SLOT_PER_YEAR)
         .mul(price.getRaw())
@@ -168,5 +210,3 @@ export class StakingPool implements Parsed<StakingPoolId> {
     return Apy.of(raw);
   }
 }
-
-

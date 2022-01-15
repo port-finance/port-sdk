@@ -19,10 +19,14 @@ export const StakingPoolLayout = BufferLayout.struct([
   ExchangeRate.field(BigType.D128, 'cumulativeRate'),
   Lamport.field(BigType.U64, 'poolSize'),
   BufferLayout.u8('bumpSeedStakingProgram'),
-  BufferLayout.blob(32, 'reserveField1'),
-  BufferLayout.blob(32, 'reserveField2'),
+  BufferLayout.u8('subRewardTokenPoolOption'),
+  TokenAccountId.field('subRewardTokenPool'),
+  BufferLayout.u8('subRatePerSlotOption'),
+  ExchangeRate.field(BigType.D128, 'subRatePerSlot'),
+  BufferLayout.u8('subCumulativeRateOption'),
+  ExchangeRate.field(BigType.D128, 'subCumulativeRate'),
   BufferLayout.blob(32, 'reserveField3'),
-  BufferLayout.blob(32, 'reserveField4'),
+  BufferLayout.blob(39, 'reserveField4'),
 ]);
 
 export interface StakingPoolProto {
@@ -38,6 +42,12 @@ export interface StakingPoolProto {
   cumulativeRate: ExchangeRate;
   poolSize: Lamport;
   bumpSeedStakingProgram: number;
+  subRewardTokenPoolOption: number;
+  subRewardTokenPool: TokenAccountId;
+  subRatePerSlotOption: number;
+  subRatePerSlot: ExchangeRate;
+  subCumulativeRateOption: number;
+  subCumulativeRate: ExchangeRate;
 }
 
 export const STAKING_POOL_DATA_SIZE = StakingPoolLayout.span;
