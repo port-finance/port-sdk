@@ -5,3 +5,4 @@ export * from './models';
 export * from './parsers';
 export * from './structs';
 export * from './constants';
+export * from './serialization';
