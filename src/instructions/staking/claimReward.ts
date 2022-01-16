@@ -22,6 +22,8 @@ export function claimRewardInstruction(
     stakingPoolPubkey: PublicKey, // 2
     rewardTokenPoolPubkey: PublicKey, // 3,
     rewardDestPubkey: PublicKey, // 4
+    destSubAccountId?: PublicKey,
+    subRewardTokenPool?: PublicKey,
 ): TransactionInstruction {
   const dataLayout = BufferLayout.struct([BufferLayout.u8('instruction')]);
   const data = Buffer.alloc(dataLayout.span);
@@ -39,6 +41,13 @@ export function claimRewardInstruction(
     getAccess(SYSVAR_CLOCK_PUBKEY, AccessType.READ),
     getAccess(TOKEN_PROGRAM_ID, AccessType.READ),
   ];
+
+  if (destSubAccountId && subRewardTokenPool) {
+    keys.push(
+        getAccess(subRewardTokenPool, AccessType.WRITE),
+        getAccess(destSubAccountId, AccessType.WRITE),
+    );
+  }
 
   return new TransactionInstruction({
     keys,
