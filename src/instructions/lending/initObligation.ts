@@ -25,6 +25,7 @@ export function initObligationInstruction(
     obligationPubkey: PublicKey, // 0
     lendingMarketPubkey: PublicKey, // 1
     obligationOwnerPubkey: PublicKey, // 2
+    lendingProgramId: PublicKey = PORT_LENDING,
 ): TransactionInstruction {
   const dataLayout = BufferLayout.struct([BufferLayout.u8('instruction')]);
   const data = Buffer.alloc(dataLayout.span);
@@ -44,7 +45,7 @@ export function initObligationInstruction(
 
   return new TransactionInstruction({
     keys,
-    programId: PORT_LENDING,
+    programId: lendingProgramId,
     data,
   });
 }

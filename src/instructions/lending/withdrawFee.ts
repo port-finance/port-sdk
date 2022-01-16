@@ -27,6 +27,7 @@ export const withdrawFeeInstruction = (
     lendingMarketOwnerPubkey: PublicKey, // 3
     reserveFeePubkey: PublicKey, // 4
     dstFeePubkey: PublicKey, // 5
+    lendingProgramId: PublicKey = PORT_LENDING,
 ): TransactionInstruction => {
   const dataLayout = BufferLayout.struct([
     BufferLayout.u8('instruction'),
@@ -51,7 +52,7 @@ export const withdrawFeeInstruction = (
 
   return new TransactionInstruction({
     keys,
-    programId: PORT_LENDING,
+    programId: lendingProgramId,
     data,
   });
 };

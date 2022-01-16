@@ -28,6 +28,7 @@ export const refreshObligationInstruction = (
     obligation: PublicKey,
     depositReserves: PublicKey[],
     borrowReserves: PublicKey[],
+    lendingProgramId: PublicKey = PORT_LENDING,
 ): TransactionInstruction => {
   const data = Buffer.alloc(DataLayout.span);
   DataLayout.encode(
@@ -50,7 +51,7 @@ export const refreshObligationInstruction = (
 
   return new TransactionInstruction({
     keys,
-    programId: PORT_LENDING,
+    programId: lendingProgramId,
     data,
   });
 };

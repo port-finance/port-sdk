@@ -22,6 +22,7 @@ export function claimRewardInstruction(
     stakingPoolPubkey: PublicKey, // 2
     rewardTokenPoolPubkey: PublicKey, // 3,
     rewardDestPubkey: PublicKey, // 4
+    stakingProgramId: PublicKey = PORT_STAKING,
     destSubAccountId?: PublicKey,
     subRewardTokenPool?: PublicKey,
 ): TransactionInstruction {
@@ -51,7 +52,7 @@ export function claimRewardInstruction(
 
   return new TransactionInstruction({
     keys,
-    programId: PORT_STAKING,
+    programId: stakingProgramId,
     data,
   });
 }

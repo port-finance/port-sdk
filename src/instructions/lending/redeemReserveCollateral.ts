@@ -36,6 +36,7 @@ export const redeemReserveCollateralInstruction = (
     lendingMarket: PublicKey,
     lendingMarketAuthority: PublicKey,
     transferAuthority: PublicKey,
+    lendingProgramId: PublicKey = PORT_LENDING,
 ): TransactionInstruction => {
   const dataLayout = BufferLayout.struct([
     BufferLayout.u8('instruction'),
@@ -66,7 +67,7 @@ export const redeemReserveCollateralInstruction = (
 
   return new TransactionInstruction({
     keys,
-    programId: PORT_LENDING,
+    programId: lendingProgramId,
     data,
   });
 };

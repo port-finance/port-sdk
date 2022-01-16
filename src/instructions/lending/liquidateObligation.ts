@@ -43,8 +43,10 @@ export const liquidateObligationInstruction = (
     lendingMarket: PublicKey,
     lendingMarketAuthority: PublicKey,
     transferAuthority: PublicKey,
-    stakingPool: PublicKey | undefined,
-    stakeAccount: PublicKey | undefined,
+    lendingProgramId: PublicKey = PORT_LENDING,
+    stakingPool?: PublicKey,
+    stakeAccount?: PublicKey,
+    stakingProgramId: PublicKey = PORT_STAKING,
 ): TransactionInstruction => {
   const dataLayout = BufferLayout.struct([
     BufferLayout.u8('instruction'),
@@ -82,13 +84,13 @@ export const liquidateObligationInstruction = (
     keys = keys.concat([
       {pubkey: stakeAccount, isSigner: false, isWritable: true},
       {pubkey: stakingPool, isSigner: false, isWritable: true},
-      {pubkey: PORT_STAKING, isSigner: false, isWritable: false},
+      {pubkey: stakingProgramId, isSigner: false, isWritable: false},
     ]);
   }
 
   return new TransactionInstruction({
     keys,
-    programId: PORT_LENDING,
+    programId: lendingProgramId,
     data,
   });
 };

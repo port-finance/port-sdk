@@ -25,6 +25,7 @@ const DataLayout = BufferLayout.struct([BufferLayout.u8('instruction')]);
 export const refreshReserveInstruction = (
     reserve: PublicKey,
     oracle: PublicKey | null,
+    lendingProgramId: PublicKey = PORT_LENDING,
 ): TransactionInstruction => {
   const data = Buffer.alloc(DataLayout.span);
   DataLayout.encode({instruction: LendingInstruction.RefreshReserve}, data);
@@ -42,7 +43,7 @@ export const refreshReserveInstruction = (
 
   return new TransactionInstruction({
     keys,
-    programId: PORT_LENDING,
+    programId: lendingProgramId,
     data,
   });
 };

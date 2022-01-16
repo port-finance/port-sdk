@@ -26,6 +26,7 @@ export const updateReserveInstruction = (
     lendingMarketPubkey: PublicKey, // 1
     lendingMarketAuthorityPubkey: PublicKey, // 2
     lendingMarketOwnerPubkey: PublicKey, // 3
+    lendingProgramId: PublicKey = PORT_LENDING,
 ): TransactionInstruction => {
   const dataLayout = BufferLayout.struct([
     BufferLayout.u8('instruction'),
@@ -51,7 +52,7 @@ export const updateReserveInstruction = (
 
   return new TransactionInstruction({
     keys,
-    programId: PORT_LENDING,
+    programId: lendingProgramId,
     data,
   });
 };

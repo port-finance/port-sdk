@@ -15,6 +15,7 @@ export function createStakeAccountInstruction(
     stakeAccountPubkey: PublicKey, // 0
     stakingPoolPubkey: PublicKey, // 1
     stakeAccountOwnerPubkey: PublicKey, // 2
+    stakingProgramId: PublicKey = PORT_STAKING,
 ): TransactionInstruction {
   const dataLayout = BufferLayout.struct([BufferLayout.u8('instruction')]);
   const data = Buffer.alloc(dataLayout.span);
@@ -32,7 +33,7 @@ export function createStakeAccountInstruction(
 
   return new TransactionInstruction({
     keys,
-    programId: PORT_STAKING,
+    programId: stakingProgramId,
     data,
   });
 }
