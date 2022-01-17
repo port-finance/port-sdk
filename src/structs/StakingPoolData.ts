@@ -26,7 +26,7 @@ export const StakingPoolLayout = BufferLayout.struct([
   BufferLayout.u8('subCumulativeRateOption'),
   ExchangeRate.field(BigType.D128, 'subCumulativeRate'),
   BufferLayout.blob(32, 'reserveField3'),
-  BufferLayout.blob(39, 'reserveField4'),
+  BufferLayout.blob(29, 'reserveField4'),
 ]);
 
 export interface StakingPoolProto {
