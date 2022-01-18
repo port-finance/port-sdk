@@ -368,8 +368,8 @@ export const MAINNET_WHETH: AssetConfig = new AssetConfig(
 export const MAINNET_FIDA: AssetConfig = new AssetConfig(
     MintId.fromBase58('EchesyfXePKdLtoiZSL8pBe8Myagyy8ZRqsACNCFGnvp'),
     new AssetDisplayConfig(
-        'Wormhole Ethereum',
-        'whETH',
+        'Bonfida',
+        'FIDA',
         // require('../assets/markets/ETH.png').default,
         '#34C5A7',
     ),
