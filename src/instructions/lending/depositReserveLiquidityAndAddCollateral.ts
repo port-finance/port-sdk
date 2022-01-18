@@ -46,8 +46,10 @@ export const depositReserveLiquidityAndAddCollateralInstruction = (
     obligationPubkey: PublicKey, // 8
     obligationOwnerPubkey: PublicKey, // 9
     transferAuthorityPubkey: PublicKey, // 10
-    optStakeAccountPubkey: PublicKey, // 13
-    optStakingPoolPubkey: PublicKey, // 14
+    lendingProgramId: PublicKey = PORT_LENDING,
+    optStakeAccountPubkey?: PublicKey, // 13
+    optStakingPoolPubkey?: PublicKey, // 14
+    stakingProgramId: PublicKey = PORT_STAKING,
 ): TransactionInstruction => {
   const dataLayout = BufferLayout.struct([
     BufferLayout.u8('instruction'),
@@ -83,13 +85,13 @@ export const depositReserveLiquidityAndAddCollateralInstruction = (
     keys.push(
         getAccess(optStakeAccountPubkey, AccessType.WRITE),
         getAccess(optStakingPoolPubkey, AccessType.WRITE),
-        getAccess(PORT_STAKING, AccessType.READ),
+        getAccess(stakingProgramId, AccessType.READ),
     );
   }
 
   return new TransactionInstruction({
     keys,
-    programId: PORT_LENDING,
+    programId: lendingProgramId,
     data,
   });
 };

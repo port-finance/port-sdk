@@ -35,6 +35,7 @@ export const depositObligationCollateralInstruction = (
     marketAuthorityPubkey: PublicKey, // 5
     obligationOwnerPubkey: PublicKey, // 6
     transferAuthorityPubkey: PublicKey, // 7
+    lendingProgramId: PublicKey = PORT_LENDING,
     stakeAccountPubkey?: PublicKey, // 8
     stakingPoolPubkey?: PublicKey, // 9
 ): TransactionInstruction => {
@@ -71,7 +72,7 @@ export const depositObligationCollateralInstruction = (
 
   return new TransactionInstruction({
     keys,
-    programId: PORT_LENDING,
+    programId: lendingProgramId,
     data,
   });
 };

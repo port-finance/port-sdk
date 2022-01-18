@@ -55,6 +55,7 @@ export const initStakingPoolInstruction = (
     derivedStakingProgram: PublicKey,
     poolOwnerAuthority: PublicKey,
     adminAuthority: PublicKey,
+    stakingProgramId: PublicKey = PORT_STAKING,
 ): TransactionInstruction => {
   const data = Buffer.alloc(DataLayout.span);
   DataLayout.encode(
@@ -86,7 +87,7 @@ export const initStakingPoolInstruction = (
 
   return new TransactionInstruction({
     keys,
-    programId: PORT_STAKING,
+    programId: stakingProgramId,
     data,
   });
 };
