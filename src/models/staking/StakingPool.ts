@@ -83,8 +83,8 @@ export class StakingPool implements Parsed<StakingPoolId> {
         info.ownerAuthority,
         info.adminAuthority,
         info.subRewardTokenPoolOption === 1 ? info.subRewardTokenPool : undefined,
-        info.subCumulativeRateOption === 1 ? info.subCumulativeRate : undefined,
         info.subRatePerSlotOption === 1 ? info.subRatePerSlot : undefined,
+        info.subCumulativeRateOption === 1 ? info.subCumulativeRate : undefined,
     );
   }
 
