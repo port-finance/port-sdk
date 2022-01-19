@@ -5,7 +5,6 @@ import {Apy} from './Apy';
 import {QuoteValue} from './QuoteValue';
 import {AssetPrice} from './AssetPrice';
 import {QuantityContext} from './QuantityContext';
-import {AssetConfig} from './AssetConfig';
 import {Share} from './Share';
 import {AssetExchangeRate} from './AssetExchangeRate';
 import {MintId} from './MintId';
@@ -120,7 +119,7 @@ export class Asset extends Token<Asset> {
 
   public print(
       context: QuantityContext | undefined,
-      config?: AssetConfig,
+      symbol?: string,
   ): string {
     if (!context) {
       return '--';
@@ -131,10 +130,10 @@ export class Asset extends Token<Asset> {
       num > Asset.LARGE_THRESHOLD ?
         Asset.FORMATTER_LARGE.format(num) :
         Asset.FORMATTER_NORMAL.format(num);
-    if (!config) {
+    if (!symbol) {
       return formatted;
     }
-    return formatted + ' ' + config.getSymbol();
+    return formatted + ' ' + symbol;
   }
 
   protected wrap(value: Lamport): Asset {
