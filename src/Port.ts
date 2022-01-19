@@ -24,7 +24,7 @@ export class Port {
   public readonly lendingMarket: PublicKey;
   public reserveContext?: ReserveContext;
 
-  constructor(connection: Connection, environment: Environment, lendingMarket) {
+  constructor(connection: Connection, environment: Environment, lendingMarket:PublicKey) {
     this.connection = connection;
     this.environment = environment;
     this.lendingMarket = lendingMarket;
@@ -122,7 +122,7 @@ export class Port {
     const parsed = raw
         .map((a) => ReserveInfo.fromRaw(a))
         .filter((p) => !!p);
-    return ReserveContext.index(parsed, this.environment.getAssetContext());
+    return ReserveContext.index(parsed);
   }
 
   public async getStakingPoolContext(): Promise<StakingPoolContext> {
