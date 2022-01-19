@@ -1,4 +1,4 @@
-import {DEFAULT_ASSET_CONFIG} from '../utils/AssetConfigs';
+import {DEFAULT_ASSET_CONFIG} from '../utils/defaultAssetConfig';
 import {AssetConfig} from './AssetConfig';
 import {MintId} from './MintId';
 import {ReserveId} from './ReserveId';

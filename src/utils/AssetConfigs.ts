@@ -376,11 +376,6 @@ export const MAINNET_PYUSDC: AssetConfig = new AssetConfig(
     AssetPriceConfig.fromDecimals(5),
 );
 
-export const DEFAULT_ASSET_CONFIG = new AssetConfig(
-    MintId.fromBase58('So11111111111111111111111111111111111111112'),
-    new AssetDisplayConfig('Default Token', 'Default'),
-    AssetPriceConfig.fromDecimals(3),
-);
 
 export const DEVNET_ASSETS: AssetConfig[] = [
   DEVNET_BTC,
