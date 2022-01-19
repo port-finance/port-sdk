@@ -12,8 +12,8 @@ import {AssetPrice} from '../AssetPrice';
 import {StakingPoolLayout, StakingPoolProto} from '../../structs';
 import {AuthorityId} from '../AuthorityId';
 import Big from 'big.js';
-import { TokenInfo } from '@solana/spl-token-registry';
-import { QuantityContext } from '..';
+import {TokenInfo} from '@solana/spl-token-registry';
+import {QuantityContext} from '..';
 
 const SLOT_PER_SECOND = 2;
 const SLOT_PER_YEAR = SLOT_PER_SECOND * 3600 * 24 * 365;
