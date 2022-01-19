@@ -1,3 +1,4 @@
+import {DEFAULT_ASSET_CONFIG} from '../utils/AssetConfigs';
 import {AssetConfig} from './AssetConfig';
 import {MintId} from './MintId';
 import {ReserveId} from './ReserveId';
@@ -36,16 +37,16 @@ export class AssetContext {
     return Array.from(this.cache.values());
   }
 
-  public findConfig(mintId: MintId): AssetConfig | undefined {
+  public findConfig(mintId: MintId): AssetConfig {
     const key = mintId.toString();
-    return this.cache.get(key);
+    return this.cache.get(key) ?? DEFAULT_ASSET_CONFIG;
   }
 
-  public findConfigBySymbol(symbol: string): AssetConfig | undefined {
-    return this.bySymbol.get(symbol);
+  public findConfigBySymbol(symbol: string): AssetConfig {
+    return this.bySymbol.get(symbol) ?? DEFAULT_ASSET_CONFIG;
   }
 
-  public findConfigByReserveId(reserveId: ReserveId): AssetConfig | undefined {
-    return this.byReserveId.get(reserveId.toBase58());
+  public findConfigByReserveId(reserveId: ReserveId): AssetConfig {
+    return this.byReserveId.get(reserveId.toBase58()) ?? DEFAULT_ASSET_CONFIG;
   }
 }

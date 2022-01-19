@@ -1,18 +1,18 @@
-import {AssetDisplayConfig,
+import {
+  AssetDisplayConfig,
   AssetPriceConfig,
   AssetDepositConfig,
   AssetConfig,
   MintId,
-  ReserveId} from '../models';
+  ReserveId,
+} from '../models';
 import {ENV} from '@solana/spl-token-registry';
-// import btcImg from '../assets/markets/BTC.png';
 
 export const DEVNET_BTC = new AssetConfig(
     MintId.fromBase58('EbwEYuUQHxcSHszxPBhA2nT2JxhiNwJedwjsctJnLmsC'),
     new AssetDisplayConfig(
         'Bitcoin',
         'BTC',
-        // require('../assets/markets/BTC.png'),
         '#FCAC44',
     ),
     AssetPriceConfig.fromDecimals(1),
@@ -27,7 +27,6 @@ export const DEVNET_PORT = new AssetConfig(
     new AssetDisplayConfig(
         'Port',
         'PORT',
-        // require('../assets/markets/PORT.svg'),
         '#796CFC',
     ),
     AssetPriceConfig.fromDecimals(4),
@@ -38,7 +37,6 @@ export const DEVNET_SOL = new AssetConfig(
     new AssetDisplayConfig(
         'Solana',
         'SOL',
-        // require('../assets/markets/SOL.png').default,
         '#BC57C4',
     ),
     AssetPriceConfig.fromDecimals(4),
@@ -56,7 +54,6 @@ export const DEVNET_USDC = new AssetConfig(
     new AssetDisplayConfig(
         'USD Coin',
         'USDC',
-        // require('../assets/markets/USDC.png').default,
         '#3C84D4',
     ),
     AssetPriceConfig.fromDecimals(5),
@@ -89,7 +86,6 @@ export const DEVNET_USDT: AssetConfig = new AssetConfig(
     new AssetDisplayConfig(
         'Tether',
         'USDT',
-        // require('../assets/markets/USDT.svg').default,
         '#19664E',
     ),
     AssetPriceConfig.fromDecimals(5),
@@ -103,7 +99,6 @@ export const DEVNET_MER: AssetConfig = new AssetConfig(
     new AssetDisplayConfig(
         'Mercurial',
         'MER',
-        // require('../assets/markets/MER.png').default,
         '#34C5A7',
     ),
     AssetPriceConfig.fromDecimals(5),
@@ -117,7 +112,6 @@ export const DEVNET_SLP: AssetConfig = new AssetConfig(
     new AssetDisplayConfig(
         'Saber USDC - USDT LP',
         'SLP',
-        // require('../assets/markets/sbr.svg').default,
         '#34C5A7',
     ),
     AssetPriceConfig.fromDecimals(5),
@@ -126,13 +120,11 @@ export const DEVNET_SLP: AssetConfig = new AssetConfig(
     ),
 );
 
-
 export const MAINNET_SOL: AssetConfig = new AssetConfig(
     MintId.fromBase58('So11111111111111111111111111111111111111112'),
     new AssetDisplayConfig(
         'Solana',
         'SOL',
-        // require('../assets/markets/SOL.png').default,
         '#BC57C4',
     ),
     AssetPriceConfig.fromDecimals(4),
@@ -150,7 +142,6 @@ export const MAINNET_USDC: AssetConfig = new AssetConfig(
     new AssetDisplayConfig(
         'USD Coin',
         'USDC',
-        // require('../assets/markets/USDC.png').default,
         '#3C84D4',
     ),
     AssetPriceConfig.fromDecimals(5),
@@ -167,7 +158,6 @@ export const MAINNET_USDT: AssetConfig = new AssetConfig(
     new AssetDisplayConfig(
         'Tether',
         'USDT',
-        // require('../assets/markets/USDT.svg').default,
         '#19664E',
     ),
     AssetPriceConfig.fromDecimals(5),
@@ -184,7 +174,6 @@ export const MAINNET_PAI: AssetConfig = new AssetConfig(
     new AssetDisplayConfig(
         'Parrot PAI',
         'PAI',
-        // require('../assets/markets/PAI.svg').default,
         '#C9D7FB',
     ),
     AssetPriceConfig.fromDecimals(5),
@@ -201,7 +190,6 @@ export const MAINNET_SRM: AssetConfig = new AssetConfig(
     new AssetDisplayConfig(
         'Serum',
         'SRM',
-        // require('../assets/markets/SRM.png').default,
         '#30C0D5',
     ),
     AssetPriceConfig.fromDecimals(5),
@@ -218,7 +206,6 @@ export const MAINNET_BTC: AssetConfig = new AssetConfig(
     new AssetDisplayConfig(
         'Bitcoin',
         'BTC',
-        // require('../assets/markets/BTC.png').default,
         '#FCAC44',
     ),
     AssetPriceConfig.fromDecimals(1),
@@ -235,7 +222,6 @@ export const MAINNET_MER: AssetConfig = new AssetConfig(
     new AssetDisplayConfig(
         'Mercurial',
         'MER',
-        // require('../assets/markets/MER.png').default,
         '#34C5A7',
     ),
     AssetPriceConfig.fromDecimals(4),
@@ -252,7 +238,6 @@ export const MAINNET_MSOL: AssetConfig = new AssetConfig(
     new AssetDisplayConfig(
         'Marinade Staked SOL',
         'mSOL',
-        // require('../assets/markets/msol.png').default,
         '#4B4592',
     ),
     AssetPriceConfig.fromDecimals(4),
@@ -269,7 +254,6 @@ export const MAINNET_PORT: AssetConfig = new AssetConfig(
     new AssetDisplayConfig(
         'Port',
         'PORT',
-        // require('../assets/markets/PORT.svg').default,
         '#796CFC',
     ),
     AssetPriceConfig.fromDecimals(4),
@@ -283,7 +267,6 @@ export const MAINNET_PSOL: AssetConfig = new AssetConfig(
     new AssetDisplayConfig(
         'Parrot Staked SOL',
         'pSOL',
-        // require('../assets/markets/pSOL.svg').default,
         '#7E4592',
     ),
     AssetPriceConfig.fromDecimals(4),
@@ -300,7 +283,6 @@ export const MAINNET_SBR: AssetConfig = new AssetConfig(
     new AssetDisplayConfig(
         'Saber Protocol Token',
         'SBR',
-        // require('../assets/markets/sbr.svg').default,
         '#7E4591',
     ),
     AssetPriceConfig.fromDecimals(6),
@@ -317,7 +299,6 @@ export const MAINNET_MNDE: AssetConfig = new AssetConfig(
     new AssetDisplayConfig(
         'Marinade Governace Token',
         'MNDE',
-        // require('../assets/markets/mnde.png').default,
         '#7E4591',
     ),
     AssetPriceConfig.fromDecimals(6),
@@ -328,7 +309,6 @@ export const MAINNET_SLP: AssetConfig = new AssetConfig(
     new AssetDisplayConfig(
         'Saber USDC - USDT LP',
         'SLP',
-        // require('../assets/markets/sbr.svg').default,
         '#34C5A7',
     ),
     AssetPriceConfig.fromDecimals(5),
@@ -342,7 +322,6 @@ export const MAINNET_UST: AssetConfig = new AssetConfig(
     new AssetDisplayConfig(
         'UST',
         'UST',
-        // require('../assets/markets/UST.png').default,
         '#34C5A7',
     ),
     AssetPriceConfig.fromDecimals(5),
@@ -356,7 +335,6 @@ export const MAINNET_WHETH: AssetConfig = new AssetConfig(
     new AssetDisplayConfig(
         'Wormhole Ethereum',
         'whETH',
-        // require('../assets/markets/ETH.png').default,
         '#34C5A7',
     ),
     AssetPriceConfig.fromDecimals(5),
@@ -370,7 +348,6 @@ export const MAINNET_FIDA: AssetConfig = new AssetConfig(
     new AssetDisplayConfig(
         'Bonfida',
         'FIDA',
-        // require('../assets/markets/ETH.png').default,
         '#34C5A7',
     ),
     AssetPriceConfig.fromDecimals(5),
@@ -384,7 +361,6 @@ export const MAINNET_PPUSDC: AssetConfig = new AssetConfig(
     new AssetDisplayConfig(
         'Port Finance 2022 March Principle USDC',
         'ppUSDC',
-        // require('../assets/markets/ppUSDC.svg').default,
         '#34C5A7',
     ),
     AssetPriceConfig.fromDecimals(5),
@@ -395,12 +371,16 @@ export const MAINNET_PYUSDC: AssetConfig = new AssetConfig(
     new AssetDisplayConfig(
         'Port Finance 2022 March Yield USDC',
         'pyUSDC',
-        // require('../assets/markets/pyUSDC.svg').default,
         '#34C5A7',
     ),
     AssetPriceConfig.fromDecimals(5),
 );
 
+export const DEFAULT_ASSET_CONFIG = new AssetConfig(
+    MintId.fromBase58('So11111111111111111111111111111111111111112'),
+    new AssetDisplayConfig('Default Token', 'Default'),
+    AssetPriceConfig.fromDecimals(3),
+);
 
 export const DEVNET_ASSETS: AssetConfig[] = [
   DEVNET_BTC,
