@@ -11,17 +11,24 @@ export class AssetConfig {
   private readonly display: AssetDisplayConfig;
   private readonly price: AssetPriceConfig;
   private readonly deposit: AssetDepositConfig | undefined;
+  private readonly isDefault: boolean;
 
   constructor(
       mintId: MintId,
       display: AssetDisplayConfig,
       price: AssetPriceConfig,
       deposit?: AssetDepositConfig,
+      isDefault?:boolean,
   ) {
     this.mintId = mintId;
     this.display = display;
     this.price = price;
     this.deposit = deposit;
+    this.isDefault = isDefault ?? false;
+  }
+
+  public checkIsDefault():boolean {
+    return this.isDefault;
   }
 
   public getMintId(): MintId {
@@ -35,10 +42,6 @@ export class AssetConfig {
   public getSymbol(): string {
     return this.getDisplayConfig().getSymbol();
   }
-
-  // public getIcon(): string {
-  //   return this.getDisplayConfig().getIcon();
-  // }
 
   public getColor(): string | undefined {
     return this.getDisplayConfig().getColor();

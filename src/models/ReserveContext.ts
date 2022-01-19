@@ -2,8 +2,8 @@ import {MintId} from './MintId';
 import {ReserveInfo} from './ReserveInfo';
 import {ReserveId} from './ReserveId';
 import {StakingPoolId} from './staking/StakingPoolId';
-import {AssetContext} from './AssetContext';
 import {OracleId} from './OracleId';
+import {TokenInfo} from '@solana/spl-token-registry';
 
 export class ReserveContext {
   private static readonly RESERVE_CONTEXT_EMPTY = new ReserveContext(
@@ -40,21 +40,22 @@ export class ReserveContext {
 
   public static index(
       reserves: ReserveInfo[],
-      assets: AssetContext,
+      tokenMap?: Map<string, TokenInfo>,
   ): ReserveContext {
     if (!reserves.length) {
       return ReserveContext.empty();
     }
 
-    const sorted = reserves
-        .filter((r) => {
-          const config = assets.findConfigByReserveId(r.getReserveId());
-          return config?.getMintId().equals(r.getAssetMintId());
-        })
-        .sort(
-            (a, b) =>
-              -a.getMarketCap().getValue().compare(b.getMarketCap().getValue()),
-        );
+    const readyToSortReserves = tokenMap ?
+      reserves.filter((r) => {
+        return tokenMap.has(r.getAssetMintId().toString());
+      }) :
+      reserves;
+
+    const sorted = readyToSortReserves.sort(
+        (a, b) =>
+          -a.getMarketCap().getValue().compare(b.getMarketCap().getValue()),
+    );
 
     const byReserveId = new Map<string, ReserveInfo>();
     const byAssetMintId = new Map<string, ReserveInfo>();
