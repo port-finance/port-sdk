@@ -12,6 +12,7 @@ import {AssetPrice} from '../AssetPrice';
 import {PORT_QUANTITY_CONTEXT} from '../../constants';
 import {StakingPoolLayout, StakingPoolProto} from '../../structs';
 import {AuthorityId} from '../AuthorityId';
+import Big from 'big.js';
 
 const SLOT_PER_SECOND = 2;
 const SLOT_PER_YEAR = SLOT_PER_SECOND * 3600 * 24 * 365;
@@ -170,8 +171,12 @@ export class StakingPool implements Parsed<StakingPoolId> {
     return this.getCumulativeRate().add(rateDiff);
   }
 
-  public getRewardApy(reserve: ReserveInfo, price: AssetPrice): Apy {
-    return this.getRewardApyInner(reserve, price, this.getRatePerSlot());
+  public getRewardApy(reserve: ReserveInfo, price: AssetPrice | Big): Apy {
+    if (price instanceof AssetPrice) {
+      return this.getRewardApyInner(reserve, price.getRaw(), this.getRatePerSlot());
+    } else {
+      return this.getRewardApyInner(reserve, price, this.getRatePerSlot());
+    }
   }
 
   public getSubRewardApy(
@@ -180,13 +185,13 @@ export class StakingPool implements Parsed<StakingPoolId> {
   ): Apy | undefined {
     const subRatePerSlot = this.getSubRatePerSlot();
     return subRatePerSlot !== undefined ?
-      this.getRewardApyInner(reserve, price, subRatePerSlot) :
+      this.getRewardApyInner(reserve, price.getRaw(), subRatePerSlot) :
       undefined;
   }
 
   private getRewardApyInner(
       reserve: ReserveInfo,
-      price: AssetPrice,
+      price: Big,
       ratePerSlot: ExchangeRate,
   ): Apy {
     const poolSize = this.getPoolSize();
@@ -204,7 +209,7 @@ export class StakingPool implements Parsed<StakingPoolId> {
     const raw = ratePerSlot
         .getRaw()
         .mul(SLOT_PER_YEAR)
-        .mul(price.getRaw())
+        .mul(price)
         .div(PORT_QUANTITY_CONTEXT.multiplier) // dangerous!
         .div(tvl.getRaw());
     return Apy.of(raw);
