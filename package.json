@@ -11,9 +11,9 @@
   "scripts": {
     "build": "rm -fr dist/ && tsc -P tsconfig.build.json && tsc -P tsconfig.esm.json",
     "test": "ts-node node_modules/jasmine/bin/jasmine",
-    "lint": "eslint src/**/*.ts",
-    "format:fix": "eslint --fix \"src/**/*.ts\""
-  },
+    "lint": "eslint tests --cache && eslint src --cache && prettier --write '{tests,src,migrations}/**/*.ts'",
+    "lint:ci": "eslint tests --max-warnings=0 && eslint src --max-warnings=0 && prettier -c '{tests,src,migrations}/**/*.ts'"
+},
   "keywords": [],
   "author": "Port Finance <info@port.finance>",
   "repository": {
@@ -33,6 +33,8 @@
     "src/"
   ],
   "dependencies": {
+    "@project-serum/anchor": "^0.20.1",
+    "@project-serum/common": "^0.0.1-beta.3",
     "@solana/buffer-layout": "^3.0.0",
     "@solana/spl-token": "^0.1.8",
     "@solana/spl-token-registry": "^0.2.1107",

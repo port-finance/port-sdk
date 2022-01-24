@@ -1,11 +1,13 @@
-import {Connection, PublicKey} from '@solana/web3.js';
+import {Connection, Keypair, PublicKey, SystemProgram, Transaction, TransactionInstruction} from '@solana/web3.js';
 import {
   RESERVE_DATA_SIZE,
   ReserveLayout,
   STAKING_POOL_DATA_SIZE,
   PORT_PROFILE_DATA_SIZE,
   ObligationLayout,
+  ReserveConfigProto,
 } from './structs';
+import {getTokenAccount} from '@project-serum/common';
 import {ReserveInfo,
   ReserveContext,
   QuoteValue, WalletId,
@@ -17,6 +19,9 @@ import {ReserveInfo,
 import {Environment} from './Environment';
 import {DEFAULT_PORT_LENDING_MARKET} from './constants';
 import {AccessType} from './utils/Instructions';
+import {BN, Provider} from '@project-serum/anchor';
+import {initLendingMarketInstruction, initReserveInstruction, PORT_LENDING} from '.';
+import {AccountLayout} from '@solana/spl-token';
 
 export class Port {
   public readonly connection: Connection;
@@ -189,5 +194,139 @@ export class Port {
           account: raw,
         },
     );
+  }
+
+  public async createLendingMarket({provider}: {provider: Provider}): Promise<[Transaction, PublicKey]> {
+    const lendingMarketKp = Keypair.generate();
+    const tx = new Transaction();
+    const [ix] = await this.createAccount({
+      provider,
+      space: 258,
+      owner: PORT_LENDING,
+    });
+    tx.add(
+        ix,
+        initLendingMarketInstruction(
+            provider.wallet.publicKey,
+            Buffer.from(
+                'USD\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
+                'ascii',
+            ),
+            lendingMarketKp.publicKey,
+        ),
+    );
+    return [tx, lendingMarketKp.publicKey];
+  }
+
+  public async createReserve({
+    provider,
+    reserveConfig,
+    transferAuthority,
+    sourceTokenWallet,
+    initialLiquidity,
+    oracle,
+  }: {
+      provider: Provider,
+      reserveConfig: ReserveConfigProto,
+      transferAuthority: PublicKey,
+      sourceTokenWallet: PublicKey,
+      initialLiquidity: number | BN,
+      oracle: PublicKey
+  }): Promise<[Transaction[], PublicKey]> {
+    const [createReserveAccount, reservePubKey] = await this.createAccount({
+      provider,
+      space: ReserveLayout.span,
+      owner: PORT_LENDING,
+    });
+    const [collateralMintIx, collateralMintPubKey] = await this.createAccount({
+      provider,
+      space: AccountLayout.span,
+      owner: PORT_LENDING,
+    });
+    const [liquiditySupplyIx, liquiditySupplyPubKey] = await this.createAccount({
+      provider,
+      space: AccountLayout.span,
+      owner: PORT_LENDING,
+    });
+    const [collateralSupplyIx, collateralSupplyPubKey] = await this.createAccount({
+      provider,
+      space: AccountLayout.span,
+      owner: PORT_LENDING,
+    });
+    const [userCollateralIx, userCollateralPubKey] = await this.createAccount({
+      provider,
+      space: AccountLayout.span,
+      owner: PORT_LENDING,
+    });
+    const [feeReceiverIx, feeReceiverPubkey] = await this.createAccount({
+      provider,
+      space: AccountLayout.span,
+      owner: PORT_LENDING,
+    });
+
+    const tokenAccount = await getTokenAccount(provider, sourceTokenWallet);
+
+    const initReserveIx = initReserveInstruction(
+        initialLiquidity,
+        1, // oracle Option
+        new BN(1),
+        reserveConfig,
+        sourceTokenWallet,
+        collateralSupplyPubKey,
+        reservePubKey,
+        tokenAccount.mint,
+        liquiditySupplyPubKey,
+        feeReceiverPubkey,
+        oracle,
+        collateralMintPubKey,
+        userCollateralPubKey,
+        this.lendingMarket,
+        (await this.getLendingMarketAuthority())[0],
+        provider.wallet.publicKey,
+        transferAuthority,
+    );
+
+    const tx1 = new Transaction();
+    tx1.add(
+        createReserveAccount,
+        collateralMintIx,
+        liquiditySupplyIx,
+        collateralSupplyIx,
+        userCollateralIx,
+    );
+    const tx2 = new Transaction();
+    tx2.add(
+        feeReceiverIx,
+        initReserveIx,
+    );
+
+    return [[tx1, tx2], reservePubKey];
+  }
+
+  public async getLendingMarketAuthority(): Promise<[PublicKey, number]> {
+    return await PublicKey.findProgramAddress(
+        [this.lendingMarket.toBuffer()],
+        PORT_LENDING,
+    );
+  }
+
+  private async createAccount({
+    provider,
+    space,
+    owner,
+  }: {
+    provider: Provider,
+    space: number,
+    owner: PublicKey}): Promise<[TransactionInstruction, PublicKey]> {
+    const newAccount = Keypair.generate();
+    return [SystemProgram.createAccount({
+      fromPubkey: provider.wallet.publicKey,
+      newAccountPubkey: newAccount.publicKey,
+      programId: owner,
+      lamports: await provider.connection.getMinimumBalanceForRentExemption(
+          space,
+      ),
+      space,
+    }), newAccount.publicKey];
   }
 }

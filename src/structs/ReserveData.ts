@@ -180,5 +180,4 @@ export const isReserve = (info: AccountInfo<Buffer>) => {
   return info.data.length === ReserveLayout.span;
 };
 
-// export const RESERVE_DATA_SIZE = 575;
 export const RESERVE_DATA_SIZE = ReserveLayout.span;
