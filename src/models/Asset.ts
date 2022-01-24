@@ -117,6 +117,12 @@ export class Asset extends Token<Asset> {
     return this.toNumber(context).toString();
   }
 
+  public toLimitRoundNumber(context: QuantityContext):number {
+    const multiplier = context.multiplier;
+    const decimals = context.decimals;
+    return this.getRaw().div(multiplier).round(Math.min(decimals, 6), 0).toNumber();
+  }
+
   public print(
       context: QuantityContext | undefined,
       symbol?: string,
@@ -125,7 +131,7 @@ export class Asset extends Token<Asset> {
       return '--';
     }
 
-    const num = this.toNumber(context);
+    const num = this.toLimitRoundNumber(context);
     const formatted =
       num > Asset.LARGE_THRESHOLD ?
         Asset.FORMATTER_LARGE.format(num) :
