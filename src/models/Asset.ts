@@ -114,7 +114,7 @@ export class Asset extends Token<Asset> {
   }
 
   public plain(context: QuantityContext): string {
-    return this.toNumber(context).toString();
+    return this.toLimitRoundNumber(context).toString();
   }
 
   public toLimitRoundNumber(context: QuantityContext):number {
