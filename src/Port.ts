@@ -34,7 +34,7 @@ import {
   LENDING_MARKET_LEN,
   PORT_LENDING,
 } from ".";
-import { AccountLayout } from "@solana/spl-token";
+import { AccountLayout, MintLayout, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
   TransactionEnvelope,
   Provider
@@ -46,7 +46,7 @@ import invariant from "tiny-invariant";
 
 export class Port {
   public readonly environment: Environment;
-  public readonly lendingMarket: PublicKey;
+  public lendingMarket: PublicKey;
   public connection: Connection;
   public reserveContext?: ReserveContext;
 
@@ -62,6 +62,10 @@ export class Port {
 
   public setConnection(connection: Connection): void {
     this.connection = connection;
+  }
+
+  public setLendingMarket(lendingMarket: PublicKey): void {
+    this.lendingMarket = lendingMarket;
   }
 
   public static forMainNet({
@@ -270,45 +274,45 @@ export class Port {
   }): Promise<[TransactionEnvelope[], PublicKey]> {
     invariant(!!oracle !== !!price, "Oracle and price can't both be present");
 
-    const [createReserveAccount, reservePubKey] = await this.createAccount({
+    const [createReserveAccountIx, reservePubKey] = await this.createAccount({
       provider,
       space: ReserveLayout.span,
       owner: PORT_LENDING,
     });
     const [collateralMintIx, collateralMintPubKey] = await this.createAccount({
       provider,
-      space: AccountLayout.span,
-      owner: PORT_LENDING,
+      space: MintLayout.span,
+      owner: TOKEN_PROGRAM_ID,
     });
     const [liquiditySupplyIx, liquiditySupplyPubKey] = await this.createAccount(
       {
         provider,
         space: AccountLayout.span,
-        owner: PORT_LENDING,
+        owner: TOKEN_PROGRAM_ID,
       }
     );
     const [collateralSupplyIx, collateralSupplyPubKey] =
       await this.createAccount({
         provider,
         space: AccountLayout.span,
-        owner: PORT_LENDING,
+        owner: TOKEN_PROGRAM_ID,
       });
     const [userCollateralIx, userCollateralPubKey] = await this.createAccount({
       provider,
       space: AccountLayout.span,
-      owner: PORT_LENDING,
+      owner: TOKEN_PROGRAM_ID,
     });
     const [feeReceiverIx, feeReceiverPubkey] = await this.createAccount({
       provider,
       space: AccountLayout.span,
-      owner: PORT_LENDING,
+      owner: TOKEN_PROGRAM_ID,
     });
 
     const tokenAccount = await getTokenAccount(provider, sourceTokenWallet);
 
     const initReserveIx = initReserveInstruction(
       initialLiquidity,
-      1, // oracle Option
+      price ? 0 : 1, // oracle Option
       price ?? new BN(1),
       reserveConfig,
       sourceTokenWallet,
@@ -327,7 +331,7 @@ export class Port {
     );
 
     let tx1 = new TransactionEnvelope(provider, []);
-    tx1 = tx1.combine(createReserveAccount);
+    tx1 = tx1.combine(createReserveAccountIx);
     tx1 = tx1.combine(collateralMintIx);
     tx1 = tx1.combine(liquiditySupplyIx);
     tx1 = tx1.combine(collateralSupplyIx);
