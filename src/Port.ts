@@ -3,8 +3,6 @@ import {
   Keypair,
   PublicKey,
   SystemProgram,
-  Transaction,
-  TransactionInstruction,
 } from "@solana/web3.js";
 import {
   RESERVE_DATA_SIZE,
@@ -312,7 +310,7 @@ export class Port {
 
     const initReserveIx = initReserveInstruction(
       initialLiquidity,
-      price ? 0 : 1, // oracle Option
+      oracle ? 0 : 1, // price Option
       price ?? new BN(1),
       reserveConfig,
       sourceTokenWallet,
