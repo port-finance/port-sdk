@@ -8,9 +8,11 @@ import {
   ReserveConfigProto,
 } from './structs';
 import {getTokenAccount} from '@project-serum/common';
-import {ReserveInfo,
+import {
+  ReserveInfo,
   ReserveContext,
-  QuoteValue, WalletId,
+  QuoteValue,
+  WalletId,
   TokenAccount,
   PortProfile,
   StakingPool,
@@ -24,15 +26,23 @@ import {initLendingMarketInstruction, initReserveInstruction, PORT_LENDING} from
 import {AccountLayout} from '@solana/spl-token';
 
 export class Port {
-  public readonly connection: Connection;
   public readonly environment: Environment;
   public readonly lendingMarket: PublicKey;
+  public connection: Connection;
   public reserveContext?: ReserveContext;
 
-  constructor(connection: Connection, environment: Environment, lendingMarket:PublicKey) {
+  constructor(
+      connection: Connection,
+      environment: Environment,
+      lendingMarket: PublicKey,
+  ) {
     this.connection = connection;
     this.environment = environment;
     this.lendingMarket = lendingMarket;
+  }
+
+  public setConnection(connection: Connection): void {
+    this.connection = connection;
   }
 
   public static forMainNet({
@@ -67,19 +77,28 @@ export class Port {
   public async getShareAccount(
       walletId: WalletId,
       context: ReserveContext,
-  ):Promise<TokenAccount[]> {
+  ): Promise<TokenAccount[]> {
     const shareMintPks = context
         .getAllReserves()
         .map((r) => r.getShareMintId())
         .map((s) => s.getAccess(AccessType.READ).pubkey);
     const programId = this.environment.getTokenProgramPk();
-    const result = await this.connection.getTokenAccountsByOwner(walletId.getAccess(AccessType.READ).pubkey, {
-      programId,
-    });
+    const result = await this.connection.getTokenAccountsByOwner(
+        walletId.getAccess(AccessType.READ).pubkey,
+        {
+          programId,
+        },
+    );
     const raw = result.value;
     return raw
         .map((a) => TokenAccount.fromRaw(a))
-        .filter((p) => p && shareMintPks.find((k) => k.equals(p.getMintId().getAccess(AccessType.READ).pubkey)));
+        .filter(
+            (p) =>
+              p &&
+          shareMintPks.find((k) =>
+            k.equals(p.getMintId().getAccess(AccessType.READ).pubkey),
+          ),
+        );
   }
 
   public async getPortProfile(
@@ -87,23 +106,22 @@ export class Port {
   ): Promise<PortProfile | undefined> {
     const raw = await this.connection.getProgramAccounts(
         this.environment.getLendingProgramPk(),
-        {filters: [
-          {
-            memcmp: {
+        {
+          filters: [
+            {
+              memcmp: {
               // offset: 1 + 8 + 1 + 32,
-              offset: ObligationLayout.offsetOf('owner')!,
-              bytes: walletId.toBase58(),
+                offset: ObligationLayout.offsetOf('owner')!,
+                bytes: walletId.toBase58(),
+              },
             },
-          },
-          {
-            dataSize: PORT_PROFILE_DATA_SIZE,
-          },
-        ],
+            {
+              dataSize: PORT_PROFILE_DATA_SIZE,
+            },
+          ],
         },
     );
-    const parsed = raw
-        .map((a) => PortProfile.fromRaw(a))
-        .filter((p) => !!p);
+    const parsed = raw.map((a) => PortProfile.fromRaw(a)).filter((p) => !!p);
     return parsed.length > 0 ? parsed[0] : undefined;
   }
 
@@ -124,9 +142,7 @@ export class Port {
           ],
         },
     );
-    const parsed = raw
-        .map((a) => ReserveInfo.fromRaw(a))
-        .filter((p) => !!p);
+    const parsed = raw.map((a) => ReserveInfo.fromRaw(a)).filter((p) => !!p);
     return ReserveContext.index(parsed);
   }
 
@@ -145,9 +161,7 @@ export class Port {
         ],
       },
     );
-    const parsed = raw
-        .map((a) => StakingPool.fromRaw(a))
-        .filter((p) => !!p);
+    const parsed = raw.map((a) => StakingPool.fromRaw(a)).filter((p) => !!p);
     return StakingPoolContext.index(parsed);
   }
 
@@ -162,25 +176,19 @@ export class Port {
           ],
         },
     );
-    const parsed = raw
-        .map((p) => PortProfile.fromRaw(p))
-        .filter((p) => !!p);
+    const parsed = raw.map((p) => PortProfile.fromRaw(p)).filter((p) => !!p);
     return parsed;
   }
 
-  public async getStakingPool(
-      stakingPoolKey: PublicKey,
-  ): Promise<StakingPool> {
+  public async getStakingPool(stakingPoolKey: PublicKey): Promise<StakingPool> {
     const raw = await this.connection.getAccountInfo(stakingPoolKey);
     if (!raw) {
       return Promise.reject(new Error('no reserve found'));
     }
-    return StakingPool.fromRaw(
-        {
-          pubkey: stakingPoolKey,
-          account: raw,
-        },
-    );
+    return StakingPool.fromRaw({
+      pubkey: stakingPoolKey,
+      account: raw,
+    });
   }
 
   public async getReserve(reserveKey: PublicKey): Promise<ReserveInfo> {
@@ -188,12 +196,10 @@ export class Port {
     if (!raw) {
       return Promise.reject(new Error('no reserve found'));
     }
-    return ReserveInfo.fromRaw(
-        {
-          pubkey: reserveKey,
-          account: raw,
-        },
-    );
+    return ReserveInfo.fromRaw({
+      pubkey: reserveKey,
+      account: raw,
+    });
   }
 
   public async createLendingMarket({provider}: {provider: Provider}): Promise<[Transaction, PublicKey]> {
