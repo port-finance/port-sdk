@@ -14,7 +14,6 @@ import {
   ObligationLayout,
   ReserveConfigProto,
 } from "./structs";
-import { getTokenAccount } from "@project-serum/common";
 import {
   ReserveInfo,
   ReserveContext,
@@ -28,13 +27,20 @@ import {
 import { Environment } from "./Environment";
 import { DEFAULT_PORT_LENDING_MARKET } from "./constants";
 import { AccessType } from "./utils/Instructions";
-import { BN, Provider } from "@project-serum/anchor";
+import { BN } from "@project-serum/anchor";
 import {
   initLendingMarketInstruction,
   initReserveInstruction,
   PORT_LENDING,
 } from ".";
 import { AccountLayout } from "@solana/spl-token";
+import {
+  TransactionEnvelope,
+  Provider
+} from "@saberhq/solana-contrib";
+import {
+  getTokenAccount
+} from "@saberhq/token-utils"
 
 export class Port {
   public readonly environment: Environment;
@@ -255,7 +261,7 @@ export class Port {
     sourceTokenWallet: PublicKey;
     initialLiquidity: number | BN;
     oracle: PublicKey;
-  }): Promise<[Transaction[], PublicKey]> {
+  }): Promise<[TransactionEnvelope[], PublicKey]> {
     const [createReserveAccount, reservePubKey] = await this.createAccount({
       provider,
       space: ReserveLayout.span,
@@ -312,16 +318,16 @@ export class Port {
       transferAuthority
     );
 
-    const tx1 = new Transaction();
-    tx1.add(
-      createReserveAccount,
-      collateralMintIx,
-      liquiditySupplyIx,
-      collateralSupplyIx,
-      userCollateralIx
-    );
-    const tx2 = new Transaction();
-    tx2.add(feeReceiverIx, initReserveIx);
+    const tx1 = new TransactionEnvelope(provider, []);
+    tx1.combine(createReserveAccount);
+    tx1.combine(collateralMintIx);
+    tx1.combine(liquiditySupplyIx);
+    tx1.combine(collateralSupplyIx);
+    tx1.combine(userCollateralIx);
+
+    const tx2 = new TransactionEnvelope(provider, []);
+    tx2.combine(feeReceiverIx);
+    tx2.addInstructions(initReserveIx);
 
     return [[tx1, tx2], reservePubKey];
   }
@@ -341,9 +347,9 @@ export class Port {
     provider: Provider;
     space: number;
     owner: PublicKey;
-  }): Promise<[TransactionInstruction, PublicKey]> {
+  }): Promise<[TransactionEnvelope, PublicKey]> {
     const newAccount = Keypair.generate();
-    return [
+    const tx = new TransactionEnvelope(provider, [
       SystemProgram.createAccount({
         fromPubkey: provider.wallet.publicKey,
         newAccountPubkey: newAccount.publicKey,
@@ -352,8 +358,10 @@ export class Port {
           space
         ),
         space,
-      }),
-      newAccount.publicKey,
-    ];
+      })
+    ],
+    [newAccount]
+    );
+    return [tx, newAccount.publicKey];
   }
 }
