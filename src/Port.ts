@@ -31,6 +31,7 @@ import { BN } from "@project-serum/anchor";
 import {
   initLendingMarketInstruction,
   initReserveInstruction,
+  LENDING_MARKET_LEN,
   PORT_LENDING,
 } from ".";
 import { AccountLayout } from "@solana/spl-token";
@@ -223,28 +224,30 @@ export class Port {
 
   public async createLendingMarket({
     provider,
+    owner = provider.wallet.publicKey
   }: {
     provider: Provider;
-  }): Promise<[Transaction, PublicKey]> {
-    const lendingMarketKp = Keypair.generate();
-    const tx = new Transaction();
-    const [ix] = await this.createAccount({
+    owner?: PublicKey;
+  }): Promise<[TransactionEnvelope, PublicKey]> {
+    let tx = new TransactionEnvelope(provider, []);
+    const [createTx, lendingMarketPubkey] = await this.createAccount({
       provider,
-      space: 258,
+      space: LENDING_MARKET_LEN,
       owner: PORT_LENDING,
     });
-    tx.add(
-      ix,
-      initLendingMarketInstruction(
-        provider.wallet.publicKey,
-        Buffer.from(
-          "USD\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
-          "ascii"
-        ),
-        lendingMarketKp.publicKey
-      )
+    const createLendingMarketIx = initLendingMarketInstruction(
+      owner,
+      Buffer.from(
+        "USD\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+        "ascii"
+      ),
+      lendingMarketPubkey
     );
-    return [tx, lendingMarketKp.publicKey];
+    tx = tx.combine(createTx);
+    tx.addInstructions(
+      createLendingMarketIx
+    );
+    return [tx, lendingMarketPubkey];
   }
 
   public async createReserve({
@@ -318,16 +321,16 @@ export class Port {
       transferAuthority
     );
 
-    const tx1 = new TransactionEnvelope(provider, []);
-    tx1.combine(createReserveAccount);
-    tx1.combine(collateralMintIx);
-    tx1.combine(liquiditySupplyIx);
-    tx1.combine(collateralSupplyIx);
-    tx1.combine(userCollateralIx);
+    let tx1 = new TransactionEnvelope(provider, []);
+    tx1 = tx1.combine(createReserveAccount);
+    tx1 = tx1.combine(collateralMintIx);
+    tx1 = tx1.combine(liquiditySupplyIx);
+    tx1 = tx1.combine(collateralSupplyIx);
+    tx1 = tx1.combine(userCollateralIx);
 
-    const tx2 = new TransactionEnvelope(provider, []);
-    tx2.combine(feeReceiverIx);
-    tx2.addInstructions(initReserveIx);
+    let tx2 = new TransactionEnvelope(provider, []);
+    tx2 = tx2.combine(feeReceiverIx);
+    tx2 = tx2.addInstructions(initReserveIx);
 
     return [[tx1, tx2], reservePubKey];
   }
