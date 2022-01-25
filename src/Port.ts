@@ -42,6 +42,7 @@ import {
 import {
   getTokenAccount
 } from "@saberhq/token-utils"
+import invariant from "tiny-invariant";
 
 export class Port {
   public readonly environment: Environment;
@@ -257,14 +258,18 @@ export class Port {
     sourceTokenWallet,
     initialLiquidity,
     oracle,
+    price,
   }: {
     provider: Provider;
     reserveConfig: ReserveConfigProto;
     transferAuthority: PublicKey;
     sourceTokenWallet: PublicKey;
     initialLiquidity: number | BN;
-    oracle: PublicKey;
+    oracle?: PublicKey;
+    price?: BN;
   }): Promise<[TransactionEnvelope[], PublicKey]> {
+    invariant(!!oracle !== !!price, "Oracle and price can't both be present");
+
     const [createReserveAccount, reservePubKey] = await this.createAccount({
       provider,
       space: ReserveLayout.span,
@@ -304,7 +309,7 @@ export class Port {
     const initReserveIx = initReserveInstruction(
       initialLiquidity,
       1, // oracle Option
-      new BN(1),
+      price ?? new BN(1),
       reserveConfig,
       sourceTokenWallet,
       collateralSupplyPubKey,
@@ -312,7 +317,7 @@ export class Port {
       tokenAccount.mint,
       liquiditySupplyPubKey,
       feeReceiverPubkey,
-      oracle,
+      oracle ?? (Keypair.generate()).publicKey,
       collateralMintPubKey,
       userCollateralPubKey,
       this.lendingMarket,
