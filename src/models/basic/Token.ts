@@ -1,6 +1,6 @@
-import {Lamport} from './Lamport';
-import {MintId} from '../MintId';
-import {WrappedLamport} from './WrappedLamport';
+import { Lamport } from "./Lamport";
+import { MintId } from "../MintId";
+import { WrappedLamport } from "./WrappedLamport";
 
 export abstract class Token<T extends Token<T>> extends WrappedLamport<T> {
   private readonly mintId: MintId;

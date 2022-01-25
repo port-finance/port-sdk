@@ -1,5 +1,5 @@
-import {MintId} from './MintId';
-import {Ratio, Percentage} from './basic';
+import { MintId } from "./MintId";
+import { Ratio, Percentage } from "./basic";
 
 export class ReserveUtilizationRatio extends Ratio<ReserveUtilizationRatio> {
   private readonly mintId: MintId;

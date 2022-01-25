@@ -1,4 +1,4 @@
-import {Ratio, Percentage} from './basic';
+import { Ratio, Percentage } from "./basic";
 
 export class MarginRatio extends Ratio<MarginRatio> {
   private static MARGIN_RATIO_NA = new MarginRatio();

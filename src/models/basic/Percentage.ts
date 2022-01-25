@@ -1,7 +1,7 @@
-import Big, {BigSource} from 'big.js';
-import {Decimal, DecimalField} from './Decimal';
-import {Field} from '../../serialization/Field';
-import {BigType} from '../../serialization/BigType';
+import Big, { BigSource } from "big.js";
+import { Decimal, DecimalField } from "./Decimal";
+import { Field } from "../../serialization/Field";
+import { BigType } from "../../serialization/BigType";
 
 export class Percentage extends Decimal<Percentage> {
   private static PCT_BIP = new Percentage(0.0001);
@@ -21,15 +21,15 @@ export class Percentage extends Decimal<Percentage> {
     return Percentage.PCT_HUNDRED;
   }
 
-  public static fromOneBased(oneBased: BigSource) {
+  public static fromOneBased(oneBased: BigSource): Percentage {
     return Percentage.fromRaw(oneBased, false);
   }
 
-  public static fromHundredBased(hundredBased: BigSource) {
+  public static fromHundredBased(hundredBased: BigSource): Percentage {
     return Percentage.fromRaw(hundredBased, true);
   }
 
-  public static fromRaw(raw: BigSource, isHundredBased: boolean) {
+  public static fromRaw(raw: BigSource, isHundredBased: boolean): Percentage {
     const big = new Big(raw);
     if (!isHundredBased) {
       return new Percentage(big);
@@ -41,11 +41,11 @@ export class Percentage extends Decimal<Percentage> {
     return new PercentageField(true, property);
   }
 
-  public isTrivial() {
+  public isTrivial(): boolean {
     return this.lt(Percentage.PCT_BIP);
   }
 
-  public isHundredPct() {
+  public isHundredPct(): boolean {
     return this.eq(Percentage.PCT_HUNDRED);
   }
 
@@ -59,9 +59,9 @@ export class Percentage extends Decimal<Percentage> {
 
   public print(): string {
     if (this.gt(Percentage.PCT_THOUSAND)) {
-      return this.raw.round(1, 1).toString() + 'x'; // RoundHalfUp
+      return this.raw.round(1, 1).toString() + "x"; // RoundHalfUp
     }
-    return this.raw.mul(100).round(2, 1).toString() + '%'; // RoundHalfUp
+    return this.raw.mul(100).round(2, 1).toString() + "%"; // RoundHalfUp
   }
 
   public replaceWithValue(value: BigSource): Percentage {

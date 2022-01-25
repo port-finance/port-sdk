@@ -1,4 +1,11 @@
-import {Connection, Keypair, PublicKey, SystemProgram, Transaction, TransactionInstruction} from '@solana/web3.js';
+import {
+  Connection,
+  Keypair,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+  TransactionInstruction,
+} from "@solana/web3.js";
 import {
   RESERVE_DATA_SIZE,
   ReserveLayout,
@@ -6,8 +13,8 @@ import {
   PORT_PROFILE_DATA_SIZE,
   ObligationLayout,
   ReserveConfigProto,
-} from './structs';
-import {getTokenAccount} from '@project-serum/common';
+} from "./structs";
+import { getTokenAccount } from "@project-serum/common";
 import {
   ReserveInfo,
   ReserveContext,
@@ -17,13 +24,17 @@ import {
   PortProfile,
   StakingPool,
   StakingPoolContext,
-} from './models';
-import {Environment} from './Environment';
-import {DEFAULT_PORT_LENDING_MARKET} from './constants';
-import {AccessType} from './utils/Instructions';
-import {BN, Provider} from '@project-serum/anchor';
-import {initLendingMarketInstruction, initReserveInstruction, PORT_LENDING} from '.';
-import {AccountLayout} from '@solana/spl-token';
+} from "./models";
+import { Environment } from "./Environment";
+import { DEFAULT_PORT_LENDING_MARKET } from "./constants";
+import { AccessType } from "./utils/Instructions";
+import { BN, Provider } from "@project-serum/anchor";
+import {
+  initLendingMarketInstruction,
+  initReserveInstruction,
+  PORT_LENDING,
+} from ".";
+import { AccountLayout } from "@solana/spl-token";
 
 export class Port {
   public readonly environment: Environment;
@@ -32,9 +43,9 @@ export class Port {
   public reserveContext?: ReserveContext;
 
   constructor(
-      connection: Connection,
-      environment: Environment,
-      lendingMarket: PublicKey,
+    connection: Connection,
+    environment: Environment,
+    lendingMarket: PublicKey
   ) {
     this.connection = connection;
     this.environment = environment;
@@ -46,7 +57,7 @@ export class Port {
   }
 
   public static forMainNet({
-    connection = new Connection('https://api.mainnet-beta.solana.com'),
+    connection = new Connection("https://api.mainnet-beta.solana.com"),
     profile = Environment.forMainNet(),
     lendingMarket = DEFAULT_PORT_LENDING_MARKET,
   }: {
@@ -68,58 +79,58 @@ export class Port {
   public async getTotalMarketCap(): Promise<QuoteValue> {
     const context = await this.getReserveContext();
     return context
-        .getAllReserves()
-        .map((r) => r.getMarketCap())
-        .map((c) => c.getValue())
-        .reduce(QuoteValue.sum, QuoteValue.zero());
+      .getAllReserves()
+      .map((r) => r.getMarketCap())
+      .map((c) => c.getValue())
+      .reduce(QuoteValue.sum, QuoteValue.zero());
   }
 
   public async getShareAccount(
-      walletId: WalletId,
-      context: ReserveContext,
+    walletId: WalletId,
+    context: ReserveContext
   ): Promise<TokenAccount[]> {
     const shareMintPks = context
-        .getAllReserves()
-        .map((r) => r.getShareMintId())
-        .map((s) => s.getAccess(AccessType.READ).pubkey);
+      .getAllReserves()
+      .map((r) => r.getShareMintId())
+      .map((s) => s.getAccess(AccessType.READ).pubkey);
     const programId = this.environment.getTokenProgramPk();
     const result = await this.connection.getTokenAccountsByOwner(
-        walletId.getAccess(AccessType.READ).pubkey,
-        {
-          programId,
-        },
+      walletId.getAccess(AccessType.READ).pubkey,
+      {
+        programId,
+      }
     );
     const raw = result.value;
     return raw
-        .map((a) => TokenAccount.fromRaw(a))
-        .filter(
-            (p) =>
-              p &&
+      .map((a) => TokenAccount.fromRaw(a))
+      .filter(
+        (p) =>
+          p &&
           shareMintPks.find((k) =>
-            k.equals(p.getMintId().getAccess(AccessType.READ).pubkey),
-          ),
-        );
+            k.equals(p.getMintId().getAccess(AccessType.READ).pubkey)
+          )
+      );
   }
 
   public async getPortProfile(
-      walletId: WalletId,
+    walletId: WalletId
   ): Promise<PortProfile | undefined> {
     const raw = await this.connection.getProgramAccounts(
-        this.environment.getLendingProgramPk(),
-        {
-          filters: [
-            {
-              memcmp: {
-              // offset: 1 + 8 + 1 + 32,
-                offset: ObligationLayout.offsetOf('owner')!,
-                bytes: walletId.toBase58(),
-              },
+      this.environment.getLendingProgramPk(),
+      {
+        filters: [
+          {
+            memcmp: {
+              // eslint-disable-next-line
+              offset: ObligationLayout.offsetOf("owner")!,
+              bytes: walletId.toBase58(),
             },
-            {
-              dataSize: PORT_PROFILE_DATA_SIZE,
-            },
-          ],
-        },
+          },
+          {
+            dataSize: PORT_PROFILE_DATA_SIZE,
+          },
+        ],
+      }
     );
     const parsed = raw.map((a) => PortProfile.fromRaw(a)).filter((p) => !!p);
     return parsed.length > 0 ? parsed[0] : undefined;
@@ -127,20 +138,21 @@ export class Port {
 
   public async getReserveContext(): Promise<ReserveContext> {
     const raw = await this.connection.getProgramAccounts(
-        this.environment.getLendingProgramPk(),
-        {
-          filters: [
-            {
-              dataSize: RESERVE_DATA_SIZE,
+      this.environment.getLendingProgramPk(),
+      {
+        filters: [
+          {
+            dataSize: RESERVE_DATA_SIZE,
+          },
+          {
+            memcmp: {
+              // eslint-disable-next-line
+              offset: ReserveLayout.offsetOf("lendingMarket")!,
+              bytes: this.lendingMarket.toBase58(),
             },
-            {
-              memcmp: {
-                offset: ReserveLayout.offsetOf('lendingMarket')!,
-                bytes: this.lendingMarket.toBase58(),
-              },
-            },
-          ],
-        },
+          },
+        ],
+      }
     );
     const parsed = raw.map((a) => ReserveInfo.fromRaw(a)).filter((p) => !!p);
     return ReserveContext.index(parsed);
@@ -152,6 +164,7 @@ export class Port {
     }
 
     const raw = await this.connection.getProgramAccounts(
+      // eslint-disable-next-line
       this.environment.getStakingProgramPk()!,
       {
         filters: [
@@ -159,7 +172,7 @@ export class Port {
             dataSize: STAKING_POOL_DATA_SIZE,
           },
         ],
-      },
+      }
     );
     const parsed = raw.map((a) => StakingPool.fromRaw(a)).filter((p) => !!p);
     return StakingPoolContext.index(parsed);
@@ -167,14 +180,14 @@ export class Port {
 
   public async getAllPortProfiles(): Promise<PortProfile[]> {
     const raw = await this.connection.getProgramAccounts(
-        this.environment.getLendingProgramPk(),
-        {
-          filters: [
-            {
-              dataSize: PORT_PROFILE_DATA_SIZE,
-            },
-          ],
-        },
+      this.environment.getLendingProgramPk(),
+      {
+        filters: [
+          {
+            dataSize: PORT_PROFILE_DATA_SIZE,
+          },
+        ],
+      }
     );
     const parsed = raw.map((p) => PortProfile.fromRaw(p)).filter((p) => !!p);
     return parsed;
@@ -183,7 +196,7 @@ export class Port {
   public async getStakingPool(stakingPoolKey: PublicKey): Promise<StakingPool> {
     const raw = await this.connection.getAccountInfo(stakingPoolKey);
     if (!raw) {
-      return Promise.reject(new Error('no reserve found'));
+      return Promise.reject(new Error("no reserve found"));
     }
     return StakingPool.fromRaw({
       pubkey: stakingPoolKey,
@@ -194,7 +207,7 @@ export class Port {
   public async getReserve(reserveKey: PublicKey): Promise<ReserveInfo> {
     const raw = await this.connection.getAccountInfo(reserveKey);
     if (!raw) {
-      return Promise.reject(new Error('no reserve found'));
+      return Promise.reject(new Error("no reserve found"));
     }
     return ReserveInfo.fromRaw({
       pubkey: reserveKey,
@@ -202,7 +215,11 @@ export class Port {
     });
   }
 
-  public async createLendingMarket({provider}: {provider: Provider}): Promise<[Transaction, PublicKey]> {
+  public async createLendingMarket({
+    provider,
+  }: {
+    provider: Provider;
+  }): Promise<[Transaction, PublicKey]> {
     const lendingMarketKp = Keypair.generate();
     const tx = new Transaction();
     const [ix] = await this.createAccount({
@@ -211,15 +228,15 @@ export class Port {
       owner: PORT_LENDING,
     });
     tx.add(
-        ix,
-        initLendingMarketInstruction(
-            provider.wallet.publicKey,
-            Buffer.from(
-                'USD\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',
-                'ascii',
-            ),
-            lendingMarketKp.publicKey,
+      ix,
+      initLendingMarketInstruction(
+        provider.wallet.publicKey,
+        Buffer.from(
+          "USD\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+          "ascii"
         ),
+        lendingMarketKp.publicKey
+      )
     );
     return [tx, lendingMarketKp.publicKey];
   }
@@ -232,12 +249,12 @@ export class Port {
     initialLiquidity,
     oracle,
   }: {
-      provider: Provider,
-      reserveConfig: ReserveConfigProto,
-      transferAuthority: PublicKey,
-      sourceTokenWallet: PublicKey,
-      initialLiquidity: number | BN,
-      oracle: PublicKey
+    provider: Provider;
+    reserveConfig: ReserveConfigProto;
+    transferAuthority: PublicKey;
+    sourceTokenWallet: PublicKey;
+    initialLiquidity: number | BN;
+    oracle: PublicKey;
   }): Promise<[Transaction[], PublicKey]> {
     const [createReserveAccount, reservePubKey] = await this.createAccount({
       provider,
@@ -249,16 +266,19 @@ export class Port {
       space: AccountLayout.span,
       owner: PORT_LENDING,
     });
-    const [liquiditySupplyIx, liquiditySupplyPubKey] = await this.createAccount({
-      provider,
-      space: AccountLayout.span,
-      owner: PORT_LENDING,
-    });
-    const [collateralSupplyIx, collateralSupplyPubKey] = await this.createAccount({
-      provider,
-      space: AccountLayout.span,
-      owner: PORT_LENDING,
-    });
+    const [liquiditySupplyIx, liquiditySupplyPubKey] = await this.createAccount(
+      {
+        provider,
+        space: AccountLayout.span,
+        owner: PORT_LENDING,
+      }
+    );
+    const [collateralSupplyIx, collateralSupplyPubKey] =
+      await this.createAccount({
+        provider,
+        space: AccountLayout.span,
+        owner: PORT_LENDING,
+      });
     const [userCollateralIx, userCollateralPubKey] = await this.createAccount({
       provider,
       space: AccountLayout.span,
@@ -273,46 +293,43 @@ export class Port {
     const tokenAccount = await getTokenAccount(provider, sourceTokenWallet);
 
     const initReserveIx = initReserveInstruction(
-        initialLiquidity,
-        1, // oracle Option
-        new BN(1),
-        reserveConfig,
-        sourceTokenWallet,
-        collateralSupplyPubKey,
-        reservePubKey,
-        tokenAccount.mint,
-        liquiditySupplyPubKey,
-        feeReceiverPubkey,
-        oracle,
-        collateralMintPubKey,
-        userCollateralPubKey,
-        this.lendingMarket,
-        (await this.getLendingMarketAuthority())[0],
-        provider.wallet.publicKey,
-        transferAuthority,
+      initialLiquidity,
+      1, // oracle Option
+      new BN(1),
+      reserveConfig,
+      sourceTokenWallet,
+      collateralSupplyPubKey,
+      reservePubKey,
+      tokenAccount.mint,
+      liquiditySupplyPubKey,
+      feeReceiverPubkey,
+      oracle,
+      collateralMintPubKey,
+      userCollateralPubKey,
+      this.lendingMarket,
+      (await this.getLendingMarketAuthority())[0],
+      provider.wallet.publicKey,
+      transferAuthority
     );
 
     const tx1 = new Transaction();
     tx1.add(
-        createReserveAccount,
-        collateralMintIx,
-        liquiditySupplyIx,
-        collateralSupplyIx,
-        userCollateralIx,
+      createReserveAccount,
+      collateralMintIx,
+      liquiditySupplyIx,
+      collateralSupplyIx,
+      userCollateralIx
     );
     const tx2 = new Transaction();
-    tx2.add(
-        feeReceiverIx,
-        initReserveIx,
-    );
+    tx2.add(feeReceiverIx, initReserveIx);
 
     return [[tx1, tx2], reservePubKey];
   }
 
   public async getLendingMarketAuthority(): Promise<[PublicKey, number]> {
     return await PublicKey.findProgramAddress(
-        [this.lendingMarket.toBuffer()],
-        PORT_LENDING,
+      [this.lendingMarket.toBuffer()],
+      PORT_LENDING
     );
   }
 
@@ -321,18 +338,22 @@ export class Port {
     space,
     owner,
   }: {
-    provider: Provider,
-    space: number,
-    owner: PublicKey}): Promise<[TransactionInstruction, PublicKey]> {
+    provider: Provider;
+    space: number;
+    owner: PublicKey;
+  }): Promise<[TransactionInstruction, PublicKey]> {
     const newAccount = Keypair.generate();
-    return [SystemProgram.createAccount({
-      fromPubkey: provider.wallet.publicKey,
-      newAccountPubkey: newAccount.publicKey,
-      programId: owner,
-      lamports: await provider.connection.getMinimumBalanceForRentExemption(
-          space,
-      ),
-      space,
-    }), newAccount.publicKey];
+    return [
+      SystemProgram.createAccount({
+        fromPubkey: provider.wallet.publicKey,
+        newAccountPubkey: newAccount.publicKey,
+        programId: owner,
+        lamports: await provider.connection.getMinimumBalanceForRentExemption(
+          space
+        ),
+        space,
+      }),
+      newAccount.publicKey,
+    ];
   }
 }

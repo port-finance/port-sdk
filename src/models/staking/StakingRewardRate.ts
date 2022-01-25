@@ -1,5 +1,5 @@
-import {WrappedDecimal} from '../basic';
-import {ExchangeRate} from '../ExchangeRate';
+import { WrappedDecimal } from "../basic";
+import { ExchangeRate } from "../ExchangeRate";
 
 export class StakingRewardRate extends WrappedDecimal<
   ExchangeRate,

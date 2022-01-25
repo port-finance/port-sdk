@@ -1,10 +1,10 @@
-import {MintId} from './MintId';
-import {ReserveId} from './ReserveId';
-import {AssetDisplayConfig} from './AssetDisplayConfig';
-import {AssetPriceConfig} from './AssetPriceConfig';
-import {AssetDepositConfig} from './AssetDepositConfig';
-import {Asset} from './Asset';
-import {Lamport} from './basic';
+import { MintId } from "./MintId";
+import { ReserveId } from "./ReserveId";
+import { AssetDisplayConfig } from "./AssetDisplayConfig";
+import { AssetPriceConfig } from "./AssetPriceConfig";
+import { AssetDepositConfig } from "./AssetDepositConfig";
+import { Asset } from "./Asset";
+import { Lamport } from "./basic";
 
 export class AssetConfig {
   private readonly mintId: MintId;
@@ -14,11 +14,11 @@ export class AssetConfig {
   private readonly isDefault: boolean;
 
   constructor(
-      mintId: MintId,
-      display: AssetDisplayConfig,
-      price: AssetPriceConfig,
-      deposit?: AssetDepositConfig,
-      isDefault?:boolean,
+    mintId: MintId,
+    display: AssetDisplayConfig,
+    price: AssetPriceConfig,
+    deposit?: AssetDepositConfig,
+    isDefault?: boolean
   ) {
     this.mintId = mintId;
     this.display = display;
@@ -27,7 +27,7 @@ export class AssetConfig {
     this.isDefault = isDefault ?? false;
   }
 
-  public checkIsDefault():boolean {
+  public checkIsDefault(): boolean {
     return this.isDefault;
   }
 
@@ -51,7 +51,7 @@ export class AssetConfig {
     return this.display;
   }
 
-  public getPriceDecimals() {
+  public getPriceDecimals(): number {
     return this.getPriceConfig().getDecimals();
   }
 

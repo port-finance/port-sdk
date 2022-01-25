@@ -1,5 +1,5 @@
-import {Ratio, Percentage} from './basic';
-import {BigSource} from 'big.js';
+import { Ratio, Percentage } from "./basic";
+import { BigSource } from "big.js";
 
 export class Apy extends Ratio<Apy> {
   private static APY_NA = new Apy();
@@ -12,7 +12,7 @@ export class Apy extends Ratio<Apy> {
     return Apy.APY_NA;
   }
 
-  public static of(raw: BigSource) {
+  public static of(raw: BigSource): Apy {
     return new Apy(Percentage.fromOneBased(raw));
   }
 

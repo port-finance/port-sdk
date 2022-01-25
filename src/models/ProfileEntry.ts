@@ -1,8 +1,8 @@
-import {ReserveId} from './ReserveId';
-import {Lamport, WrappedLamport} from './basic';
+import { ReserveId } from "./ReserveId";
+import { Lamport, WrappedLamport } from "./basic";
 
 export abstract class ProfileEntry<
-  T extends ProfileEntry<T>,
+  T extends ProfileEntry<T>
 > extends WrappedLamport<T> {
   private readonly reserveId: ReserveId;
 

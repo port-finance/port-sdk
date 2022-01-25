@@ -1,36 +1,36 @@
-import {MintId} from './MintId';
-import {TokenAccount} from './TokenAccount';
-import {TokenAccountId} from './TokenAccountId';
+import { MintId } from "./MintId";
+import { TokenAccount } from "./TokenAccount";
+import { TokenAccountId } from "./TokenAccountId";
 
 export class TokenAccountContext {
   private static readonly SPL_ACCOUNT_CONTEXT_EMPTY = TokenAccountContext.index(
-      [],
+    []
   );
 
   private readonly accounts: TokenAccount[];
   private readonly bySplAccountId: Map<string, TokenAccount>;
 
   private constructor(
-      accounts: TokenAccount[],
-      bySplAccountId: Map<string, TokenAccount>,
+    accounts: TokenAccount[],
+    bySplAccountId: Map<string, TokenAccount>
   ) {
     this.accounts = accounts;
     this.bySplAccountId = bySplAccountId;
   }
 
-  public static empty() {
+  public static empty(): TokenAccountContext {
     return TokenAccountContext.SPL_ACCOUNT_CONTEXT_EMPTY;
   }
 
   public static index(accounts: TokenAccount[]): TokenAccountContext {
     const bySplAccountId = new Map<string, TokenAccount>();
     accounts.forEach((a) =>
-      bySplAccountId.set(a.getSplAccountId().toString(), a),
+      bySplAccountId.set(a.getSplAccountId().toString(), a)
     );
     return new TokenAccountContext(accounts, bySplAccountId);
   }
 
-  public isReady() {
+  public isReady(): boolean {
     return this.accounts.length > 0;
   }
 
@@ -48,7 +48,7 @@ export class TokenAccountContext {
   }
 
   public findSplAccount(
-      splAccountId: TokenAccountId,
+    splAccountId: TokenAccountId
   ): TokenAccount | undefined {
     const key = splAccountId.toString();
     return this.bySplAccountId.get(key);
@@ -65,8 +65,8 @@ export class TokenAccountContext {
 
   public findSplAccountByMintId(mintId: MintId): TokenAccount | undefined {
     const accounts = this.accounts
-        .filter((account) => account.getMintId().equals(mintId))
-        .sort((a, b) => -a.getAmount().compare(b.getAmount()));
+      .filter((account) => account.getMintId().equals(mintId))
+      .sort((a, b) => -a.getAmount().compare(b.getAmount()));
     return accounts[0];
   }
 }

@@ -1,5 +1,5 @@
-import Big, {BigSource, Comparison} from 'big.js';
-import {Comparable} from './Comparable';
+import Big, { BigSource, Comparison } from "big.js";
+import { Comparable } from "./Comparable";
 
 export abstract class Numerical<N extends Numerical<N>> extends Comparable<N> {
   private static readonly BIG_ZERO = new Big(0);

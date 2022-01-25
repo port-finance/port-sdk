@@ -1,7 +1,7 @@
-import {PublicKey} from '@solana/web3.js';
-import {Id} from './basic';
-import {PublicKeyField} from '../serialization/PublicKeyField';
-import {Field} from '../serialization/Field';
+import { PublicKey } from "@solana/web3.js";
+import { Id } from "./basic";
+import { PublicKeyField } from "../serialization/PublicKeyField";
+import { Field } from "../serialization/Field";
 
 export class AuthorityId extends Id {
   private constructor(pubKey: PublicKey) {

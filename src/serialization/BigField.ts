@@ -1,6 +1,6 @@
-import {Field} from './Field';
-import Big from 'big.js';
-import {BigType} from './BigType';
+import { Field } from "./Field";
+import Big from "big.js";
+import { BigType } from "./BigType";
 
 export class BigField extends Field<Big> {
   private readonly type: BigType;
@@ -10,7 +10,7 @@ export class BigField extends Field<Big> {
     this.type = type;
   }
 
-  public static forType(type: BigType, property: string) {
+  public static forType(type: BigType, property: string): BigField {
     return new BigField(type, property);
   }
 

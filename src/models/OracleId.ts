@@ -1,6 +1,6 @@
-import {PublicKey} from '@solana/web3.js';
+import { PublicKey } from "@solana/web3.js";
 
-import {Id} from './basic';
+import { Id } from "./basic";
 
 export class OracleId extends Id {
   static fromBase58(base58: string): OracleId {

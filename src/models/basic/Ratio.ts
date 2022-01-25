@@ -1,6 +1,6 @@
-import {Percentage} from './Percentage';
-import Big, {Comparison} from 'big.js';
-import {Comparable} from './Comparable';
+import { Percentage } from "./Percentage";
+import Big, { Comparison } from "big.js";
+import { Comparable } from "./Comparable";
 
 export abstract class Ratio<R extends Ratio<R>> extends Comparable<R> {
   private readonly pct?: Percentage;
@@ -29,7 +29,7 @@ export abstract class Ratio<R extends Ratio<R>> extends Comparable<R> {
 
   public getUnchecked(): Big {
     if (!this.pct) {
-      throw new Error('No value available');
+      throw new Error("No value available");
     }
 
     return this.pct.getRaw();
@@ -40,7 +40,7 @@ export abstract class Ratio<R extends Ratio<R>> extends Comparable<R> {
   }
 
   public print(): string {
-    return !this.pct ? '--' : this.pct.print();
+    return !this.pct ? "--" : this.pct.print();
   }
 
   public compare(that: R): Comparison {

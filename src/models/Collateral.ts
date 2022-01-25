@@ -1,6 +1,6 @@
-import {ReserveId} from './ReserveId';
-import {Lamport} from './basic';
-import {ProfileEntry} from './ProfileEntry';
+import { ReserveId } from "./ReserveId";
+import { Lamport } from "./basic";
+import { ProfileEntry } from "./ProfileEntry";
 
 export class Collateral extends ProfileEntry<Collateral> {
   public constructor(reserveId: ReserveId, amount: Lamport) {

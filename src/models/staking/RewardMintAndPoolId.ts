@@ -1,5 +1,5 @@
-import {StakingPoolId} from './StakingPoolId';
-import {MintId} from '../MintId';
+import { StakingPoolId } from "./StakingPoolId";
+import { MintId } from "../MintId";
 
 export interface RewardMintIdAndPoolId {
   primaryMintId: MintId;

@@ -2,15 +2,15 @@ import {
   PublicKey,
   SYSVAR_CLOCK_PUBKEY,
   TransactionInstruction,
-} from '@solana/web3.js';
+} from "@solana/web3.js";
 
-import * as BufferLayout from '@solana/buffer-layout';
-import * as Layout from '../../serialization/layout';
-import {LendingInstruction} from './instruction';
-import {TOKEN_PROGRAM_ID} from '@solana/spl-token';
-import {AccessType, getAccess} from '../../utils/Instructions';
-import BN from 'bn.js';
-import {PORT_LENDING} from '../../constants';
+import * as BufferLayout from "@solana/buffer-layout";
+import * as Layout from "../../serialization/layout";
+import { LendingInstruction } from "./instruction";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { AccessType, getAccess } from "../../utils/Instructions";
+import BN from "bn.js";
+import { PORT_LENDING } from "../../constants";
 
 // Deposit liquidity into a reserve in exchange for collateral. Collateral represents a share
 // of the reserve liquidity pool.
@@ -29,28 +29,28 @@ import {PORT_LENDING} from '../../constants';
 //   8. `[]` Clock sysvar.
 //   9. `[]` Token program id.
 export const depositReserveLiquidityInstruction = (
-    liquidityAmount: number | BN,
-    srcLiquidityPubkey: PublicKey, // 0
-    dstCollateralPubkey: PublicKey, // 1
-    reservePubkey: PublicKey, // 2
-    reserveLiquiditySupplyPubkey: PublicKey, // 3
-    reserveCollateralMintPubkey: PublicKey, // 4
-    lendingMarketPubkey: PublicKey, // 5
-    lendingMarketAuthorityPubkey: PublicKey, // 6
-    transferAuthorityPubkey: PublicKey, // 7
-    lendingProgramId: PublicKey = PORT_LENDING,
+  liquidityAmount: number | BN,
+  srcLiquidityPubkey: PublicKey, // 0
+  dstCollateralPubkey: PublicKey, // 1
+  reservePubkey: PublicKey, // 2
+  reserveLiquiditySupplyPubkey: PublicKey, // 3
+  reserveCollateralMintPubkey: PublicKey, // 4
+  lendingMarketPubkey: PublicKey, // 5
+  lendingMarketAuthorityPubkey: PublicKey, // 6
+  transferAuthorityPubkey: PublicKey, // 7
+  lendingProgramId: PublicKey = PORT_LENDING
 ): TransactionInstruction => {
   const dataLayout = BufferLayout.struct([
-    BufferLayout.u8('instruction'),
-    Layout.uint64('liquidityAmount'),
+    BufferLayout.u8("instruction"),
+    Layout.uint64("liquidityAmount"),
   ]);
   const data = Buffer.alloc(dataLayout.span);
   dataLayout.encode(
-      {
-        instruction: LendingInstruction.DepositReserveLiquidity,
-        liquidityAmount: new BN(liquidityAmount),
-      },
-      data,
+    {
+      instruction: LendingInstruction.DepositReserveLiquidity,
+      liquidityAmount: new BN(liquidityAmount),
+    },
+    data
   );
 
   const keys = [

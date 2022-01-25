@@ -1,5 +1,5 @@
-import {AssetPrice} from './AssetPrice';
-import {MintId} from './MintId';
+import { AssetPrice } from "./AssetPrice";
+import { MintId } from "./MintId";
 
 export class PriceOracle {
   private readonly cache: Map<string, AssetPrice>;

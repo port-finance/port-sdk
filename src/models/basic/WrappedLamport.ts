@@ -1,9 +1,9 @@
-import {WrappedDecimal} from './WrappedDecimal';
-import {Lamport} from './Lamport';
-import {u64} from '@solana/spl-token';
+import { WrappedDecimal } from "./WrappedDecimal";
+import { Lamport } from "./Lamport";
+import { u64 } from "@solana/spl-token";
 
 export abstract class WrappedLamport<
-  T extends WrappedLamport<T>,
+  T extends WrappedLamport<T>
 > extends WrappedDecimal<Lamport, T> {
   public isMax(): boolean {
     return this.getWrapped().isMax();

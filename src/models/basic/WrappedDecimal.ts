@@ -1,10 +1,10 @@
-import {Numerical} from './Numerical';
-import {Decimal} from './Decimal';
-import Big, {BigSource} from 'big.js';
+import { Numerical } from "./Numerical";
+import { Decimal } from "./Decimal";
+import Big, { BigSource } from "big.js";
 
 export abstract class WrappedDecimal<
   D extends Decimal<D>,
-  W extends WrappedDecimal<D, W>,
+  W extends WrappedDecimal<D, W>
 > extends Numerical<W> {
   private readonly wrapped: D;
 

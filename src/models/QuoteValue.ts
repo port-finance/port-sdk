@@ -1,10 +1,10 @@
-import Big, {BigSource} from 'big.js';
-import {Value} from './Value';
-import {ValueRatio} from './ValueRatio';
-import {Percentage, DecimalField} from './basic';
-import {BigType} from '../serialization/BigType';
-import {Field} from '../serialization/Field';
-import {Margin} from './Margin';
+import Big, { BigSource } from "big.js";
+import { Value } from "./Value";
+import { ValueRatio } from "./ValueRatio";
+import { Percentage, DecimalField } from "./basic";
+import { BigType } from "../serialization/BigType";
+import { Field } from "../serialization/Field";
+import { Margin } from "./Margin";
 
 export class QuoteValue extends Value<QuoteValue> {
   private static readonly QUOTE_VALUE_ZERO = new QuoteValue(0);
