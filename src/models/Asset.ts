@@ -5,7 +5,6 @@ import {Apy} from './Apy';
 import {QuoteValue} from './QuoteValue';
 import {AssetPrice} from './AssetPrice';
 import {QuantityContext} from './QuantityContext';
-import {AssetConfig} from './AssetConfig';
 import {Share} from './Share';
 import {AssetExchangeRate} from './AssetExchangeRate';
 import {MintId} from './MintId';
@@ -115,26 +114,32 @@ export class Asset extends Token<Asset> {
   }
 
   public plain(context: QuantityContext): string {
-    return this.toNumber(context).toString();
+    return this.toLimitRoundNumber(context).toString();
+  }
+
+  public toLimitRoundNumber(context: QuantityContext):number {
+    const multiplier = context.multiplier;
+    const decimals = context.decimals;
+    return this.getRaw().div(multiplier).round(Math.min(decimals, 6), 0).toNumber();
   }
 
   public print(
       context: QuantityContext | undefined,
-      config?: AssetConfig,
+      symbol?: string,
   ): string {
     if (!context) {
       return '--';
     }
 
-    const num = this.toNumber(context);
+    const num = this.toLimitRoundNumber(context);
     const formatted =
       num > Asset.LARGE_THRESHOLD ?
         Asset.FORMATTER_LARGE.format(num) :
         Asset.FORMATTER_NORMAL.format(num);
-    if (!config) {
+    if (!symbol) {
       return formatted;
     }
-    return formatted + ' ' + config.getSymbol();
+    return formatted + ' ' + symbol;
   }
 
   protected wrap(value: Lamport): Asset {

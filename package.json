@@ -1,6 +1,6 @@
 {
   "name": "@port.finance/port-sdk",
-  "version": "0.2.36",
+  "version": "0.2.40",
   "license": "MIT",
   "source": "src/index.js",
   "main": "dist/cjs/index.js",
@@ -11,8 +11,8 @@
   "scripts": {
     "build": "rm -fr dist/ && tsc -P tsconfig.build.json && tsc -P tsconfig.esm.json",
     "test": "ts-node node_modules/jasmine/bin/jasmine",
-    "lint": "eslint tests --cache && eslint src --cache && prettier --write '{tests,src,migrations}/**/*.ts'",
-    "lint:ci": "eslint tests --max-warnings=0 && eslint src --max-warnings=0 && prettier -c '{tests,src,migrations}/**/*.ts'"
+    "lint": "eslint src --cache && eslint spec --cache && prettier --write '{src,spec}/**/*.ts'",
+    "lint:ci": "eslint src --max-warnings=0 && eslint spec --max-warnings=0 && prettier -c '{src,spec}/**/*.ts'"
 },
   "keywords": [],
   "author": "Port Finance <info@port.finance>",
