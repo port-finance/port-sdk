@@ -59,7 +59,7 @@
     "ts-node": "^10.1.0"
   },
   "peerDependencies": {
-    "@solana/web3.js": "^1.29.0",
+    "@solana/web3.js": "^1.32.0",
     "bn.js": "^5.2.0"
   }
 }
