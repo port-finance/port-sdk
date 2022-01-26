@@ -1,9 +1,4 @@
-import {
-  Connection,
-  Keypair,
-  PublicKey,
-  SystemProgram,
-} from "@solana/web3.js";
+import { Connection, Keypair, PublicKey, SystemProgram } from "@solana/web3.js";
 import {
   RESERVE_DATA_SIZE,
   ReserveLayout,
@@ -33,13 +28,8 @@ import {
   PORT_LENDING,
 } from ".";
 import { AccountLayout, MintLayout, TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import {
-  TransactionEnvelope,
-  Provider
-} from "@saberhq/solana-contrib";
-import {
-  getTokenAccount
-} from "@saberhq/token-utils"
+import { TransactionEnvelope, Provider } from "@saberhq/solana-contrib";
+import { getTokenAccount } from "@saberhq/token-utils";
 import invariant from "tiny-invariant";
 
 export class Port {
@@ -227,7 +217,7 @@ export class Port {
 
   public async createLendingMarket({
     provider,
-    owner = provider.wallet.publicKey
+    owner = provider.wallet.publicKey,
   }: {
     provider: Provider;
     owner?: PublicKey;
@@ -247,9 +237,7 @@ export class Port {
       lendingMarketPubkey
     );
     tx = tx.combine(createTx);
-    tx.addInstructions(
-      createLendingMarketIx
-    );
+    tx.addInstructions(createLendingMarketIx);
     return [tx, lendingMarketPubkey];
   }
 
@@ -319,7 +307,7 @@ export class Port {
       tokenAccount.mint,
       liquiditySupplyPubKey,
       feeReceiverPubkey,
-      oracle ?? (Keypair.generate()).publicKey,
+      oracle ?? Keypair.generate().publicKey,
       collateralMintPubKey,
       userCollateralPubKey,
       this.lendingMarket,
@@ -359,18 +347,20 @@ export class Port {
     owner: PublicKey;
   }): Promise<[TransactionEnvelope, PublicKey]> {
     const newAccount = Keypair.generate();
-    const tx = new TransactionEnvelope(provider, [
-      SystemProgram.createAccount({
-        fromPubkey: provider.wallet.publicKey,
-        newAccountPubkey: newAccount.publicKey,
-        programId: owner,
-        lamports: await provider.connection.getMinimumBalanceForRentExemption(
-          space
-        ),
-        space,
-      })
-    ],
-    [newAccount]
+    const tx = new TransactionEnvelope(
+      provider,
+      [
+        SystemProgram.createAccount({
+          fromPubkey: provider.wallet.publicKey,
+          newAccountPubkey: newAccount.publicKey,
+          programId: owner,
+          lamports: await provider.connection.getMinimumBalanceForRentExemption(
+            space
+          ),
+          space,
+        }),
+      ],
+      [newAccount]
     );
     return [tx, newAccount.publicKey];
   }
