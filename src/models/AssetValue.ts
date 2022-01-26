@@ -1,6 +1,6 @@
-import {QuoteValue} from './QuoteValue';
-import {MintId} from './MintId';
-import {Asset} from './Asset';
+import { QuoteValue } from "./QuoteValue";
+import { MintId } from "./MintId";
+import { Asset } from "./Asset";
 
 export class AssetValue {
   private readonly asset: Asset;
@@ -11,7 +11,7 @@ export class AssetValue {
     this.value = value;
   }
 
-  public static zero(mintId: MintId) {
+  public static zero(mintId: MintId): AssetValue {
     return new AssetValue(Asset.zero(mintId), QuoteValue.zero());
   }
 

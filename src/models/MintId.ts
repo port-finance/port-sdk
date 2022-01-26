@@ -1,9 +1,9 @@
-import {PublicKey} from '@solana/web3.js';
+import { PublicKey } from "@solana/web3.js";
 
-import {Id} from './basic';
-import {NATIVE_MINT} from '@solana/spl-token';
-import {PublicKeyField} from '../serialization/PublicKeyField';
-import {Field} from '../serialization/Field';
+import { Id } from "./basic";
+import { NATIVE_MINT } from "@solana/spl-token";
+import { PublicKeyField } from "../serialization/PublicKeyField";
+import { Field } from "../serialization/Field";
 
 export class MintId extends Id {
   private constructor(key: PublicKey) {

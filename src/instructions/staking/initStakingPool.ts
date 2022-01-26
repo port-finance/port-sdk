@@ -1,17 +1,16 @@
-import {TOKEN_PROGRAM_ID} from '@solana/spl-token';
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
   PublicKey,
   SYSVAR_RENT_PUBKEY,
   TransactionInstruction,
-} from '@solana/web3.js';
-import * as BufferLayout from '@solana/buffer-layout';
-import BN from 'bn.js';
+} from "@solana/web3.js";
+import * as BufferLayout from "@solana/buffer-layout";
+import BN from "bn.js";
 
-import * as Layout from '../../serialization/layout';
-import {PORT_STAKING} from '../../constants';
-import {StakingInstructions} from './instruction';
-import {AccessType, getAccess} from '../../utils/Instructions';
-
+import * as Layout from "../../serialization/layout";
+import { PORT_STAKING } from "../../constants";
+import { StakingInstructions } from "./instruction";
+import { AccessType, getAccess } from "../../utils/Instructions";
 
 // interface Data {
 //   instruction: number;
@@ -24,13 +23,13 @@ import {AccessType, getAccess} from '../../utils/Instructions';
 // }
 
 const DataLayout = BufferLayout.struct([
-  BufferLayout.u8('instruction'),
-  Layout.uint64('supply'),
-  Layout.uint64('duration'),
-  Layout.uint64('earliestRewardTime'),
-  BufferLayout.u8('bumpSeed'),
-  Layout.publicKey('poolOwnerAuthority'),
-  Layout.publicKey('adminAuthority'),
+  BufferLayout.u8("instruction"),
+  Layout.uint64("supply"),
+  Layout.uint64("duration"),
+  Layout.uint64("earliestRewardTime"),
+  BufferLayout.u8("bumpSeed"),
+  Layout.publicKey("poolOwnerAuthority"),
+  Layout.publicKey("adminAuthority"),
 ]);
 
 // Accounts expected by this instruction:
@@ -43,32 +42,32 @@ const DataLayout = BufferLayout.struct([
 //   6. `[]` Rent sysvar .
 //   7. `[]` Token program.
 export const initStakingPoolInstruction = (
-    supply: number | BN,
-    duration: number | BN,
-    earliestRewardTime: number | BN,
-    bumpSeed: number,
-    transferRewardSupply: PublicKey,
-    rewardTokenSupply: PublicKey,
-    rewardTokenPool: PublicKey,
-    stakingPool: PublicKey,
-    rewardTokenMint: PublicKey,
-    derivedStakingProgram: PublicKey,
-    poolOwnerAuthority: PublicKey,
-    adminAuthority: PublicKey,
-    stakingProgramId: PublicKey = PORT_STAKING,
+  supply: number | BN,
+  duration: number | BN,
+  earliestRewardTime: number | BN,
+  bumpSeed: number,
+  transferRewardSupply: PublicKey,
+  rewardTokenSupply: PublicKey,
+  rewardTokenPool: PublicKey,
+  stakingPool: PublicKey,
+  rewardTokenMint: PublicKey,
+  derivedStakingProgram: PublicKey,
+  poolOwnerAuthority: PublicKey,
+  adminAuthority: PublicKey,
+  stakingProgramId: PublicKey = PORT_STAKING
 ): TransactionInstruction => {
   const data = Buffer.alloc(DataLayout.span);
   DataLayout.encode(
-      {
-        instruction: StakingInstructions.InitStakingPool,
-        supply: new BN(supply),
-        duration: new BN(duration),
-        earliestRewardTime: new BN(earliestRewardTime),
-        bumpSeed,
-        poolOwnerAuthority,
-        adminAuthority,
-      },
-      data,
+    {
+      instruction: StakingInstructions.InitStakingPool,
+      supply: new BN(supply),
+      duration: new BN(duration),
+      earliestRewardTime: new BN(earliestRewardTime),
+      bumpSeed,
+      poolOwnerAuthority,
+      adminAuthority,
+    },
+    data
   );
 
   const keys = [

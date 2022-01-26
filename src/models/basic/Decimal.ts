@@ -1,8 +1,8 @@
-import Big, {BigSource} from 'big.js';
-import {BigField} from '../../serialization/BigField';
-import {Field} from '../../serialization/Field';
-import {Numerical} from './Numerical';
-import {BigType} from '../../serialization/BigType';
+import Big, { BigSource } from "big.js";
+import { BigField } from "../../serialization/BigField";
+import { Field } from "../../serialization/Field";
+import { Numerical } from "./Numerical";
+import { BigType } from "../../serialization/BigType";
 
 export abstract class Decimal<D extends Decimal<D>> extends Numerical<D> {
   protected readonly raw: Big;
@@ -22,6 +22,7 @@ export abstract class Decimal<D extends Decimal<D>> extends Numerical<D> {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export abstract class DecimalField<T extends Decimal<any>> extends Field<T> {
   private readonly delegate: BigField;
 

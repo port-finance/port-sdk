@@ -1,5 +1,5 @@
-import {MAX_SEED_LENGTH, PublicKey} from '@solana/web3.js';
-import {BlobField} from './BlobField';
+import { MAX_SEED_LENGTH, PublicKey } from "@solana/web3.js";
+import { BlobField } from "./BlobField";
 
 export abstract class PublicKeyField<T extends PublicKey> extends BlobField<T> {
   protected constructor(property?: string) {

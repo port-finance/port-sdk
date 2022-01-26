@@ -2,14 +2,14 @@ import {
   PublicKey,
   SYSVAR_CLOCK_PUBKEY,
   TransactionInstruction,
-} from '@solana/web3.js';
-import BN from 'bn.js';
-import * as BufferLayout from '@solana/buffer-layout';
-import * as Layout from '../../serialization/layout';
-import {TOKEN_PROGRAM_ID} from '@solana/spl-token';
-import {LendingInstruction} from './instruction';
-import {PORT_LENDING} from '../../constants';
-import {AccessType, getAccess} from '../../utils/Instructions';
+} from "@solana/web3.js";
+import BN from "bn.js";
+import * as BufferLayout from "@solana/buffer-layout";
+import * as Layout from "../../serialization/layout";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { LendingInstruction } from "./instruction";
+import { PORT_LENDING } from "../../constants";
+import { AccessType, getAccess } from "../../utils/Instructions";
 
 // Redeem collateral from a reserve in exchange for liquidity.
 //
@@ -27,29 +27,29 @@ import {AccessType, getAccess} from '../../utils/Instructions';
 //   8. `[]` Clock sysvar.
 //   9. `[]` Token program id.
 export const redeemReserveCollateralInstruction = (
-    collateralAmount: number | BN,
-    sourceCollateral: PublicKey,
-    destinationLiquidity: PublicKey,
-    reserve: PublicKey,
-    reserveCollateralMint: PublicKey,
-    reserveLiquiditySupply: PublicKey,
-    lendingMarket: PublicKey,
-    lendingMarketAuthority: PublicKey,
-    transferAuthority: PublicKey,
-    lendingProgramId: PublicKey = PORT_LENDING,
+  collateralAmount: number | BN,
+  sourceCollateral: PublicKey,
+  destinationLiquidity: PublicKey,
+  reserve: PublicKey,
+  reserveCollateralMint: PublicKey,
+  reserveLiquiditySupply: PublicKey,
+  lendingMarket: PublicKey,
+  lendingMarketAuthority: PublicKey,
+  transferAuthority: PublicKey,
+  lendingProgramId: PublicKey = PORT_LENDING
 ): TransactionInstruction => {
   const dataLayout = BufferLayout.struct([
-    BufferLayout.u8('instruction'),
-    Layout.uint64('collateralAmount'),
+    BufferLayout.u8("instruction"),
+    Layout.uint64("collateralAmount"),
   ]);
 
   const data = Buffer.alloc(dataLayout.span);
   dataLayout.encode(
-      {
-        instruction: LendingInstruction.RedeemReserveCollateral,
-        collateralAmount: new BN(collateralAmount),
-      },
-      data,
+    {
+      instruction: LendingInstruction.RedeemReserveCollateral,
+      collateralAmount: new BN(collateralAmount),
+    },
+    data
   );
 
   const keys = [

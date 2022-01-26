@@ -1,8 +1,8 @@
-import {ENV} from '@solana/spl-token-registry';
-import {PublicKey} from '@solana/web3.js';
-import {AssetConfig, AssetContext} from './models';
-import {PORT_LENDING, PORT_STAKING} from './constants';
-import {MAINNET_ASSETS} from './utils/AssetConfigs';
+import { ENV } from "@solana/spl-token-registry";
+import { PublicKey } from "@solana/web3.js";
+import { AssetConfig, AssetContext } from "./models";
+import { PORT_LENDING, PORT_STAKING } from "./constants";
+import { MAINNET_ASSETS } from "./utils/AssetConfigs";
 
 export class Environment {
   private readonly env: ENV;
@@ -12,11 +12,11 @@ export class Environment {
   private readonly assetContext: AssetContext;
 
   constructor(
-      env: ENV,
-      lendingProgramPk: PublicKey,
-      stakingProgramPk: PublicKey | undefined,
-      tokenProgramPk: PublicKey,
-      assetConfigs: AssetConfig[],
+    env: ENV,
+    lendingProgramPk: PublicKey,
+    stakingProgramPk: PublicKey | undefined,
+    tokenProgramPk: PublicKey,
+    assetConfigs: AssetConfig[]
   ) {
     this.env = env;
     this.lendingProgramPk = lendingProgramPk;
@@ -25,13 +25,13 @@ export class Environment {
     this.assetContext = AssetContext.index(assetConfigs);
   }
 
-  public static forMainNet() {
+  public static forMainNet(): Environment {
     return new Environment(
-        ENV.MainnetBeta,
-        PORT_LENDING,
-        PORT_STAKING,
-        new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
-        MAINNET_ASSETS,
+      ENV.MainnetBeta,
+      PORT_LENDING,
+      PORT_STAKING,
+      new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
+      MAINNET_ASSETS
     );
   }
 

@@ -1,11 +1,11 @@
-import Big, {BigSource} from 'big.js';
+import Big, { BigSource } from "big.js";
 
-import {Value} from './Value';
-import {MarginRatio} from './MarginRatio';
-import {Percentage, DecimalField} from './basic';
-import {BigType} from '../serialization/BigType';
-import {Field} from '../serialization/Field';
-import {QuoteValue} from './QuoteValue';
+import { Value } from "./Value";
+import { MarginRatio } from "./MarginRatio";
+import { Percentage, DecimalField } from "./basic";
+import { BigType } from "../serialization/BigType";
+import { Field } from "../serialization/Field";
+import { QuoteValue } from "./QuoteValue";
 
 export class Margin extends Value<Margin> {
   private static MARGIN_ZERO = new Margin(0);
@@ -14,7 +14,7 @@ export class Margin extends Value<Margin> {
     super(value);
   }
 
-  public static of(raw: Big) {
+  public static of(raw: Big): Margin {
     return new Margin(raw);
   }
 
@@ -36,7 +36,7 @@ export class Margin extends Value<Margin> {
     }
 
     return MarginRatio.of(
-        Percentage.fromOneBased(this.getRaw().div(threshold.raw)),
+      Percentage.fromOneBased(this.getRaw().div(threshold.raw))
     );
   }
 

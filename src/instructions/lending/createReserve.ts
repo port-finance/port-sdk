@@ -1,17 +1,20 @@
-import {TOKEN_PROGRAM_ID} from '@solana/spl-token';
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
   PublicKey,
   SYSVAR_CLOCK_PUBKEY,
   SYSVAR_RENT_PUBKEY,
   TransactionInstruction,
-} from '@solana/web3.js';
-import {PORT_LENDING} from '../../constants';
-import {ReserveConfigProtoLayout, ReserveConfigProto} from '../../structs/ReserveData';
-import {LendingInstruction} from './instruction';
-import * as BufferLayout from '@solana/buffer-layout';
-import * as Layout from '../../serialization/layout';
-import BN from 'bn.js';
-import {AccessType, getAccess} from '../../utils/Instructions';
+} from "@solana/web3.js";
+import { PORT_LENDING } from "../../constants";
+import {
+  ReserveConfigProtoLayout,
+  ReserveConfigProto,
+} from "../../structs/ReserveData";
+import { LendingInstruction } from "./instruction";
+import * as BufferLayout from "@solana/buffer-layout";
+import * as Layout from "../../serialization/layout";
+import BN from "bn.js";
+import { AccessType, getAccess } from "../../utils/Instructions";
 
 // interface Data {
 //   instruction: number;
@@ -20,7 +23,6 @@ import {AccessType, getAccess} from '../../utils/Instructions';
 //   marketPrice: BN;
 //   config: ReserveConfigProto;
 // }
-
 
 // Initializes a new lending market reserve.
 //
@@ -45,43 +47,43 @@ import {AccessType, getAccess} from '../../utils/Instructions';
 //   15 `[optional]` Oracle price account, pyth or switchboard.
 //           This will be used as the reserve liquidity oracle account.
 export const initReserveInstruction = (
-    liquidityAmount: number | BN,
-    option: number,
-    price: BN,
-    config: ReserveConfigProto,
-    sourceLiquidity: PublicKey,
-    destinationCollateral: PublicKey,
-    reserve: PublicKey,
-    liquidityMint: PublicKey,
-    liquiditySupply: PublicKey,
-    liquidityFeeReceiver: PublicKey,
-    pythPrice: PublicKey,
-    collateralMint: PublicKey,
-    collateralSupply: PublicKey,
-    lendingMarket: PublicKey,
-    lendingMarketAuthority: PublicKey,
-    lendingMarketOwner: PublicKey,
-    transferAuthority: PublicKey,
-    lendingProgramId: PublicKey = PORT_LENDING,
+  liquidityAmount: number | BN,
+  option: number,
+  price: BN,
+  config: ReserveConfigProto,
+  sourceLiquidity: PublicKey,
+  destinationCollateral: PublicKey,
+  reserve: PublicKey,
+  liquidityMint: PublicKey,
+  liquiditySupply: PublicKey,
+  liquidityFeeReceiver: PublicKey,
+  pythPrice: PublicKey,
+  collateralMint: PublicKey,
+  collateralSupply: PublicKey,
+  lendingMarket: PublicKey,
+  lendingMarketAuthority: PublicKey,
+  lendingMarketOwner: PublicKey,
+  transferAuthority: PublicKey,
+  lendingProgramId: PublicKey = PORT_LENDING
 ): TransactionInstruction => {
   const dataLayout = BufferLayout.struct([
-    BufferLayout.u8('instruction'),
-    Layout.uint64('liquidityAmount'),
-    BufferLayout.u32('option'),
-    Layout.uint128('marketPrice'),
+    BufferLayout.u8("instruction"),
+    Layout.uint64("liquidityAmount"),
+    BufferLayout.u32("option"),
+    Layout.uint128("marketPrice"),
     // eslint-disable-next-line new-cap
-    ReserveConfigProtoLayout('config'),
+    ReserveConfigProtoLayout("config"),
   ]);
   const data = Buffer.alloc(dataLayout.span);
   dataLayout.encode(
-      {
-        instruction: LendingInstruction.InitReserve,
-        option,
-        marketPrice: new BN(price),
-        liquidityAmount: new BN(liquidityAmount),
-        config: {...config},
-      },
-      data,
+    {
+      instruction: LendingInstruction.InitReserve,
+      option,
+      marketPrice: new BN(price),
+      liquidityAmount: new BN(liquidityAmount),
+      config: { ...config },
+    },
+    data
   );
 
   const keys = [

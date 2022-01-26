@@ -1,5 +1,5 @@
-import Big, {BigSource} from 'big.js';
-import {ReserveId} from './ReserveId';
+import Big, { BigSource } from "big.js";
+import { ReserveId } from "./ReserveId";
 
 export class AssetDepositConfig {
   private readonly reserveId: ReserveId;
@@ -8,8 +8,8 @@ export class AssetDepositConfig {
   private readonly remain?: Big;
 
   constructor(
-      reserveId: ReserveId,
-      args?: { min?: BigSource; max?: BigSource; remain?: BigSource },
+    reserveId: ReserveId,
+    args?: { min?: BigSource; max?: BigSource; remain?: BigSource }
   ) {
     this.reserveId = reserveId;
     this.min = args?.min ? new Big(args.min) : undefined;

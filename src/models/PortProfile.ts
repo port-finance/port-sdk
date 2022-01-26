@@ -1,12 +1,12 @@
-import {PortProfileId} from './PortProfileId';
-import {Collateral} from './Collateral';
-import {Loan} from './Loan';
-import {ReserveId} from './ReserveId';
-import {Margin} from './Margin';
-import {MarginRatio} from './MarginRatio';
-import {Parsed} from '../serialization/Parsed';
-import * as BufferLayout from '@solana/buffer-layout';
-import {RawData} from '../serialization/RawData';
+import { PortProfileId } from "./PortProfileId";
+import { Collateral } from "./Collateral";
+import { Loan } from "./Loan";
+import { ReserveId } from "./ReserveId";
+import { Margin } from "./Margin";
+import { MarginRatio } from "./MarginRatio";
+import { Parsed } from "../serialization/Parsed";
+import * as BufferLayout from "@solana/buffer-layout";
+import { RawData } from "../serialization/RawData";
 import {
   ObligationCollateralLayout,
   ObligationLayout,
@@ -15,9 +15,9 @@ import {
   PortProfileData,
   PortProfileLoanData,
   ProtoObligation,
-} from '../structs';
-import {PublicKey} from '@solana/web3.js';
-import {QuoteValue} from './QuoteValue';
+} from "../structs";
+import { PublicKey } from "@solana/web3.js";
+import { QuoteValue } from "./QuoteValue";
 
 export class PortProfile implements Parsed<PortProfileId> {
   private readonly profileId: PortProfileId;
@@ -32,14 +32,14 @@ export class PortProfile implements Parsed<PortProfileId> {
   private readonly depositedValue: QuoteValue | undefined;
 
   private constructor(
-      profileId: PortProfileId,
-      collaterals: Collateral[],
-      loans: Loan[],
-      loanMargin: Margin,
-      initialMargin: Margin,
-      maintenanceMargin: Margin,
-      owner?:PublicKey,
-      depositedValue?:QuoteValue,
+    profileId: PortProfileId,
+    collaterals: Collateral[],
+    loans: Loan[],
+    loanMargin: Margin,
+    initialMargin: Margin,
+    maintenanceMargin: Margin,
+    owner?: PublicKey,
+    depositedValue?: QuoteValue
   ) {
     this.profileId = profileId;
     this.collaterals = collaterals;
@@ -53,12 +53,12 @@ export class PortProfile implements Parsed<PortProfileId> {
 
   public static newAccount(profileId: PortProfileId): PortProfile {
     return new PortProfile(
-        profileId,
-        [],
-        [],
-        Margin.zero(),
-        Margin.zero(),
-        Margin.zero(),
+      profileId,
+      [],
+      [],
+      Margin.zero(),
+      Margin.zero(),
+      Margin.zero()
     );
   }
 
@@ -68,15 +68,15 @@ export class PortProfile implements Parsed<PortProfileId> {
     const proto = PortProfileParser(raw.account.data);
 
     const collaterals = proto.deposits.map(
-        (c) => new Collateral(ReserveId.of(c.depositReserve), c.depositedAmount),
+      (c) => new Collateral(ReserveId.of(c.depositReserve), c.depositedAmount)
     );
     const loans = proto.borrows.map(
-        (l) =>
-          new Loan(
-              l.borrowReserve,
-              l.borrowedAmountWads,
-              l.cumulativeBorrowRateWads,
-          ),
+      (l) =>
+        new Loan(
+          l.borrowReserve,
+          l.borrowedAmountWads,
+          l.cumulativeBorrowRateWads
+        )
     );
     const loanMargin = proto.borrowedValue;
     const initialMargin = proto.allowedBorrowValue;
@@ -84,14 +84,14 @@ export class PortProfile implements Parsed<PortProfileId> {
     const depositedValue = proto.depositedValue;
     const owner = proto.owner;
     return new PortProfile(
-        profileId,
-        collaterals,
-        loans,
-        loanMargin,
-        initialMargin,
-        maintenanceMargin,
-        owner,
-        depositedValue,
+      profileId,
+      collaterals,
+      loans,
+      loanMargin,
+      initialMargin,
+      maintenanceMargin,
+      owner,
+      depositedValue
     );
   }
 
@@ -112,7 +112,9 @@ export class PortProfile implements Parsed<PortProfileId> {
   }
 
   public getCollateral(reserveId: ReserveId): Collateral | undefined {
-    return this.getCollaterals().find((c) => c.getReserveId().equals(reserveId));
+    return this.getCollaterals().find((c) =>
+      c.getReserveId().equals(reserveId)
+    );
   }
 
   public getCollateralReserveIds(): ReserveId[] {
@@ -156,7 +158,6 @@ export class PortProfile implements Parsed<PortProfileId> {
   }
 }
 
-
 const PortProfileParser = (buffer: Buffer) => {
   const {
     version,
@@ -173,21 +174,21 @@ const PortProfileParser = (buffer: Buffer) => {
   } = ObligationLayout.decode(buffer) as ProtoObligation;
 
   const depositsBuffer = dataFlat.slice(
-      0,
-      depositsLen * ObligationCollateralLayout.span,
+    0,
+    depositsLen * ObligationCollateralLayout.span
   );
   const deposits = BufferLayout.seq(
-      ObligationCollateralLayout,
-      depositsLen,
+    ObligationCollateralLayout,
+    depositsLen
   ).decode(depositsBuffer) as PortProfileCollateralData[];
 
   const borrowsBuffer = dataFlat.slice(
-      depositsBuffer.length,
-      depositsBuffer.length + borrowsLen * ObligationLiquidityLayout.span,
+    depositsBuffer.length,
+    depositsBuffer.length + borrowsLen * ObligationLiquidityLayout.span
   );
   const borrows = BufferLayout.seq(
-      ObligationLiquidityLayout,
-      borrowsLen,
+    ObligationLiquidityLayout,
+    borrowsLen
   ).decode(borrowsBuffer) as PortProfileLoanData[];
 
   return {

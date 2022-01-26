@@ -1,8 +1,8 @@
-import {MintId} from './MintId';
-import {AssetExchangeRate} from './AssetExchangeRate';
-import {Asset} from './Asset';
-import {Token, Lamport} from './basic';
-import {TokenAccount} from './TokenAccount';
+import { MintId } from "./MintId";
+import { AssetExchangeRate } from "./AssetExchangeRate";
+import { Asset } from "./Asset";
+import { Token, Lamport } from "./basic";
+import { TokenAccount } from "./TokenAccount";
 
 export class Share extends Token<Share> {
   private constructor(mintId: MintId, lamport: Lamport) {

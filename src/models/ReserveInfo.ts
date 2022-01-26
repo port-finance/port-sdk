@@ -1,41 +1,41 @@
 /* eslint-disable new-cap */
-import {ReserveId} from './ReserveId';
-import {Asset} from './Asset';
-import {Share} from './Share';
-import {AssetExchangeRate} from './AssetExchangeRate';
-import {ReserveUtilizationRatio} from './ReserveUtilizationRatio';
-import {ReserveBorrowRate} from './ReserveBorrowRate';
-import Big from 'big.js';
-import {MintId} from './MintId';
-import {Apy} from './Apy';
-import {OracleId} from './OracleId';
-import {MarketId} from './MarketId';
-import {TokenAccountId} from './TokenAccountId';
-import {Percentage} from './basic';
-import {AssetPrice} from './AssetPrice';
-import {QuantityContext} from './QuantityContext';
-import {AssetValue} from './AssetValue';
-import {Parsed} from '../serialization/Parsed';
-import {PublicKey, TransactionInstruction} from '@solana/web3.js';
+import { ReserveId } from "./ReserveId";
+import { Asset } from "./Asset";
+import { Share } from "./Share";
+import { AssetExchangeRate } from "./AssetExchangeRate";
+import { ReserveUtilizationRatio } from "./ReserveUtilizationRatio";
+import { ReserveBorrowRate } from "./ReserveBorrowRate";
+import Big from "big.js";
+import { MintId } from "./MintId";
+import { Apy } from "./Apy";
+import { OracleId } from "./OracleId";
+import { MarketId } from "./MarketId";
+import { TokenAccountId } from "./TokenAccountId";
+import { Percentage } from "./basic";
+import { AssetPrice } from "./AssetPrice";
+import { QuantityContext } from "./QuantityContext";
+import { AssetValue } from "./AssetValue";
+import { Parsed } from "../serialization/Parsed";
+import { PublicKey, TransactionInstruction } from "@solana/web3.js";
 import {
   borrowObligationLiquidityInstruction,
   depositObligationCollateralInstruction,
   depositReserveLiquidityInstruction,
   redeemReserveCollateralInstruction,
   refreshReserveInstruction,
-} from '../instructions';
+} from "../instructions";
 import {
   ReserveCollateral,
   ReserveConfig,
   ReserveData,
   ReserveLayout,
   ReserveLiquidity,
-} from '../structs';
-import {RawData} from '../serialization/RawData';
-import {StakingPoolId} from './staking/StakingPoolId';
-import {ExchangeRate} from './ExchangeRate';
-import {PORT_LENDING} from '../constants';
-import BN from 'bn.js';
+} from "../structs";
+import { RawData } from "../serialization/RawData";
+import { StakingPoolId } from "./staking/StakingPoolId";
+import { ExchangeRate } from "./ExchangeRate";
+import { PORT_LENDING } from "../constants";
+import BN from "bn.js";
 
 export class ReserveInfo implements Parsed<ReserveId> {
   private readonly reserveId: ReserveId;
@@ -49,13 +49,13 @@ export class ReserveInfo implements Parsed<ReserveId> {
   readonly proto: ReserveData;
 
   constructor(
-      reserveId: ReserveId,
-      marketId: MarketId,
-      asset: ReserveAssetInfo,
-      share: ReserveTokenInfo,
-      params: ReserveParams,
-      stakingPoolId: StakingPoolId | undefined,
-      proto: ReserveData,
+    reserveId: ReserveId,
+    marketId: MarketId,
+    asset: ReserveAssetInfo,
+    share: ReserveTokenInfo,
+    params: ReserveParams,
+    stakingPoolId: StakingPoolId | undefined,
+    proto: ReserveData
   ) {
     this.reserveId = reserveId;
     this.marketId = marketId;
@@ -76,13 +76,13 @@ export class ReserveInfo implements Parsed<ReserveId> {
     const params = ReserveParams.fromRaw(asset.getMintId(), proto.config);
     const stakingPoolId = proto.config.stakingPoolId;
     return new ReserveInfo(
-        ReserveId.of(raw.pubkey),
-        marketId,
-        asset,
-        token,
-        params,
-        stakingPoolId,
-        proto,
+      ReserveId.of(raw.pubkey),
+      marketId,
+      asset,
+      token,
+      params,
+      stakingPoolId,
+      proto
     );
   }
 
@@ -130,8 +130,8 @@ export class ReserveInfo implements Parsed<ReserveId> {
   public getMarketCap(price?: AssetPrice): AssetValue {
     const asset = this.getTotalAsset();
     return new AssetValue(
-        asset,
-        asset.toValue(price ?? this.getMarkPrice(), this.getQuantityContext()),
+      asset,
+      asset.toValue(price ?? this.getMarkPrice(), this.getQuantityContext())
     );
   }
 
@@ -143,8 +143,8 @@ export class ReserveInfo implements Parsed<ReserveId> {
   public getAvailableAssetValue(price?: AssetPrice): AssetValue {
     const asset = this.getAvailableAsset();
     return new AssetValue(
-        asset,
-        asset.toValue(price ?? this.getMarkPrice(), this.getQuantityContext()),
+      asset,
+      asset.toValue(price ?? this.getMarkPrice(), this.getQuantityContext())
     );
   }
 
@@ -156,8 +156,8 @@ export class ReserveInfo implements Parsed<ReserveId> {
   public getBorrowedAssetValue(price?: AssetPrice): AssetValue {
     const asset = this.getBorrowedAsset();
     return new AssetValue(
-        asset,
-        asset.toValue(price ?? this.getMarkPrice(), this.getQuantityContext()),
+      asset,
+      asset.toValue(price ?? this.getMarkPrice(), this.getQuantityContext())
     );
   }
 
@@ -193,7 +193,7 @@ export class ReserveInfo implements Parsed<ReserveId> {
     }
 
     const pct = Percentage.fromOneBased(
-        this.getBorrowedAsset().getRaw().div(total.getRaw()),
+      this.getBorrowedAsset().getRaw().div(total.getRaw())
     );
     return new ReserveUtilizationRatio(total.getMintId(), pct);
   }
@@ -239,7 +239,7 @@ export class ReserveInfo implements Parsed<ReserveId> {
 
       const minBorrowRateRaw = minBorrowRate.getUnchecked();
       const normalizedFactor = utilizationRatioRaw.div(
-          optimalUtilizationRatioRaw,
+        optimalUtilizationRatioRaw
       );
       const borrowRateDiff = optimalBorrowRateRaw.sub(minBorrowRateRaw);
       return Apy.of(normalizedFactor.mul(borrowRateDiff).add(minBorrowRateRaw));
@@ -252,12 +252,12 @@ export class ReserveInfo implements Parsed<ReserveId> {
 
     const maxBorrowRateRaw = maxBorrowRate.getUnchecked();
     const normalizedFactor = utilizationRatioRaw
-        .sub(optimalUtilizationRatioRaw)
-        .div(new Big(1).sub(optimalUtilizationRatioRaw));
+      .sub(optimalUtilizationRatioRaw)
+      .div(new Big(1).sub(optimalUtilizationRatioRaw));
     const borrowRateDiff = maxBorrowRateRaw.sub(optimalBorrowRateRaw);
 
     return Apy.of(
-        normalizedFactor.mul(borrowRateDiff).add(optimalBorrowRateRaw),
+      normalizedFactor.mul(borrowRateDiff).add(optimalBorrowRateRaw)
     );
   }
 
@@ -268,10 +268,11 @@ export class ReserveInfo implements Parsed<ReserveId> {
   // add reserve instructions ,use in Sundial
   public async getMarketAuthority(): Promise<[PublicKey, number]> {
     return await PublicKey.findProgramAddress(
-        [this.getMarketId().toBuffer()],
-        PORT_LENDING,
+      [this.getMarketId().toBuffer()],
+      PORT_LENDING
     );
   }
+
   public async depositReserve({
     amount,
     userLiquidityWallet,
@@ -287,21 +288,21 @@ export class ReserveInfo implements Parsed<ReserveId> {
     const ixs: TransactionInstruction[] = [];
 
     ixs.push(
-        refreshReserveInstruction(
-            this.getReserveId(),
-            this.getOracleId() ?? null,
-        ),
-        depositReserveLiquidityInstruction(
-            amount,
-            userLiquidityWallet,
-            destinationCollateralWallet,
-            this.getReserveId(),
-            this.getAssetBalanceId(),
-            this.getShareMintId(),
-            this.getMarketId(),
-            authority,
-            userTransferAuthority,
-        ),
+      refreshReserveInstruction(
+        this.getReserveId(),
+        this.getOracleId() ?? null
+      ),
+      depositReserveLiquidityInstruction(
+        amount,
+        userLiquidityWallet,
+        destinationCollateralWallet,
+        this.getReserveId(),
+        this.getAssetBalanceId(),
+        this.getShareMintId(),
+        this.getMarketId(),
+        authority,
+        userTransferAuthority
+      )
     );
     return ixs;
   }
@@ -323,21 +324,21 @@ export class ReserveInfo implements Parsed<ReserveId> {
     const ixs: TransactionInstruction[] = [];
 
     ixs.push(
-        refreshReserveInstruction(
-            this.getReserveId(),
-            this.getOracleId() ?? null,
-        ),
-        depositObligationCollateralInstruction(
-            amount,
-            userCollateralWallet,
-            this.getShareBalanceId(),
-            this.getReserveId(),
-            obligation,
-            this.getMarketId(),
-            authority,
-            obligationOwner,
-            userTransferAuthority,
-        ),
+      refreshReserveInstruction(
+        this.getReserveId(),
+        this.getOracleId() ?? null
+      ),
+      depositObligationCollateralInstruction(
+        amount,
+        userCollateralWallet,
+        this.getShareBalanceId(),
+        this.getReserveId(),
+        obligation,
+        this.getMarketId(),
+        authority,
+        obligationOwner,
+        userTransferAuthority
+      )
     );
     return ixs;
   }
@@ -358,17 +359,17 @@ export class ReserveInfo implements Parsed<ReserveId> {
     const ixs: TransactionInstruction[] = [];
 
     ixs.push(
-        borrowObligationLiquidityInstruction(
-            amount,
-            this.getAssetBalanceId(),
-            userWallet,
-            this.getReserveId(),
-            this.getFeeBalanceId(),
-            obligation,
-            this.getMarketId(),
-            authority,
-            owner,
-        ),
+      borrowObligationLiquidityInstruction(
+        amount,
+        this.getAssetBalanceId(),
+        userWallet,
+        this.getReserveId(),
+        this.getFeeBalanceId(),
+        obligation,
+        this.getMarketId(),
+        authority,
+        owner
+      )
     );
     return ixs;
   }
@@ -388,17 +389,17 @@ export class ReserveInfo implements Parsed<ReserveId> {
     const ixs: TransactionInstruction[] = [];
 
     ixs.push(
-        redeemReserveCollateralInstruction(
-            amount,
-            userCollateralWallet,
-            destinationLiquidityWallet,
-            this.getReserveId(),
-            this.getShareMintId(),
-            this.getAssetBalanceId(),
-            this.getMarketId(),
-            authority,
-            userTransferAuthority,
-        ),
+      redeemReserveCollateralInstruction(
+        amount,
+        userCollateralWallet,
+        destinationLiquidityWallet,
+        this.getReserveId(),
+        this.getShareMintId(),
+        this.getAssetBalanceId(),
+        this.getMarketId(),
+        authority,
+        userTransferAuthority
+      )
     );
     return ixs;
   }
@@ -416,15 +417,15 @@ export class ReserveAssetInfo {
   private readonly quantityContext: QuantityContext;
 
   constructor(
-      mintId: MintId,
-      oracleId: OracleId | null,
-      feeBalanceId: TokenAccountId,
-      supplyAccountId: TokenAccountId,
-      available: Asset,
-      borrowed: Asset,
-      markPrice: AssetPrice,
-      cumulativeBorrowRate: ExchangeRate,
-      quantityContext: QuantityContext,
+    mintId: MintId,
+    oracleId: OracleId | null,
+    feeBalanceId: TokenAccountId,
+    supplyAccountId: TokenAccountId,
+    available: Asset,
+    borrowed: Asset,
+    markPrice: AssetPrice,
+    cumulativeBorrowRate: ExchangeRate,
+    quantityContext: QuantityContext
   ) {
     this.mintId = mintId;
     this.oracleId = oracleId;
@@ -449,15 +450,15 @@ export class ReserveAssetInfo {
     const cumulativeBorrowRate = raw.cumulativeBorrowRateWads;
     const quantityContext = QuantityContext.fromDecimals(raw.mintDecimals);
     return new ReserveAssetInfo(
-        mintId,
-        oracleId,
-        feeAccountId,
-        supplyBalanceId,
-        available,
-        borrowed,
-        markPrice,
-        cumulativeBorrowRate,
-        quantityContext,
+      mintId,
+      oracleId,
+      feeAccountId,
+      supplyBalanceId,
+      available,
+      borrowed,
+      markPrice,
+      cumulativeBorrowRate,
+      quantityContext
     );
   }
 
@@ -540,14 +541,14 @@ export class ReserveParams {
   borrowFee: Percentage;
 
   constructor(
-      loanToValueRatio: Percentage,
-      optimalUtilizationRatio: ReserveUtilizationRatio,
-      optimalBorrowRate: ReserveBorrowRate,
-      minBorrowRate: ReserveBorrowRate,
-      maxBorrowRate: ReserveBorrowRate,
-      liquidationThreshold: Percentage,
-      liquidationPenalty: Percentage,
-      borrowFee: Percentage,
+    loanToValueRatio: Percentage,
+    optimalUtilizationRatio: ReserveUtilizationRatio,
+    optimalBorrowRate: ReserveBorrowRate,
+    minBorrowRate: ReserveBorrowRate,
+    maxBorrowRate: ReserveBorrowRate,
+    liquidationThreshold: Percentage,
+    liquidationPenalty: Percentage,
+    borrowFee: Percentage
   ) {
     this.loanToValueRatio = loanToValueRatio;
     this.optimalUtilizationRatio = optimalUtilizationRatio;
@@ -562,12 +563,12 @@ export class ReserveParams {
   static fromRaw(mintId: MintId, config: ReserveConfig): ReserveParams {
     const loanToValueRatio = config.loanToValueRatio;
     const optimalUtilizationRatio = new ReserveUtilizationRatio(
-        mintId,
-        config.optimalUtilizationRate,
+      mintId,
+      config.optimalUtilizationRate
     );
     const optimalBorrowRate = new ReserveBorrowRate(
-        mintId,
-        config.optimalBorrowRate,
+      mintId,
+      config.optimalBorrowRate
     );
     const minBorrowRate = new ReserveBorrowRate(mintId, config.minBorrowRate);
     const maxBorrowRate = new ReserveBorrowRate(mintId, config.maxBorrowRate);
@@ -575,14 +576,14 @@ export class ReserveParams {
     const liquidationPenalty = config.liquidationBonus;
     const borrowFee = Percentage.fromOneBased(config.fees.borrowFeeWad);
     return new ReserveParams(
-        loanToValueRatio,
-        optimalUtilizationRatio,
-        optimalBorrowRate,
-        minBorrowRate,
-        maxBorrowRate,
-        liquidationThreshold,
-        liquidationPenalty,
-        borrowFee,
+      loanToValueRatio,
+      optimalUtilizationRatio,
+      optimalBorrowRate,
+      minBorrowRate,
+      maxBorrowRate,
+      liquidationThreshold,
+      liquidationPenalty,
+      borrowFee
     );
   }
 }

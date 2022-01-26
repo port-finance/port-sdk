@@ -1,9 +1,9 @@
-import {PublicKey} from '@solana/web3.js';
+import { PublicKey } from "@solana/web3.js";
 
-import {Id} from './basic';
-import {WalletId} from './WalletId';
-import {PublicKeyField} from '../serialization/PublicKeyField';
-import {Field} from '../serialization/Field';
+import { Id } from "./basic";
+import { WalletId } from "./WalletId";
+import { PublicKeyField } from "../serialization/PublicKeyField";
+import { Field } from "../serialization/Field";
 
 export class TokenAccountId extends Id {
   private constructor(key: PublicKey) {

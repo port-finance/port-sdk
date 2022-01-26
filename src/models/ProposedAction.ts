@@ -1,10 +1,10 @@
-import {Loan} from './Loan';
-import {Collateral} from './Collateral';
-import {ProfileEntry} from './ProfileEntry';
-import {Asset} from './Asset';
-import {Share} from './Share';
-import {MintId} from './MintId';
-import {ReserveId} from './ReserveId';
+import { Loan } from "./Loan";
+import { Collateral } from "./Collateral";
+import { ProfileEntry } from "./ProfileEntry";
+import { Asset } from "./Asset";
+import { Share } from "./Share";
+import { MintId } from "./MintId";
+import { ReserveId } from "./ReserveId";
 
 export class ProposedAction {
   private readonly assets: Asset[];
@@ -13,10 +13,10 @@ export class ProposedAction {
   private readonly loans: Loan[];
 
   constructor(
-      assets: Asset[],
-      shares: Share[],
-      collaterals: Collateral[],
-      loans: Loan[],
+    assets: Asset[],
+    shares: Share[],
+    collaterals: Collateral[],
+    loans: Loan[]
   ) {
     this.assets = assets;
     this.shares = shares;
@@ -74,8 +74,8 @@ export class ProposedAction {
   }
 
   private static proposal<T extends ProfileEntry<T>>(
-      entries: T[],
-      proposal: T[],
+    entries: T[],
+    proposal: T[]
   ): T[] {
     if (!proposal.length) {
       return entries;

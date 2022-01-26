@@ -1,7 +1,7 @@
-import Big, {BigSource} from 'big.js';
-import {Decimal, DecimalField} from './basic';
-import {Field} from '../serialization/Field';
-import {BigType} from '../serialization/BigType';
+import Big, { BigSource } from "big.js";
+import { Decimal, DecimalField } from "./basic";
+import { Field } from "../serialization/Field";
+import { BigType } from "../serialization/BigType";
 
 export class Slot extends Decimal<Slot> {
   private static SLOT_ZERO = Slot.of(0);
@@ -14,7 +14,7 @@ export class Slot extends Decimal<Slot> {
     return Slot.SLOT_ZERO;
   }
 
-  public static of(raw: BigSource) {
+  public static of(raw: BigSource): Slot {
     return new Slot(raw);
   }
 

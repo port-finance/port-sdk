@@ -1,5 +1,5 @@
-import * as BufferLayout from '@solana/buffer-layout';
-import {Field} from './Field';
+import * as BufferLayout from "@solana/buffer-layout";
+import { Field } from "./Field";
 
 export abstract class BlobField<T> extends Field<T> {
   private readonly delegate: BufferLayout.Blob;

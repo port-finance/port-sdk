@@ -1,7 +1,7 @@
-import {DEFAULT_ASSET_CONFIG} from '../utils/defaultAssetConfig';
-import {AssetConfig} from './AssetConfig';
-import {MintId} from './MintId';
-import {ReserveId} from './ReserveId';
+import { DEFAULT_ASSET_CONFIG } from "../utils/defaultAssetConfig";
+import { AssetConfig } from "./AssetConfig";
+import { MintId } from "./MintId";
+import { ReserveId } from "./ReserveId";
 
 export class AssetContext {
   private readonly cache: Map<string, AssetConfig>;
@@ -9,9 +9,9 @@ export class AssetContext {
   private readonly byReserveId: Map<string, AssetConfig>;
 
   private constructor(
-      cache: Map<string, AssetConfig>,
-      bySymbol: Map<string, AssetConfig>,
-      byReserveId: Map<string, AssetConfig>,
+    cache: Map<string, AssetConfig>,
+    bySymbol: Map<string, AssetConfig>,
+    byReserveId: Map<string, AssetConfig>
   ) {
     this.cache = cache;
     this.bySymbol = bySymbol;
@@ -20,7 +20,9 @@ export class AssetContext {
 
   public static index(configs: AssetConfig[]): AssetContext {
     const cache = new Map<string, AssetConfig>();
-    configs.forEach((config) => cache.set(config.getMintId().toString(), config));
+    configs.forEach((config) =>
+      cache.set(config.getMintId().toString(), config)
+    );
     const bySymbol = new Map<string, AssetConfig>();
     configs.forEach((config) => bySymbol.set(config.getSymbol(), config));
     const byReserveId = new Map<string, AssetConfig>();

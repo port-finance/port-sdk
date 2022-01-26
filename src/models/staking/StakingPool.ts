@@ -1,19 +1,19 @@
-import {StakingPoolId} from './StakingPoolId';
-import {Parsed} from '../../serialization/Parsed';
-import {TokenAccountId} from '../TokenAccountId';
-import {Slot} from '../Slot';
-import {ExchangeRate} from '../ExchangeRate';
-import {Lamport} from '../basic';
-import {RawData} from '../../serialization/RawData';
-import {ReserveInfo} from '../ReserveInfo';
-import {Apy} from '../Apy';
-import {Share} from '../Share';
-import {AssetPrice} from '../AssetPrice';
-import {StakingPoolLayout, StakingPoolProto} from '../../structs';
-import {AuthorityId} from '../AuthorityId';
-import Big from 'big.js';
-import {TokenInfo} from '@solana/spl-token-registry';
-import {QuantityContext} from '..';
+import { StakingPoolId } from "./StakingPoolId";
+import { Parsed } from "../../serialization/Parsed";
+import { TokenAccountId } from "../TokenAccountId";
+import { Slot } from "../Slot";
+import { ExchangeRate } from "../ExchangeRate";
+import { Lamport } from "../basic";
+import { RawData } from "../../serialization/RawData";
+import { ReserveInfo } from "../ReserveInfo";
+import { Apy } from "../Apy";
+import { Share } from "../Share";
+import { AssetPrice } from "../AssetPrice";
+import { StakingPoolLayout, StakingPoolProto } from "../../structs";
+import { AuthorityId } from "../AuthorityId";
+import Big from "big.js";
+import { TokenInfo } from "@solana/spl-token-registry";
+import { QuantityContext } from "..";
 
 const SLOT_PER_SECOND = 2;
 const SLOT_PER_YEAR = SLOT_PER_SECOND * 3600 * 24 * 365;
@@ -37,20 +37,20 @@ export class StakingPool implements Parsed<StakingPoolId> {
   private readonly adminAuthority: AuthorityId;
 
   private constructor(
-      stakingPoolId: StakingPoolId,
-      rewardTokenPool: TokenAccountId,
-      lastUpdate: Slot,
-      endTime: Slot,
-      earliestRewardClaimTime: Slot,
-      duration: Slot,
-      ratePerSlot: ExchangeRate,
-      cumulativeRate: ExchangeRate,
-      poolSize: Lamport,
-      ownerAuthority: AuthorityId,
-      adminAuthority: AuthorityId,
-      subRewardTokenPool?: TokenAccountId,
-      subRatePerSlot?: ExchangeRate,
-      subCumulativeRate?: ExchangeRate,
+    stakingPoolId: StakingPoolId,
+    rewardTokenPool: TokenAccountId,
+    lastUpdate: Slot,
+    endTime: Slot,
+    earliestRewardClaimTime: Slot,
+    duration: Slot,
+    ratePerSlot: ExchangeRate,
+    cumulativeRate: ExchangeRate,
+    poolSize: Lamport,
+    ownerAuthority: AuthorityId,
+    adminAuthority: AuthorityId,
+    subRewardTokenPool?: TokenAccountId,
+    subRatePerSlot?: ExchangeRate,
+    subCumulativeRate?: ExchangeRate
   ) {
     this.stakingPoolId = stakingPoolId;
     this.rewardTokenPool = rewardTokenPool;
@@ -73,20 +73,20 @@ export class StakingPool implements Parsed<StakingPoolId> {
     const info = StakingPoolLayout.decode(buffer) as StakingPoolProto;
 
     return new StakingPool(
-        StakingPoolId.of(raw.pubkey),
-        info.rewardTokenPool,
-        info.lastUpdate,
-        info.endTime,
-        info.earliestRewardClaimTime,
-        info.duration,
-        info.ratePerSlot,
-        info.cumulativeRate,
-        info.poolSize,
-        info.ownerAuthority,
-        info.adminAuthority,
-        info.subRewardTokenPoolOption === 1 ? info.subRewardTokenPool : undefined,
-        info.subRatePerSlotOption === 1 ? info.subRatePerSlot : undefined,
-        info.subCumulativeRateOption === 1 ? info.subCumulativeRate : undefined,
+      StakingPoolId.of(raw.pubkey),
+      info.rewardTokenPool,
+      info.lastUpdate,
+      info.endTime,
+      info.earliestRewardClaimTime,
+      info.duration,
+      info.ratePerSlot,
+      info.cumulativeRate,
+      info.poolSize,
+      info.ownerAuthority,
+      info.adminAuthority,
+      info.subRewardTokenPoolOption === 1 ? info.subRewardTokenPool : undefined,
+      info.subRatePerSlotOption === 1 ? info.subRatePerSlot : undefined,
+      info.subCumulativeRateOption === 1 ? info.subCumulativeRate : undefined
     );
   }
 
@@ -163,39 +163,53 @@ export class StakingPool implements Parsed<StakingPoolId> {
     currentSlot = currentSlot.min(this.getEndTime());
     const slotDiff = currentSlot.subtract(this.getLastUpdate());
     if (slotDiff.isNegative()) {
-      throw new Error('Slot older than last update');
+      throw new Error("Slot older than last update");
     }
 
     const rateDiff = this.getRatePerSlot()
-        .multiply(slotDiff.getRaw())
-        .divide(poolSize.getRaw());
+      .multiply(slotDiff.getRaw())
+      .divide(poolSize.getRaw());
     return this.getCumulativeRate().add(rateDiff);
   }
 
-  public getRewardApy(reserve: ReserveInfo, price: AssetPrice, tokenInfo: TokenInfo): Apy {
-    return this.getRewardApyInner(reserve, tokenInfo, price.getRaw(), this.getRatePerSlot());
+  public getRewardApy(
+    reserve: ReserveInfo,
+    price: AssetPrice,
+    tokenInfo: TokenInfo
+  ): Apy {
+    return this.getRewardApyInner(
+      reserve,
+      tokenInfo,
+      price.getRaw(),
+      this.getRatePerSlot()
+    );
   }
 
   public getSubRewardApy(
-      reserve: ReserveInfo,
-      price: AssetPrice | Big,
-      tokenInfo: TokenInfo,
+    reserve: ReserveInfo,
+    price: AssetPrice | Big,
+    tokenInfo: TokenInfo
   ): Apy {
     const subRatePerSlot = this.getSubRatePerSlot();
     if (!subRatePerSlot) {
       return Apy.na();
     } else if (price instanceof AssetPrice) {
-      return this.getRewardApyInner(reserve, tokenInfo, price.getRaw(), subRatePerSlot);
+      return this.getRewardApyInner(
+        reserve,
+        tokenInfo,
+        price.getRaw(),
+        subRatePerSlot
+      );
     } else {
       return this.getRewardApyInner(reserve, tokenInfo, price, subRatePerSlot);
     }
   }
 
   private getRewardApyInner(
-      reserve: ReserveInfo,
-      tokenInfo: TokenInfo,
-      price: Big,
-      ratePerSlot: ExchangeRate,
+    reserve: ReserveInfo,
+    tokenInfo: TokenInfo,
+    price: Big,
+    ratePerSlot: ExchangeRate
   ): Apy {
     const poolSize = this.getPoolSize();
     if (!poolSize.isPositive()) {
@@ -205,18 +219,18 @@ export class StakingPool implements Parsed<StakingPoolId> {
     const share = Share.of(reserve.getShareMintId(), poolSize);
     const asset = share.toAsset(reserve.getExchangeRatio());
     const tvl = asset.toValue(
-        reserve.getMarkPrice(),
-        reserve.getQuantityContext(),
+      reserve.getMarkPrice(),
+      reserve.getQuantityContext()
     );
 
     const qtyContext = QuantityContext.fromDecimals(tokenInfo.decimals);
 
     const raw = ratePerSlot
-        .getRaw()
-        .mul(SLOT_PER_YEAR)
-        .mul(price)
-        .div(qtyContext.multiplier)
-        .div(tvl.getRaw());
+      .getRaw()
+      .mul(SLOT_PER_YEAR)
+      .mul(price)
+      .div(qtyContext.multiplier)
+      .div(tvl.getRaw());
     return Apy.of(raw);
   }
 }

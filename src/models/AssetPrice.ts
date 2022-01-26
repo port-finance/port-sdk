@@ -1,7 +1,7 @@
-import Big, {BigSource} from 'big.js';
-import {Decimal, Percentage} from './basic';
-import {AssetConfig} from './AssetConfig';
-import {MintId} from './MintId';
+import Big, { BigSource } from "big.js";
+import { Decimal, Percentage } from "./basic";
+import { AssetConfig } from "./AssetConfig";
+import { MintId } from "./MintId";
 
 export class AssetPrice extends Decimal<AssetPrice> {
   private readonly mintId: MintId;
@@ -25,7 +25,7 @@ export class AssetPrice extends Decimal<AssetPrice> {
 
   public print(config: AssetConfig): string {
     const decimals = config.getPriceDecimals();
-    return '$' + this.raw.round(decimals, 1).toFixed(decimals); // RoundHalfUp
+    return "$" + this.raw.round(decimals, 1).toFixed(decimals); // RoundHalfUp
   }
 
   public replaceWithValue(value: BigSource): AssetPrice {

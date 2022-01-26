@@ -1,4 +1,4 @@
-import {Ratio, Percentage} from './basic';
+import { Ratio, Percentage } from "./basic";
 
 export class ValueRatio extends Ratio<ValueRatio> {
   private static VALUE_RATIO_NA = new ValueRatio();

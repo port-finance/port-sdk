@@ -1,5 +1,5 @@
-import * as BufferLayout from '@solana/buffer-layout';
-import {Field} from './Field';
+import * as BufferLayout from "@solana/buffer-layout";
+import { Field } from "./Field";
 
 export class Optional<T> extends Field<T | undefined> {
   private readonly delegate: Field<T>;

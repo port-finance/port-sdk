@@ -1,7 +1,7 @@
-import Big, {BigSource} from 'big.js';
-import {Decimal, DecimalField} from './basic';
-import {Field} from '../serialization/Field';
-import {BigType} from '../serialization/BigType';
+import Big, { BigSource } from "big.js";
+import { Decimal, DecimalField } from "./basic";
+import { Field } from "../serialization/Field";
+import { BigType } from "../serialization/BigType";
 
 export class ExchangeRate extends Decimal<ExchangeRate> {
   private static ZERO = ExchangeRate.of(0);
@@ -14,7 +14,7 @@ export class ExchangeRate extends Decimal<ExchangeRate> {
     return ExchangeRate.ZERO;
   }
 
-  public static of(raw: BigSource) {
+  public static of(raw: BigSource): ExchangeRate {
     return new ExchangeRate(raw);
   }
 

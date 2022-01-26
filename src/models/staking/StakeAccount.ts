@@ -1,10 +1,10 @@
-import {Parsed} from '../../serialization/Parsed';
-import {StakeAccountId} from './StakeAccountId';
-import {ExchangeRate} from '../ExchangeRate';
-import {StakingPoolId} from './StakingPoolId';
-import {Lamport} from '../basic';
-import {RawData} from '../../serialization/RawData';
-import {StakeAccountLayout, StakeAccountProto} from '../../structs';
+import { Parsed } from "../../serialization/Parsed";
+import { StakeAccountId } from "./StakeAccountId";
+import { ExchangeRate } from "../ExchangeRate";
+import { StakingPoolId } from "./StakingPoolId";
+import { Lamport } from "../basic";
+import { RawData } from "../../serialization/RawData";
+import { StakeAccountLayout, StakeAccountProto } from "../../structs";
 
 export class StakeAccount implements Parsed<StakeAccountId> {
   private readonly stakeAccountId: StakeAccountId;
@@ -14,11 +14,11 @@ export class StakeAccount implements Parsed<StakeAccountId> {
   private readonly unclaimedReward: Lamport;
 
   private constructor(
-      stakeAccountId: StakeAccountId,
-      stakingPoolId: StakingPoolId,
-      startRate: ExchangeRate,
-      depositedAmount: Lamport,
-      unclaimedReward: Lamport,
+    stakeAccountId: StakeAccountId,
+    stakingPoolId: StakingPoolId,
+    startRate: ExchangeRate,
+    depositedAmount: Lamport,
+    unclaimedReward: Lamport
   ) {
     this.stakeAccountId = stakeAccountId;
     this.stakingPoolId = stakingPoolId;
@@ -28,15 +28,15 @@ export class StakeAccount implements Parsed<StakeAccountId> {
   }
 
   public static newAccount(
-      stakeAccountId: StakeAccountId,
-      stakingPoolId: StakingPoolId,
+    stakeAccountId: StakeAccountId,
+    stakingPoolId: StakingPoolId
   ): StakeAccount {
     return new StakeAccount(
-        stakeAccountId,
-        stakingPoolId,
-        ExchangeRate.zero(),
-        Lamport.zero(),
-        Lamport.zero(),
+      stakeAccountId,
+      stakingPoolId,
+      ExchangeRate.zero(),
+      Lamport.zero(),
+      Lamport.zero()
     );
   }
 
@@ -46,11 +46,11 @@ export class StakeAccount implements Parsed<StakeAccountId> {
 
     const stakeAccountId = StakeAccountId.of(raw.pubkey);
     return new StakeAccount(
-        stakeAccountId,
-        proto.poolPubkey,
-        proto.startRate,
-        proto.depositedAmount,
-        proto.unclaimedRewardWads,
+      stakeAccountId,
+      proto.poolPubkey,
+      proto.startRate,
+      proto.depositedAmount,
+      proto.unclaimedRewardWads
     );
   }
 
@@ -81,12 +81,10 @@ export class StakeAccount implements Parsed<StakeAccountId> {
   public getTotalClaimableReward(rate: ExchangeRate): Lamport {
     const rateDiff = rate.subtract(this.getStartRate());
     if (rateDiff.isNegative()) {
-      throw new Error('Rate lower than start rate');
+      throw new Error("Rate lower than start rate");
     }
 
     const extraClaimable = this.getDepositAmount().multiply(rateDiff.getRaw());
     return extraClaimable.add(this.getUnclaimedReward());
   }
 }
-
-

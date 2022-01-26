@@ -1,14 +1,14 @@
-import {BigSource} from 'big.js';
-import {Decimal, Lamport} from './basic';
-import {AssetPrice} from './AssetPrice';
-import {Asset} from './Asset';
-import {QuantityContext} from './QuantityContext';
+import { BigSource } from "big.js";
+import { Decimal, Lamport } from "./basic";
+import { AssetPrice } from "./AssetPrice";
+import { Asset } from "./Asset";
+import { QuantityContext } from "./QuantityContext";
 
 export abstract class Value<V extends Value<V>> extends Decimal<V> {
   // eslint-disable-next-line new-cap
-  private static FORMATTER = Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
+  private static FORMATTER = Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
   });
 
   protected constructor(raw: BigSource) {
@@ -17,7 +17,7 @@ export abstract class Value<V extends Value<V>> extends Decimal<V> {
 
   public toAsset(price: AssetPrice, context: QuantityContext): Asset {
     const lamport = Lamport.of(
-        this.raw.div(price.getRaw()).mul(context.multiplier),
+      this.raw.div(price.getRaw()).mul(context.multiplier)
     );
     return Asset.of(price.getMintId(), lamport);
   }

@@ -1,6 +1,6 @@
-import Big from 'big.js';
-import * as BufferLayout from '@solana/buffer-layout';
-import {UintField} from './UIntField';
+import Big from "big.js";
+import * as BufferLayout from "@solana/buffer-layout";
+import { UintField } from "./UIntField";
 
 export class BigType {
   private static readonly WAD = new Big(10).pow(18);

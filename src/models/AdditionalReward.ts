@@ -1,6 +1,6 @@
-import {Apy} from './Apy';
-import {ReserveId} from './ReserveId';
-import {MintId} from './MintId';
+import { Apy } from "./Apy";
+import { ReserveId } from "./ReserveId";
+import { MintId } from "./MintId";
 
 export class AdditionalReward {
   private readonly reserveId: ReserveId;
@@ -9,10 +9,10 @@ export class AdditionalReward {
   private readonly mintId?: MintId;
 
   constructor(
-      reserveId: ReserveId,
-      apy: Apy,
-      accurate?: boolean,
-      mintId?: MintId,
+    reserveId: ReserveId,
+    apy: Apy,
+    accurate?: boolean,
+    mintId?: MintId
   ) {
     this.reserveId = reserveId;
     this.apy = apy;

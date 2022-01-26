@@ -1,12 +1,12 @@
-import {StakeAccount} from './StakeAccount';
-import {StakeAccountId} from './StakeAccountId';
-import {StakingPoolId} from './StakingPoolId';
+import { StakeAccount } from "./StakeAccount";
+import { StakeAccountId } from "./StakeAccountId";
+import { StakingPoolId } from "./StakingPoolId";
 
 export class StakeAccountContext {
   private static readonly STAKE_ACCOUNT_CONTEXT_EMPTY = new StakeAccountContext(
-      [],
-      new Map(),
-      new Map(),
+    [],
+    new Map(),
+    new Map()
   );
 
   private readonly accounts: StakeAccount[];
@@ -14,16 +14,16 @@ export class StakeAccountContext {
   private readonly byStakingPoolId: Map<string, StakeAccount>;
 
   private constructor(
-      accounts: StakeAccount[],
-      byStakeAccountId: Map<string, StakeAccount>,
-      byStakingPoolId: Map<string, StakeAccount>,
+    accounts: StakeAccount[],
+    byStakeAccountId: Map<string, StakeAccount>,
+    byStakingPoolId: Map<string, StakeAccount>
   ) {
     this.accounts = accounts;
     this.byStakeAccountId = byStakeAccountId;
     this.byStakingPoolId = byStakingPoolId;
   }
 
-  public static empty() {
+  public static empty(): StakeAccountContext {
     return StakeAccountContext.STAKE_ACCOUNT_CONTEXT_EMPTY;
   }
 
@@ -34,11 +34,11 @@ export class StakeAccountContext {
 
     const byStakeAccountId = new Map<string, StakeAccount>();
     accounts.forEach((a) =>
-      byStakeAccountId.set(a.getStakeAccountId().toString(), a),
+      byStakeAccountId.set(a.getStakeAccountId().toString(), a)
     );
     const byStakingPoolId = new Map<string, StakeAccount>();
     accounts.forEach((a) =>
-      byStakingPoolId.set(a.getStakingPoolId().toString(), a),
+      byStakingPoolId.set(a.getStakingPoolId().toString(), a)
     );
     return new StakeAccountContext(accounts, byStakeAccountId, byStakingPoolId);
   }
@@ -57,7 +57,7 @@ export class StakeAccountContext {
   }
 
   public getStakeAccountByStakingPoolId(
-      stakingPoolId: StakingPoolId,
+    stakingPoolId: StakingPoolId
   ): StakeAccount {
     const result = this.findStakeAccountByStakingPoolId(stakingPoolId);
     if (!result) {
@@ -68,14 +68,14 @@ export class StakeAccountContext {
   }
 
   public findStakeAccount(
-      stakeAccountId: StakeAccountId,
+    stakeAccountId: StakeAccountId
   ): StakeAccount | undefined {
     const key = stakeAccountId.toString();
     return this.byStakeAccountId.get(key);
   }
 
   public findStakeAccountByStakingPoolId(
-      stakingPoolId: StakingPoolId,
+    stakingPoolId: StakingPoolId
   ): StakeAccount | undefined {
     const key = stakingPoolId.toString();
     return this.byStakingPoolId.get(key);

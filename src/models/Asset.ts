@@ -1,28 +1,28 @@
-import Big from 'big.js';
+import Big from "big.js";
 
-import {Token, Lamport, Percentage} from './basic';
-import {Apy} from './Apy';
-import {QuoteValue} from './QuoteValue';
-import {AssetPrice} from './AssetPrice';
-import {QuantityContext} from './QuantityContext';
-import {Share} from './Share';
-import {AssetExchangeRate} from './AssetExchangeRate';
-import {MintId} from './MintId';
-import {TokenAccount} from './TokenAccount';
+import { Token, Lamport, Percentage } from "./basic";
+import { Apy } from "./Apy";
+import { QuoteValue } from "./QuoteValue";
+import { AssetPrice } from "./AssetPrice";
+import { QuantityContext } from "./QuantityContext";
+import { Share } from "./Share";
+import { AssetExchangeRate } from "./AssetExchangeRate";
+import { MintId } from "./MintId";
+import { TokenAccount } from "./TokenAccount";
 
 export class Asset extends Token<Asset> {
   public static readonly MIN_NATIVE_LAMPORT = Asset.native(
-      Lamport.of(5_000_000),
+    Lamport.of(5_000_000)
   );
 
   private static SIGNIFICANT_DIGITS = 6;
   private static LARGE_THRESHOLD = new Big(10).pow(6).toNumber();
-  private static FORMATTER_NORMAL = new Intl.NumberFormat('en-US', {
-    style: 'decimal',
+  private static FORMATTER_NORMAL = new Intl.NumberFormat("en-US", {
+    style: "decimal",
     maximumSignificantDigits: Asset.SIGNIFICANT_DIGITS,
   });
-  private static FORMATTER_LARGE = new Intl.NumberFormat('en-US', {
-    style: 'decimal',
+  private static FORMATTER_LARGE = new Intl.NumberFormat("en-US", {
+    style: "decimal",
     maximumFractionDigits: 0,
   });
 
@@ -31,16 +31,16 @@ export class Asset extends Token<Asset> {
   }
 
   public static fromString(
-      str: string,
-      mintId: MintId,
-      context: QuantityContext,
+    str: string,
+    mintId: MintId,
+    context: QuantityContext
   ): Asset {
     const increment = context.multiplier;
     const lamport = Lamport.of(new Big(str).mul(increment).round(0, 0));
     return new Asset(mintId, lamport);
   }
 
-  public static zero(mintId: MintId) {
+  public static zero(mintId: MintId): Asset {
     return Asset.of(mintId);
   }
 
@@ -65,12 +65,12 @@ export class Asset extends Token<Asset> {
   }
 
   public toValue(
-      price: AssetPrice,
-      quantityContext: QuantityContext,
+    price: AssetPrice,
+    quantityContext: QuantityContext
   ): QuoteValue {
     console.assert(
-        this.getMintId().equals(price.getMintId()),
-        `asset id: ${this.getMintId()} price id: ${price.getMintId()}`,
+      this.getMintId().equals(price.getMintId()),
+      `asset id: ${this.getMintId()} price id: ${price.getMintId()}`
     );
     if (!price) {
       return QuoteValue.zero();
@@ -98,7 +98,7 @@ export class Asset extends Token<Asset> {
     }
 
     const lamport = Lamport.of(
-        this.getRaw().mul(exchangeRatio.getUnchecked()).round(0),
+      this.getRaw().mul(exchangeRatio.getUnchecked()).round(0)
     );
     return Share.of(exchangeRatio.getShareMintId(), lamport);
   }
@@ -117,29 +117,29 @@ export class Asset extends Token<Asset> {
     return this.toLimitRoundNumber(context).toString();
   }
 
-  public toLimitRoundNumber(context: QuantityContext):number {
+  public toLimitRoundNumber(context: QuantityContext): number {
     const multiplier = context.multiplier;
     const decimals = context.decimals;
-    return this.getRaw().div(multiplier).round(Math.min(decimals, 6), 0).toNumber();
+    return this.getRaw()
+      .div(multiplier)
+      .round(Math.min(decimals, 6), 0)
+      .toNumber();
   }
 
-  public print(
-      context: QuantityContext | undefined,
-      symbol?: string,
-  ): string {
+  public print(context: QuantityContext | undefined, symbol?: string): string {
     if (!context) {
-      return '--';
+      return "--";
     }
 
     const num = this.toLimitRoundNumber(context);
     const formatted =
-      num > Asset.LARGE_THRESHOLD ?
-        Asset.FORMATTER_LARGE.format(num) :
-        Asset.FORMATTER_NORMAL.format(num);
+      num > Asset.LARGE_THRESHOLD
+        ? Asset.FORMATTER_LARGE.format(num)
+        : Asset.FORMATTER_NORMAL.format(num);
     if (!symbol) {
       return formatted;
     }
-    return formatted + ' ' + symbol;
+    return formatted + " " + symbol;
   }
 
   protected wrap(value: Lamport): Asset {

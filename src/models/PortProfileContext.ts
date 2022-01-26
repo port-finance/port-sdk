@@ -1,26 +1,26 @@
-import {PortProfile} from './PortProfile';
-import {PortProfileId} from './PortProfileId';
+import { PortProfile } from "./PortProfile";
+import { PortProfileId } from "./PortProfileId";
 
 export class PortProfileContext {
   private readonly selectedProfile: PortProfile | undefined;
   private readonly allProfiles: PortProfile[];
 
   private constructor(
-      selectedProfile: PortProfile | undefined,
-      allProfiles: PortProfile[],
+    selectedProfile: PortProfile | undefined,
+    allProfiles: PortProfile[]
   ) {
     this.selectedProfile = selectedProfile;
     this.allProfiles = allProfiles;
   }
 
   public static index(
-      profiles: PortProfile[],
-      whitelist: PortProfileId | undefined,
+    profiles: PortProfile[],
+    whitelist: PortProfileId | undefined
   ): PortProfileContext {
     profiles = profiles.sort(byCollateralAndLoanCountDesc);
-    let selected = whitelist ?
-      profiles.find((p) => p.getProfileId().equals(whitelist)) :
-      undefined;
+    let selected = whitelist
+      ? profiles.find((p) => p.getProfileId().equals(whitelist))
+      : undefined;
     if (!selected && profiles.length) {
       selected = profiles[0];
     }

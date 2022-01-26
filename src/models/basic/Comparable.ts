@@ -1,8 +1,6 @@
-import {Comparison} from 'big.js';
+import { Comparison } from "big.js";
 
 export abstract class Comparable<C extends Comparable<C>> {
-  protected constructor() {}
-
   public eq(that?: C): boolean {
     if (!that) {
       return false;

@@ -1,24 +1,24 @@
-import {StakingPool} from './StakingPool';
-import {StakingPoolId} from './StakingPoolId';
+import { StakingPool } from "./StakingPool";
+import { StakingPoolId } from "./StakingPoolId";
 
 export class StakingPoolContext {
   private static readonly STAKING_POOL_CONTEXT_EMPTY = new StakingPoolContext(
-      [],
-      new Map(),
+    [],
+    new Map()
   );
 
   private readonly pools: StakingPool[];
   private readonly byStakingPoolId: Map<string, StakingPool>;
 
   private constructor(
-      pools: StakingPool[],
-      byStakingPoolId: Map<string, StakingPool>,
+    pools: StakingPool[],
+    byStakingPoolId: Map<string, StakingPool>
   ) {
     this.pools = pools;
     this.byStakingPoolId = byStakingPoolId;
   }
 
-  public static empty() {
+  public static empty(): StakingPoolContext {
     return StakingPoolContext.STAKING_POOL_CONTEXT_EMPTY;
   }
 
@@ -29,7 +29,7 @@ export class StakingPoolContext {
 
     const byStakingPoolId = new Map<string, StakingPool>();
     accounts.forEach((a) =>
-      byStakingPoolId.set(a.getStakingPoolId().toString(), a),
+      byStakingPoolId.set(a.getStakingPoolId().toString(), a)
     );
     return new StakingPoolContext(accounts, byStakingPoolId);
   }
@@ -48,7 +48,7 @@ export class StakingPoolContext {
   }
 
   public findStakingPool(
-      stakingPoolId: StakingPoolId,
+    stakingPoolId: StakingPoolId
   ): StakingPool | undefined {
     const key = stakingPoolId.toString();
     return this.byStakingPoolId.get(key);

@@ -1,9 +1,13 @@
-import {PublicKey, SYSVAR_CLOCK_PUBKEY, TransactionInstruction} from '@solana/web3.js';
-import {TOKEN_PROGRAM_ID} from '@solana/spl-token';
-import * as BufferLayout from '@solana/buffer-layout';
-import {StakingInstructions} from './instruction';
-import {AccessType, getAccess} from '../../utils/Instructions';
-import {PORT_STAKING} from '../../constants';
+import {
+  PublicKey,
+  SYSVAR_CLOCK_PUBKEY,
+  TransactionInstruction,
+} from "@solana/web3.js";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import * as BufferLayout from "@solana/buffer-layout";
+import { StakingInstructions } from "./instruction";
+import { AccessType, getAccess } from "../../utils/Instructions";
+import { PORT_STAKING } from "../../constants";
 
 // Claim all unclaimed Reward from a stake account
 //
@@ -17,21 +21,18 @@ import {PORT_STAKING} from '../../constants';
 //   6. `[]` Clock sysvar.
 //   7. `[]` Token program.
 export function claimRewardInstruction(
-    stakeAccountOwnerPubkey: PublicKey, // 0
-    stakeAccountPubkey: PublicKey, // 1
-    stakingPoolPubkey: PublicKey, // 2
-    rewardTokenPoolPubkey: PublicKey, // 3,
-    rewardDestPubkey: PublicKey, // 4
-    stakingProgramId: PublicKey = PORT_STAKING,
-    destSubAccountId?: PublicKey,
-    subRewardTokenPool?: PublicKey,
+  stakeAccountOwnerPubkey: PublicKey, // 0
+  stakeAccountPubkey: PublicKey, // 1
+  stakingPoolPubkey: PublicKey, // 2
+  rewardTokenPoolPubkey: PublicKey, // 3,
+  rewardDestPubkey: PublicKey, // 4
+  stakingProgramId: PublicKey = PORT_STAKING,
+  destSubAccountId?: PublicKey,
+  subRewardTokenPool?: PublicKey
 ): TransactionInstruction {
-  const dataLayout = BufferLayout.struct([BufferLayout.u8('instruction')]);
+  const dataLayout = BufferLayout.struct([BufferLayout.u8("instruction")]);
   const data = Buffer.alloc(dataLayout.span);
-  dataLayout.encode(
-      {instruction: StakingInstructions.ClaimReward},
-      data,
-  );
+  dataLayout.encode({ instruction: StakingInstructions.ClaimReward }, data);
 
   const keys = [
     getAccess(stakeAccountOwnerPubkey, AccessType.SIGNER),
@@ -45,8 +46,8 @@ export function claimRewardInstruction(
 
   if (destSubAccountId && subRewardTokenPool) {
     keys.push(
-        getAccess(subRewardTokenPool, AccessType.WRITE),
-        getAccess(destSubAccountId, AccessType.WRITE),
+      getAccess(subRewardTokenPool, AccessType.WRITE),
+      getAccess(destSubAccountId, AccessType.WRITE)
     );
   }
 

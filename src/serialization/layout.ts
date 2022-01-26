@@ -1,11 +1,11 @@
-import {PublicKey} from '@solana/web3.js';
-import * as BufferLayout from '@solana/buffer-layout';
-import BN from 'bn.js';
+import { PublicKey } from "@solana/web3.js";
+import * as BufferLayout from "@solana/buffer-layout";
+import BN from "bn.js";
 
 export const publicKey = (property: string): BufferLayout.Layout => {
   const publicKeyLayout = BufferLayout.blob(
-      32,
-      property,
+    32,
+    property
   ) as BufferLayout.Layout;
 
   const _decode = publicKeyLayout.decode.bind(publicKeyLayout);
@@ -23,11 +23,11 @@ export const publicKey = (property: string): BufferLayout.Layout => {
   return publicKeyLayout;
 };
 
-export const uint64 = (property = 'uint64'): BufferLayout.Layout => {
+export const uint64 = (property = "uint64"): BufferLayout.Layout => {
   return _uint(8, property);
 };
 
-export const uint128 = (property = 'uint128'): BufferLayout.Layout => {
+export const uint128 = (property = "uint128"): BufferLayout.Layout => {
   return _uint(16, property);
 };
 
@@ -40,11 +40,11 @@ const _uint = (length: number, property: string): BufferLayout.Layout => {
   layout.decode = (buffer: Buffer, offset: number) => {
     const data = _decode(buffer, offset);
     return new BN(
-        [...data]
-            .reverse()
-            .map((i) => `00${i.toString(16)}`.slice(-2))
-            .join(''),
-        16,
+      [...data]
+        .reverse()
+        .map((i) => `00${i.toString(16)}`.slice(-2))
+        .join(""),
+      16
     );
   };
 
@@ -62,4 +62,3 @@ const _uint = (length: number, property: string): BufferLayout.Layout => {
 
   return layout;
 };
-

@@ -1,14 +1,14 @@
-import Big, {BigSource} from 'big.js';
-import {u64} from '@solana/spl-token';
+import Big, { BigSource } from "big.js";
+import { u64 } from "@solana/spl-token";
 
-import {Decimal, DecimalField} from './Decimal';
-import {BigType} from '../../serialization/BigType';
-import {Field} from '../../serialization/Field';
+import { Decimal, DecimalField } from "./Decimal";
+import { BigType } from "../../serialization/BigType";
+import { Field } from "../../serialization/Field";
 
 export class Lamport extends Decimal<Lamport> {
   protected static readonly ZERO = new Lamport(0);
   protected static readonly ONE = new Lamport(1);
-  protected static readonly MAX = new Lamport('18446744073709551615');
+  protected static readonly MAX = new Lamport("18446744073709551615");
 
   private constructor(raw: BigSource) {
     super(raw);

@@ -1,8 +1,12 @@
-import {PublicKey, SYSVAR_RENT_PUBKEY, TransactionInstruction} from '@solana/web3.js';
-import * as BufferLayout from '@solana/buffer-layout';
-import {PORT_STAKING} from '../../constants';
-import {AccessType, getAccess} from '../../utils/Instructions';
-import {StakingInstructions} from './instruction';
+import {
+  PublicKey,
+  SYSVAR_RENT_PUBKEY,
+  TransactionInstruction,
+} from "@solana/web3.js";
+import * as BufferLayout from "@solana/buffer-layout";
+import { PORT_STAKING } from "../../constants";
+import { AccessType, getAccess } from "../../utils/Instructions";
+import { StakingInstructions } from "./instruction";
 
 // Accounts expected by this instruction:
 //
@@ -12,16 +16,16 @@ import {StakingInstructions} from './instruction';
 //   3. `[]` Rent sysvar.
 
 export function createStakeAccountInstruction(
-    stakeAccountPubkey: PublicKey, // 0
-    stakingPoolPubkey: PublicKey, // 1
-    stakeAccountOwnerPubkey: PublicKey, // 2
-    stakingProgramId: PublicKey = PORT_STAKING,
+  stakeAccountPubkey: PublicKey, // 0
+  stakingPoolPubkey: PublicKey, // 1
+  stakeAccountOwnerPubkey: PublicKey, // 2
+  stakingProgramId: PublicKey = PORT_STAKING
 ): TransactionInstruction {
-  const dataLayout = BufferLayout.struct([BufferLayout.u8('instruction')]);
+  const dataLayout = BufferLayout.struct([BufferLayout.u8("instruction")]);
   const data = Buffer.alloc(dataLayout.span);
   dataLayout.encode(
-      {instruction: StakingInstructions.CreateStakeAccount},
-      data,
+    { instruction: StakingInstructions.CreateStakeAccount },
+    data
   );
 
   const keys = [
