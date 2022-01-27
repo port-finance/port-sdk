@@ -1,6 +1,7 @@
-import {ReserveId} from '.';
-import {AssetConfig} from './AssetConfig';
-import {AssetId} from './AssetId';
+import { DEFAULT_ASSET_CONFIG } from "../utils/defaultAssetConfig";
+import { AssetConfig } from "./AssetConfig";
+import { MintId } from "./MintId";
+import { ReserveId } from "./ReserveId";
 
 export class AssetContext {
   private readonly cache: Map<string, AssetConfig>;
@@ -8,9 +9,9 @@ export class AssetContext {
   private readonly byReserveId: Map<string, AssetConfig>;
 
   private constructor(
-      cache: Map<string, AssetConfig>,
-      bySymbol: Map<string, AssetConfig>,
-      byReserveId: Map<string, AssetConfig>,
+    cache: Map<string, AssetConfig>,
+    bySymbol: Map<string, AssetConfig>,
+    byReserveId: Map<string, AssetConfig>
   ) {
     this.cache = cache;
     this.bySymbol = bySymbol;
@@ -19,14 +20,16 @@ export class AssetContext {
 
   public static index(configs: AssetConfig[]): AssetContext {
     const cache = new Map<string, AssetConfig>();
-    configs.forEach((config) => cache.set(config.getAssetId().toString(), config));
+    configs.forEach((config) =>
+      cache.set(config.getMintId().toString(), config)
+    );
     const bySymbol = new Map<string, AssetConfig>();
-    configs.forEach((config) => bySymbol.set(config.getDisplayConfig().getSymbol(), config));
+    configs.forEach((config) => bySymbol.set(config.getSymbol(), config));
     const byReserveId = new Map<string, AssetConfig>();
     for (const config of configs) {
       const reserveId = config.getReserveId();
       if (reserveId) {
-        byReserveId.set(reserveId.toString(), config);
+        byReserveId.set(reserveId.toBase58(), config);
       }
     }
     return new AssetContext(cache, bySymbol, byReserveId);
@@ -36,16 +39,16 @@ export class AssetContext {
     return Array.from(this.cache.values());
   }
 
-  public findConfig(assetId: AssetId): AssetConfig | undefined {
-    const key = assetId.toString();
-    return this.cache.get(key);
+  public findConfig(mintId: MintId): AssetConfig {
+    const key = mintId.toString();
+    return this.cache.get(key) ?? DEFAULT_ASSET_CONFIG;
   }
 
-  public findConfigBySymbol(symbol: string): AssetConfig | undefined {
-    return this.bySymbol.get(symbol);
+  public findConfigBySymbol(symbol: string): AssetConfig {
+    return this.bySymbol.get(symbol) ?? DEFAULT_ASSET_CONFIG;
   }
 
-  public findConfigByReserveId(reserveId: ReserveId): AssetConfig | undefined {
-    return this.byReserveId.get(reserveId.toString());
+  public findConfigByReserveId(reserveId: ReserveId): AssetConfig {
+    return this.byReserveId.get(reserveId.toBase58()) ?? DEFAULT_ASSET_CONFIG;
   }
 }

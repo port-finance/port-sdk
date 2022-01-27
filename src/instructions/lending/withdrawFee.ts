@@ -2,12 +2,12 @@ import {
   PublicKey,
   SYSVAR_RENT_PUBKEY,
   TransactionInstruction,
-} from '@solana/web3.js';
-import {TOKEN_PROGRAM_ID} from '@solana/spl-token';
-import * as BufferLayout from 'buffer-layout';
-import {LendingInstruction} from './instruction';
-import {AccessType, getAccess} from '../../utils/Instructions';
-import {PORT_LENDING} from '../../constants';
+} from "@solana/web3.js";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import * as BufferLayout from "@solana/buffer-layout";
+import { LendingInstruction } from "./instruction";
+import { AccessType, getAccess } from "../../utils/Instructions";
+import { PORT_LENDING } from "../../constants";
 
 // Withdraw fee from a reserve.
 // Accounts expected by this instruction:
@@ -21,22 +21,21 @@ import {PORT_LENDING} from '../../constants';
 //   6. `[]` Rent sysvar.
 //   7. `[]` Token program id.
 export const withdrawFeeInstruction = (
-    reservePubkey: PublicKey, // 0
-    lendingMarketPubkey: PublicKey, // 1
-    lendingMarketAuthorityPubkey: PublicKey, // 2
-    lendingMarketOwnerPubkey: PublicKey, // 3
-    reserveFeePubkey: PublicKey, // 4
-    dstFeePubkey: PublicKey, // 5
+  reservePubkey: PublicKey, // 0
+  lendingMarketPubkey: PublicKey, // 1
+  lendingMarketAuthorityPubkey: PublicKey, // 2
+  lendingMarketOwnerPubkey: PublicKey, // 3
+  reserveFeePubkey: PublicKey, // 4
+  dstFeePubkey: PublicKey, // 5
+  lendingProgramId: PublicKey = PORT_LENDING
 ): TransactionInstruction => {
-  const dataLayout = BufferLayout.struct([
-    BufferLayout.u8('instruction'),
-  ]);
+  const dataLayout = BufferLayout.struct([BufferLayout.u8("instruction")]);
   const data = Buffer.alloc(dataLayout.span);
   dataLayout.encode(
-      {
-        instruction: LendingInstruction.WithdrawFee,
-      },
-      data,
+    {
+      instruction: LendingInstruction.WithdrawFee,
+    },
+    data
   );
   const keys = [
     getAccess(reservePubkey, AccessType.WRITE),
@@ -51,7 +50,7 @@ export const withdrawFeeInstruction = (
 
   return new TransactionInstruction({
     keys,
-    programId: PORT_LENDING,
+    programId: lendingProgramId,
     data,
   });
 };

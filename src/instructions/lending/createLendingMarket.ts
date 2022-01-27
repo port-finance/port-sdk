@@ -1,26 +1,26 @@
-import {TOKEN_PROGRAM_ID} from '@solana/spl-token';
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
   PublicKey,
   SYSVAR_RENT_PUBKEY,
   TransactionInstruction,
-} from '@solana/web3.js';
-import {Buffer} from 'buffer';
-import * as BufferLayout from 'buffer-layout';
-import {PORT_LENDING} from '../../constants';
-import {AccessType, getAccess} from '../../utils/Instructions';
-import * as Layout from '../../utils/layout';
-import {LendingInstruction} from './instruction';
+} from "@solana/web3.js";
+import { Buffer } from "buffer";
+import * as BufferLayout from "@solana/buffer-layout";
+import { PORT_LENDING } from "../../constants";
+import { AccessType, getAccess } from "../../utils/Instructions";
+import * as Layout from "../../serialization/layout";
+import { LendingInstruction } from "./instruction";
 
-interface Data {
-  instruction: number;
-  owner: PublicKey;
-  quoteCurrency: Buffer;
-}
+// interface Data {
+//   instruction: number;
+//   owner: PublicKey;
+//   quoteCurrency: Buffer;
+// }
 
-const DataLayout = BufferLayout.struct<Data>([
-  BufferLayout.u8('instruction'),
-  Layout.publicKey('owner'),
-  BufferLayout.blob(32, 'quoteCurrency'),
+const DataLayout = BufferLayout.struct([
+  BufferLayout.u8("instruction"),
+  Layout.publicKey("owner"),
+  BufferLayout.blob(32, "quoteCurrency"),
 ]);
 
 // Initializes a new lending market.
@@ -31,18 +31,19 @@ const DataLayout = BufferLayout.struct<Data>([
 //   1. `[]` Rent sysvar.
 //   2. `[]` Token program id.
 export const initLendingMarketInstruction = (
-    owner: PublicKey,
-    quoteCurrency: Buffer,
-    lendingMarket: PublicKey,
+  owner: PublicKey,
+  quoteCurrency: Buffer,
+  lendingMarket: PublicKey,
+  lendingProgramId: PublicKey = PORT_LENDING
 ): TransactionInstruction => {
   const data = Buffer.alloc(DataLayout.span);
   DataLayout.encode(
-      {
-        instruction: LendingInstruction.InitLendingMarket,
-        owner,
-        quoteCurrency,
-      },
-      data,
+    {
+      instruction: LendingInstruction.InitLendingMarket,
+      owner,
+      quoteCurrency,
+    },
+    data
   );
 
   const keys = [
@@ -53,7 +54,7 @@ export const initLendingMarketInstruction = (
 
   return new TransactionInstruction({
     keys,
-    programId: PORT_LENDING,
+    programId: lendingProgramId,
     data,
   });
 };

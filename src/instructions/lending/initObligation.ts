@@ -3,13 +3,13 @@ import {
   SYSVAR_CLOCK_PUBKEY,
   SYSVAR_RENT_PUBKEY,
   TransactionInstruction,
-} from '@solana/web3.js';
-import {TOKEN_PROGRAM_ID} from '@solana/spl-token';
-import * as BufferLayout from 'buffer-layout';
+} from "@solana/web3.js";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import * as BufferLayout from "@solana/buffer-layout";
 
-import {LendingInstruction} from './instruction';
-import {AccessType, getAccess} from '../../utils/Instructions';
-import {PORT_LENDING} from '../../constants';
+import { LendingInstruction } from "./instruction";
+import { AccessType, getAccess } from "../../utils/Instructions";
+import { PORT_LENDING } from "../../constants";
 
 // Initializes a new lending market obligation.
 //
@@ -22,16 +22,14 @@ import {PORT_LENDING} from '../../constants';
 //   4. `[]` Rent sysvar.
 //   5. `[]` Token program id.
 export function initObligationInstruction(
-    obligationPubkey: PublicKey, // 0
-    lendingMarketPubkey: PublicKey, // 1
-    obligationOwnerPubkey: PublicKey, // 2
+  obligationPubkey: PublicKey, // 0
+  lendingMarketPubkey: PublicKey, // 1
+  obligationOwnerPubkey: PublicKey, // 2
+  lendingProgramId: PublicKey = PORT_LENDING
 ): TransactionInstruction {
-  const dataLayout = BufferLayout.struct([BufferLayout.u8('instruction')]);
+  const dataLayout = BufferLayout.struct([BufferLayout.u8("instruction")]);
   const data = Buffer.alloc(dataLayout.span);
-  dataLayout.encode(
-      {instruction: LendingInstruction.InitObligation},
-      data,
-  );
+  dataLayout.encode({ instruction: LendingInstruction.InitObligation }, data);
 
   const keys = [
     getAccess(obligationPubkey, AccessType.WRITE),
@@ -44,7 +42,7 @@ export function initObligationInstruction(
 
   return new TransactionInstruction({
     keys,
-    programId: PORT_LENDING,
+    programId: lendingProgramId,
     data,
   });
 }

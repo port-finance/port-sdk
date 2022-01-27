@@ -1,14 +1,13 @@
-import {Ratio} from './Ratio';
-import {BigSource} from 'big.js';
+import { Ratio, Percentage } from "./basic";
 
-export class MarginRatio extends Ratio {
+export class MarginRatio extends Ratio<MarginRatio> {
   private static MARGIN_RATIO_NA = new MarginRatio();
 
-  private constructor(pct?: BigSource) {
+  private constructor(pct?: Percentage) {
     super(pct);
   }
 
-  public static of(pct?: BigSource): MarginRatio {
+  public static of(pct?: Percentage): MarginRatio {
     if (!pct) {
       return MarginRatio.na();
     }
@@ -17,5 +16,10 @@ export class MarginRatio extends Ratio {
 
   public static na(): MarginRatio {
     return MarginRatio.MARGIN_RATIO_NA;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected isCompatibleWith(that: MarginRatio): boolean {
+    return true;
   }
 }

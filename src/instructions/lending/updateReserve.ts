@@ -2,13 +2,13 @@ import {
   PublicKey,
   SYSVAR_RENT_PUBKEY,
   TransactionInstruction,
-} from '@solana/web3.js';
-import {TOKEN_PROGRAM_ID} from '@solana/spl-token';
-import * as BufferLayout from 'buffer-layout';
-import {LendingInstruction} from './instruction';
-import {AccessType, getAccess} from '../../utils/Instructions';
-import {ReserveConfig, ReserveConfigLayout} from '../../structs/ReserveData';
-import {PORT_LENDING} from '../../constants';
+} from "@solana/web3.js";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import * as BufferLayout from "@solana/buffer-layout";
+import { LendingInstruction } from "./instruction";
+import { AccessType, getAccess } from "../../utils/Instructions";
+import { ReserveConfig, ReserveConfigLayout } from "../../structs/ReserveData";
+import { PORT_LENDING } from "../../constants";
 
 // Update configuration for an existing market reserve.
 //
@@ -21,23 +21,25 @@ import {PORT_LENDING} from '../../constants';
 //   4. `[]` Rent sysvar.
 //   5. `[]` Token program id.
 export const updateReserveInstruction = (
-    config: ReserveConfig,
-    reservePubkey: PublicKey, // 0
-    lendingMarketPubkey: PublicKey, // 1
-    lendingMarketAuthorityPubkey: PublicKey, // 2
-    lendingMarketOwnerPubkey: PublicKey, // 3
+  config: ReserveConfig,
+  reservePubkey: PublicKey, // 0
+  lendingMarketPubkey: PublicKey, // 1
+  lendingMarketAuthorityPubkey: PublicKey, // 2
+  lendingMarketOwnerPubkey: PublicKey, // 3
+  lendingProgramId: PublicKey = PORT_LENDING
 ): TransactionInstruction => {
   const dataLayout = BufferLayout.struct([
-    BufferLayout.u8('instruction'),
-    ReserveConfigLayout,
+    BufferLayout.u8("instruction"),
+    // eslint-disable-next-line new-cap
+    ReserveConfigLayout("config"),
   ]);
   const data = Buffer.alloc(dataLayout.span);
   dataLayout.encode(
-      {
-        instruction: LendingInstruction.UpdateReserve,
-        config,
-      },
-      data,
+    {
+      instruction: LendingInstruction.UpdateReserve,
+      config,
+    },
+    data
   );
   const keys = [
     getAccess(reservePubkey, AccessType.WRITE),
@@ -50,7 +52,7 @@ export const updateReserveInstruction = (
 
   return new TransactionInstruction({
     keys,
-    programId: PORT_LENDING,
+    programId: lendingProgramId,
     data,
   });
 };

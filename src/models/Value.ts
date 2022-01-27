@@ -1,23 +1,25 @@
-import {BigSource} from 'big.js';
-import {Decimal} from './Decimal';
-import {AssetPrice} from './AssetPrice';
-import {Asset} from './Asset';
-import {AssetQuantityContext} from './AssetQuantityContext';
+import { BigSource } from "big.js";
+import { Decimal, Lamport } from "./basic";
+import { AssetPrice } from "./AssetPrice";
+import { Asset } from "./Asset";
+import { QuantityContext } from "./QuantityContext";
 
 export abstract class Value<V extends Value<V>> extends Decimal<V> {
   // eslint-disable-next-line new-cap
-  private static FORMATTER = Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
+  private static FORMATTER = Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
   });
 
   protected constructor(raw: BigSource) {
     super(raw);
   }
 
-  public toAsset(price: AssetPrice, context: AssetQuantityContext): Asset {
-    const lamport = this.raw.div(price.getRaw()).mul(context.multiplier);
-    return new Asset(price.assetId, lamport);
+  public toAsset(price: AssetPrice, context: QuantityContext): Asset {
+    const lamport = Lamport.of(
+      this.raw.div(price.getRaw()).mul(context.multiplier)
+    );
+    return Asset.of(price.getMintId(), lamport);
   }
 
   public toNumber(): number {
@@ -30,10 +32,5 @@ export abstract class Value<V extends Value<V>> extends Decimal<V> {
 
   public toString(): string {
     return this.print();
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected isCompatibleWith(that: V): boolean {
-    return true;
   }
 }

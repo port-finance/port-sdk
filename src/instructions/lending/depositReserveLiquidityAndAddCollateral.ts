@@ -2,15 +2,15 @@ import {
   PublicKey,
   SYSVAR_CLOCK_PUBKEY,
   TransactionInstruction,
-} from '@solana/web3.js';
-import {TOKEN_PROGRAM_ID} from '@solana/spl-token';
-import * as BufferLayout from 'buffer-layout';
+} from "@solana/web3.js";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import * as BufferLayout from "@solana/buffer-layout";
 
-import * as Layout from '../../utils/layout';
-import {LendingInstruction} from './instruction';
-import {AccessType, getAccess} from '../../utils/Instructions';
-import BN from 'bn.js';
-import {PORT_LENDING, PORT_STAKING} from '../../constants';
+import * as Layout from "../../serialization/layout";
+import { LendingInstruction } from "./instruction";
+import { AccessType, getAccess } from "../../utils/Instructions";
+import BN from "bn.js";
+import { PORT_LENDING, PORT_STAKING } from "../../constants";
 
 // Combines DepositReserveLiquidity and DepositObligationCollateral
 //
@@ -34,33 +34,34 @@ import {PORT_LENDING, PORT_STAKING} from '../../constants';
 //   14 `[writable, optional]` Staking pool.
 //   15 `[optional]` staking program id.
 export const depositReserveLiquidityAndAddCollateralInstruction = (
-    liquidityAmount: number | BN,
-    srcLiquidityPubkey: PublicKey, // 0
-    dstCollateralPubkey: PublicKey, // 1
-    reservePubkey: PublicKey, // 2
-    reserveLiquiditySupplyPubkey: PublicKey, // 3
-    reserveCollateralMintPubkey: PublicKey, // 4
-    lendingMarketPubkey: PublicKey, // 5
-    lendingMarketAuthorityPubkey: PublicKey, // 6
-    dstDepositCollateralPubkey: PublicKey, // 7
-    obligationPubkey: PublicKey, // 8
-    obligationOwnerPubkey: PublicKey, // 9
-    transferAuthorityPubkey: PublicKey, // 10
-    optStakeAccountPubkey: PublicKey, // 13
-    optStakingPoolPubkey: PublicKey, // 14
+  liquidityAmount: number | BN,
+  srcLiquidityPubkey: PublicKey, // 0
+  dstCollateralPubkey: PublicKey, // 1
+  reservePubkey: PublicKey, // 2
+  reserveLiquiditySupplyPubkey: PublicKey, // 3
+  reserveCollateralMintPubkey: PublicKey, // 4
+  lendingMarketPubkey: PublicKey, // 5
+  lendingMarketAuthorityPubkey: PublicKey, // 6
+  dstDepositCollateralPubkey: PublicKey, // 7
+  obligationPubkey: PublicKey, // 8
+  obligationOwnerPubkey: PublicKey, // 9
+  transferAuthorityPubkey: PublicKey, // 10
+  lendingProgramId: PublicKey = PORT_LENDING,
+  optStakeAccountPubkey?: PublicKey, // 13
+  optStakingPoolPubkey?: PublicKey, // 14
+  stakingProgramId: PublicKey = PORT_STAKING
 ): TransactionInstruction => {
   const dataLayout = BufferLayout.struct([
-    BufferLayout.u8('instruction'),
-    Layout.uint64('liquidityAmount'),
+    BufferLayout.u8("instruction"),
+    Layout.uint64("liquidityAmount"),
   ]);
   const data = Buffer.alloc(dataLayout.span);
   dataLayout.encode(
-      {
-        instruction:
-        LendingInstruction.DepositReserveLiquidityAndAddCollateral,
-        liquidityAmount: new BN(liquidityAmount),
-      },
-      data,
+    {
+      instruction: LendingInstruction.DepositReserveLiquidityAndAddCollateral,
+      liquidityAmount: new BN(liquidityAmount),
+    },
+    data
   );
 
   const keys = [
@@ -81,15 +82,15 @@ export const depositReserveLiquidityAndAddCollateralInstruction = (
 
   if (optStakeAccountPubkey && optStakingPoolPubkey) {
     keys.push(
-        getAccess(optStakeAccountPubkey, AccessType.WRITE),
-        getAccess(optStakingPoolPubkey, AccessType.WRITE),
-        getAccess(PORT_STAKING, AccessType.READ),
+      getAccess(optStakeAccountPubkey, AccessType.WRITE),
+      getAccess(optStakingPoolPubkey, AccessType.WRITE),
+      getAccess(stakingProgramId, AccessType.READ)
     );
   }
 
   return new TransactionInstruction({
     keys,
-    programId: PORT_LENDING,
+    programId: lendingProgramId,
     data,
   });
 };

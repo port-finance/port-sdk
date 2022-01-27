@@ -1,40 +1,53 @@
-import {PublicKey} from '@solana/web3.js';
-import BN from 'bn.js';
-import * as BufferLayout from 'buffer-layout';
-import * as Layout from '../utils/layout';
+import * as BufferLayout from "@solana/buffer-layout";
+import { AuthorityId } from "../models/AuthorityId";
+import { Lamport } from "../models/basic";
+import { ExchangeRate } from "../models/ExchangeRate";
+import { Slot } from "../models/Slot";
+import { TokenAccountId } from "../models/TokenAccountId";
+import { BigType } from "../serialization/BigType";
 
 export const StakingPoolLayout = BufferLayout.struct([
-  BufferLayout.u8('version'),
-  Layout.publicKey('ownerAuthority'),
-  Layout.publicKey('adminAuthority'),
-  Layout.publicKey('rewardTokenPool'),
-  Layout.uint64('lastUpdate'),
-  Layout.uint64('endTime'),
-  Layout.uint64('duration'),
-  Layout.uint64('earliestRewardClaimTime'),
-  Layout.uint128('ratePerSlot'),
-  Layout.uint128('cumulativeRate'),
-  Layout.uint64('poolSize'),
-  BufferLayout.u8('bumpSeedStakingProgram'),
-  BufferLayout.blob(32, 'reserveField1'),
-  BufferLayout.blob(32, 'reserveField2'),
-  BufferLayout.blob(32, 'reserveField3'),
-  BufferLayout.blob(32, 'reserveField4'),
+  BufferLayout.u8("version"),
+  AuthorityId.field("ownerAuthority"),
+  AuthorityId.field("adminAuthority"),
+  TokenAccountId.field("rewardTokenPool"),
+  Slot.field("lastUpdate"),
+  Slot.field("endTime"),
+  Slot.field("duration"),
+  Slot.field("earliestRewardClaimTime"),
+  ExchangeRate.field(BigType.D128, "ratePerSlot"),
+  ExchangeRate.field(BigType.D128, "cumulativeRate"),
+  Lamport.field(BigType.U64, "poolSize"),
+  BufferLayout.u8("bumpSeedStakingProgram"),
+  BufferLayout.u8("subRewardTokenPoolOption"),
+  TokenAccountId.field("subRewardTokenPool"),
+  BufferLayout.u8("subRatePerSlotOption"),
+  ExchangeRate.field(BigType.D128, "subRatePerSlot"),
+  BufferLayout.u8("subCumulativeRateOption"),
+  ExchangeRate.field(BigType.D128, "subCumulativeRate"),
+  BufferLayout.blob(32, "reserveField3"),
+  BufferLayout.blob(29, "reserveField4"),
 ]);
 
 export interface StakingPoolProto {
   version: number;
-  ownerAuthority: PublicKey;
-  adminAuthority: PublicKey;
-  rewardTokenPool: PublicKey;
-  lastUpdate: BN;
-  endTime: BN;
-  duration: BN;
-  earliestRewardClaimTime: BN;
-  ratePerSlot: BN;
-  cumulativeRate: BN;
-  poolSize: BN;
+  ownerAuthority: AuthorityId;
+  adminAuthority: AuthorityId;
+  rewardTokenPool: TokenAccountId;
+  lastUpdate: Slot;
+  endTime: Slot;
+  earliestRewardClaimTime: Slot;
+  duration: Slot;
+  ratePerSlot: ExchangeRate;
+  cumulativeRate: ExchangeRate;
+  poolSize: Lamport;
   bumpSeedStakingProgram: number;
+  subRewardTokenPoolOption: number;
+  subRewardTokenPool: TokenAccountId;
+  subRatePerSlotOption: number;
+  subRatePerSlot: ExchangeRate;
+  subCumulativeRateOption: number;
+  subCumulativeRate: ExchangeRate;
 }
 
 export const STAKING_POOL_DATA_SIZE = StakingPoolLayout.span;

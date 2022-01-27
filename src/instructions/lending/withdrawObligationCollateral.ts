@@ -1,11 +1,15 @@
-import {PublicKey, SYSVAR_CLOCK_PUBKEY, TransactionInstruction} from '@solana/web3.js';
-import {TOKEN_PROGRAM_ID} from '@solana/spl-token';
-import * as BufferLayout from 'buffer-layout';
-import * as Layout from '../../utils/layout';
-import {LendingInstruction} from './instruction';
-import {AccessType, getAccess} from '../../utils/Instructions';
-import BN from 'bn.js';
-import {PORT_LENDING, PORT_STAKING} from '../../constants';
+import {
+  PublicKey,
+  SYSVAR_CLOCK_PUBKEY,
+  TransactionInstruction,
+} from "@solana/web3.js";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import * as BufferLayout from "@solana/buffer-layout";
+import * as Layout from "../../serialization/layout";
+import { LendingInstruction } from "./instruction";
+import { AccessType, getAccess } from "../../utils/Instructions";
+import BN from "bn.js";
+import { PORT_LENDING, PORT_STAKING } from "../../constants";
 
 // Withdraw collateral from an obligation. Requires a refreshed obligation and reserve.
 //
@@ -26,28 +30,29 @@ import {PORT_LENDING, PORT_STAKING} from '../../constants';
 //   11 `[optional]` staking program id.
 
 export const withdrawObligationCollateralInstruction = (
-    collateralAmount: number | BN,
-    srcCollateralPubkey: PublicKey, // 0
-    dstCollateralPubkey: PublicKey, // 1
-    withdrawReservePubkey: PublicKey, // 2
-    obligationPubkey: PublicKey, // 3
-    lendingMarketPubkey: PublicKey, // 4
-    lendingMarketAuthorityPubkey: PublicKey, // 5
-    obligationOwnerPubkey: PublicKey, // 6
-    optStakeAccountPubkey?: PublicKey, // 9
-    optStakingPoolPubkey?: PublicKey, // 10
+  collateralAmount: number | BN,
+  srcCollateralPubkey: PublicKey, // 0
+  dstCollateralPubkey: PublicKey, // 1
+  withdrawReservePubkey: PublicKey, // 2
+  obligationPubkey: PublicKey, // 3
+  lendingMarketPubkey: PublicKey, // 4
+  lendingMarketAuthorityPubkey: PublicKey, // 5
+  obligationOwnerPubkey: PublicKey, // 6
+  lendingProgramId: PublicKey = PORT_LENDING,
+  optStakeAccountPubkey?: PublicKey, // 9
+  optStakingPoolPubkey?: PublicKey // 10
 ): TransactionInstruction => {
   const dataLayout = BufferLayout.struct([
-    BufferLayout.u8('instruction'),
-    Layout.uint64('collateralAmount'),
+    BufferLayout.u8("instruction"),
+    Layout.uint64("collateralAmount"),
   ]);
   const data = Buffer.alloc(dataLayout.span);
   dataLayout.encode(
-      {
-        instruction: LendingInstruction.WithdrawObligationCollateral,
-        collateralAmount: new BN(collateralAmount),
-      },
-      data,
+    {
+      instruction: LendingInstruction.WithdrawObligationCollateral,
+      collateralAmount: new BN(collateralAmount),
+    },
+    data
   );
 
   const keys = [
@@ -64,15 +69,15 @@ export const withdrawObligationCollateralInstruction = (
 
   if (optStakeAccountPubkey && optStakingPoolPubkey) {
     keys.push(
-        getAccess(optStakeAccountPubkey, AccessType.WRITE),
-        getAccess(optStakingPoolPubkey, AccessType.WRITE),
-        getAccess(PORT_STAKING, AccessType.READ),
+      getAccess(optStakeAccountPubkey, AccessType.WRITE),
+      getAccess(optStakingPoolPubkey, AccessType.WRITE),
+      getAccess(PORT_STAKING, AccessType.READ)
     );
   }
 
   return new TransactionInstruction({
     keys,
-    programId: PORT_LENDING,
+    programId: lendingProgramId,
     data,
   });
 };
