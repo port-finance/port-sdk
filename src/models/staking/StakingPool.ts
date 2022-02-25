@@ -12,7 +12,7 @@ import { AssetPrice } from "../AssetPrice";
 import { StakingPoolLayout, StakingPoolProto } from "../../structs";
 import { AuthorityId } from "../AuthorityId";
 import Big from "big.js";
-import { TokenInfo } from "@solana/spl-token-registry";
+import type { TokenInfo } from "@solana/spl-token-registry";
 import { QuantityContext } from "..";
 
 const SLOT_PER_SECOND = 2;
