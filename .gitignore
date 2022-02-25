@@ -1,0 +1,5 @@
+.idea
+node_modules
+.yarnrc.yml
+dist/
+lib/
