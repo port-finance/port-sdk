@@ -3,7 +3,7 @@ import { ReserveInfo } from "./ReserveInfo";
 import { ReserveId } from "./ReserveId";
 import { StakingPoolId } from "./staking/StakingPoolId";
 import { OracleId } from "./OracleId";
-import { TokenInfo } from "@solana/spl-token-registry";
+import type { TokenInfo } from "@solana/spl-token-registry";
 
 export class ReserveContext {
   private static readonly RESERVE_CONTEXT_EMPTY = new ReserveContext(

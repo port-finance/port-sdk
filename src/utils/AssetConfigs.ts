@@ -6,7 +6,7 @@ import {
   MintId,
   ReserveId,
 } from "../models";
-import { ENV } from "@solana/spl-token-registry";
+import { ENV } from "./env";
 
 export const DEVNET_BTC = new AssetConfig(
   MintId.fromBase58("EbwEYuUQHxcSHszxPBhA2nT2JxhiNwJedwjsctJnLmsC"),

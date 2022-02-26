@@ -1,8 +1,8 @@
-import { ENV } from "@solana/spl-token-registry";
 import { PublicKey } from "@solana/web3.js";
 import { AssetConfig, AssetContext } from "./models";
 import { PORT_LENDING, PORT_STAKING } from "./constants";
 import { MAINNET_ASSETS } from "./utils/AssetConfigs";
+import { ENV } from "./utils/env";
 
 export class Environment {
   private readonly env: ENV;
