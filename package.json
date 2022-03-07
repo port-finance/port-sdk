@@ -33,10 +33,9 @@
     "src/"
   ],
   "dependencies": {
-    "@project-serum/anchor": "^0.18.0",
-    "@project-serum/common": "^0.0.1-beta.3",
-    "@saberhq/solana-contrib": "1.10.4",
-    "@saberhq/token-utils": "1.10.4",
+    "@project-serum/anchor": "^0.21.0",
+    "@saberhq/solana-contrib": "^1.12.48",
+    "@saberhq/token-utils": "^1.12.48",
     "@solana/buffer-layout": "^3.0.0",
     "@solana/spl-token": "^0.1.8",
     "@solana/spl-token-registry": "^0.2.1107",
@@ -66,6 +65,6 @@
     "bn.js": "^5.2.0"
   },
   "resolutions": {
-    "@saberhq/solana-contrib": "1.10.4"
+    "@saberhq/solana-contrib": "^1.12.48"
   }
 }
