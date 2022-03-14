@@ -14,7 +14,7 @@ describe("Port", function () {
 
   beforeAll(async function () {
     port = Port.forMainNet({
-      connection: new Connection("https://port-finance.rpcpool.com"),
+      connection: new Connection("https://solana-api.projectserum.com"),
     });
     context = await port.getReserveContext();
   });
