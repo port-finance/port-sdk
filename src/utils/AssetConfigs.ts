@@ -264,7 +264,16 @@ export const MAINNET_FIDA: AssetConfig = new AssetConfig(
   )
 );
 
-export const MAINNET_PPUSDC: AssetConfig = new AssetConfig(
+export const MAINNET_STSOL: AssetConfig = new AssetConfig(
+  MintId.fromBase58("7dHbWXmci3dT8UFYWYZweBLXgycu7Y3iL6trKn1Y7ARj"),
+  new AssetDisplayConfig("Lido Staked SOL", "stSOL", "#34C5A7"),
+  AssetPriceConfig.fromDecimals(5),
+  new AssetDepositConfig(
+    ReserveId.fromBase58("AH4PS75H3LAGDd48HQBgGo78gv3nk2LVZjNrUgiueUrh")
+  )
+);
+
+export const MAINNET_2022_MAR_PPUSDC: AssetConfig = new AssetConfig(
   MintId.fromBase58("6cKnRJskSTonD6kZiWt2Fy3NB6ZND6CbgA3vHiZ1kHEU"),
   new AssetDisplayConfig(
     "Port Finance 2022 March Principle USDC",
@@ -274,7 +283,7 @@ export const MAINNET_PPUSDC: AssetConfig = new AssetConfig(
   AssetPriceConfig.fromDecimals(5)
 );
 
-export const MAINNET_PYUSDC: AssetConfig = new AssetConfig(
+export const MAINNET_2022_MAR_PYUSDC: AssetConfig = new AssetConfig(
   MintId.fromBase58("B64haiHLQoWdrvcJqufRG5dEMms96rDpwuaTjYTihQEo"),
   new AssetDisplayConfig(
     "Port Finance 2022 March Yield USDC",
@@ -311,8 +320,8 @@ export const MAINNET_ASSETS: AssetConfig[] = [
   MAINNET_UST,
   MAINNET_WHETH,
   MAINNET_FIDA,
-  MAINNET_PPUSDC,
-  MAINNET_PYUSDC,
+  MAINNET_2022_MAR_PPUSDC,
+  MAINNET_2022_MAR_PYUSDC,
 ];
 
 export function getAssetConfigs(env: ENV): AssetConfig[] {
