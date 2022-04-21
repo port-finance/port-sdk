@@ -322,6 +322,7 @@ export const MAINNET_ASSETS: AssetConfig[] = [
   MAINNET_FIDA,
   MAINNET_2022_MAR_PPUSDC,
   MAINNET_2022_MAR_PYUSDC,
+  MAINNET_STSOL,
 ];
 
 export function getAssetConfigs(env: ENV): AssetConfig[] {
