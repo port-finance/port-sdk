@@ -194,6 +194,13 @@ export class Port {
           {
             dataSize: PORT_PROFILE_DATA_SIZE,
           },
+          {
+            memcmp: {
+              // eslint-disable-next-line
+              offset: ObligationLayout.offsetOf("lendingMarket")!,
+              bytes: this.lendingMarket.toBase58(),
+            },
+          },
         ],
       }
     );
