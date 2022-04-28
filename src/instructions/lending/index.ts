@@ -13,3 +13,4 @@ export * from "./repayObligationLiquidity";
 export * from "./updateReserve";
 export * from "./withdrawFee";
 export * from "./withdrawObligationCollateral";
+export * from "./setLendingMarketOwner";

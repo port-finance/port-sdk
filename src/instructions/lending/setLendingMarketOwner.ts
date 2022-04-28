@@ -17,7 +17,7 @@ const DataLayout = BufferLayout.struct([
 //
 //   0. `[writable]` Lending market account.
 //   1. `[signer]` Previous owner.
-export const initLendingMarketInstruction = (
+export const setLendingMarketOwnerInstruction = (
   lendingMarket: PublicKey,
   lendingMarketOwner: PublicKey,
   newOwner: PublicKey,
