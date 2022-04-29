@@ -16,6 +16,8 @@ import {
   PortProfile,
   StakingPool,
   StakingPoolContext,
+  Share,
+  Asset,
 } from "./models";
 import { Environment } from "./Environment";
 import { DEFAULT_PORT_LENDING_MARKET } from "./constants";
@@ -84,6 +86,66 @@ export class Port {
       .map((r) => r.getMarketCap())
       .map((c) => c.getValue())
       .reduce(QuoteValue.sum, QuoteValue.zero());
+  }
+
+  public async getDepositBySymbol(
+    wallet: string
+  ): Promise<{ [key: string]: number }> {
+    const result: { [key: string]: number } = {};
+
+    const walletId = WalletId.fromBase58(wallet);
+    const assets = this.getEnvironment().getAssetContext();
+    const reserves = await this.getReserveContext();
+
+    const balancesInWallet = await this.getShareAccount(
+      walletId,
+      reserves
+    );
+    balancesInWallet.forEach((balance) => {
+      const shareMintId = balance.getMintId();
+      const share = Share.fromTokenAccount(balance);
+      const reserve = reserves.getByShareMintId(shareMintId);
+      const symbol = assets.findConfig(reserve.getAssetMintId()).getSymbol();
+      const asset = share.toAsset(reserve.getExchangeRatio());
+
+      result[symbol] = asset.toNumber(reserve.getQuantityContext());
+    });
+
+    const portProfile = await this.getPortProfile(walletId);
+    const balancesInObligation = portProfile?.getCollaterals();
+    balancesInObligation?.forEach((collateral) => {
+      const reserve = reserves.findReserve(collateral.getReserveId());
+      if (!reserve) return;
+      const share = Share.of(reserve.getShareMintId(), collateral.getAmount());
+      const symbol = assets.findConfig(reserve.getAssetMintId()).getSymbol();
+      const asset = share.toAsset(reserve.getExchangeRatio());
+      result[symbol] =
+        (result[symbol] || 0) + asset.toNumber(reserve.getQuantityContext());
+    });
+
+    return result;
+  }
+
+  public async getLoanBySymbol(
+    wallet: string
+  ): Promise<{ [key: string]: number }> {
+    const result: { [key: string]: number } = {};
+
+    const walletId = WalletId.fromBase58(wallet);
+    const assets = this.getEnvironment().getAssetContext();
+    const reserves = await this.getReserveContext();
+
+    const portProfile = await this.getPortProfile(walletId);
+    const loans = portProfile?.getLoans();
+    loans?.forEach((loan) => {
+      const reserve = reserves.findReserve(loan.getReserveId());
+      if (!reserve) return;
+      const symbol = assets.findConfig(reserve.getAssetMintId()).getSymbol();
+      const asset = Asset.of(reserve.getAssetMintId(), loan.getAmount());
+      result[symbol] = asset.toNumber(reserve.getQuantityContext());
+    });
+
+    return result;
   }
 
   public async getShareAccount(
