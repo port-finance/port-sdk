@@ -79,7 +79,7 @@ export const initStakingPoolInstruction = (
   };
 
   if (subReward) {
-    params["subSupply"] = subReward.supply;
+    params["subSupply"] = new BN(subReward.supply);
   }
 
   DataLayout.encode(params, data);
