@@ -8,9 +8,9 @@ import * as BufferLayout from "@solana/buffer-layout";
 import BN from "bn.js";
 
 import * as Layout from "../../serialization/layout";
-import { PORT_STAKING } from "../../constants";
 import { StakingInstructions } from "./instruction";
 import { AccessType, getAccess } from "../../utils/Instructions";
+import { Optional } from "../../serialization";
 
 // interface Data {
 //   instruction: number;
@@ -25,6 +25,7 @@ import { AccessType, getAccess } from "../../utils/Instructions";
 const DataLayout = BufferLayout.struct([
   BufferLayout.u8("instruction"),
   Layout.uint64("supply"),
+  Optional.of(Layout.uint64("subSupply")),
   Layout.uint64("duration"),
   Layout.uint64("earliestRewardTime"),
   BufferLayout.u8("bumpSeed"),
@@ -41,6 +42,9 @@ const DataLayout = BufferLayout.struct([
 //   5. `[]` Staking program derived that owns reward token pool.
 //   6. `[]` Rent sysvar .
 //   7. `[]` Token program.
+//   8. `[writable, optional]` Sub Reward token supply.
+//   9. `[writable, optional]` Sub Reward token pool - uninitialized.
+//   10. `[optional]` Sub Reward token mint.
 export const initStakingPoolInstruction = (
   supply: number | BN,
   duration: number | BN,
@@ -54,21 +58,31 @@ export const initStakingPoolInstruction = (
   derivedStakingProgram: PublicKey,
   poolOwnerAuthority: PublicKey,
   adminAuthority: PublicKey,
-  stakingProgramId: PublicKey = PORT_STAKING
+  stakingProgramId: PublicKey,
+  subReward?: {
+    supply: number | BN;
+    tokenSupply: PublicKey;
+    tokenPool: PublicKey;
+    rewardTokenMint: PublicKey;
+  }
 ): TransactionInstruction => {
   const data = Buffer.alloc(DataLayout.span);
-  DataLayout.encode(
-    {
-      instruction: StakingInstructions.InitStakingPool,
-      supply: new BN(supply),
-      duration: new BN(duration),
-      earliestRewardTime: new BN(earliestRewardTime),
-      bumpSeed,
-      poolOwnerAuthority,
-      adminAuthority,
-    },
-    data
-  );
+
+  const params = {
+    instruction: StakingInstructions.InitStakingPool,
+    supply: new BN(supply),
+    duration: new BN(duration),
+    earliestRewardTime: new BN(earliestRewardTime),
+    bumpSeed,
+    poolOwnerAuthority,
+    adminAuthority,
+  };
+
+  if (subReward) {
+    params["subSupply"] = subReward.supply;
+  }
+
+  DataLayout.encode(params, data);
 
   const keys = [
     // signer
@@ -83,6 +97,14 @@ export const initStakingPoolInstruction = (
     getAccess(SYSVAR_RENT_PUBKEY, AccessType.READ),
     getAccess(TOKEN_PROGRAM_ID, AccessType.READ),
   ];
+
+  if (subReward) {
+    keys.push(
+      getAccess(subReward.tokenSupply, AccessType.WRITE),
+      getAccess(subReward.tokenPool, AccessType.WRITE),
+      getAccess(subReward.rewardTokenMint, AccessType.READ)
+    );
+  }
 
   return new TransactionInstruction({
     keys,
