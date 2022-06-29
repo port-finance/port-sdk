@@ -1,5 +1,6 @@
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
+  Keypair,
   PublicKey,
   SYSVAR_RENT_PUBKEY,
   TransactionInstruction,
@@ -84,27 +85,24 @@ export const initStakingPoolInstruction = (
 
   DataLayout.encode(params, data);
 
+  const dummy = () => Keypair.generate().publicKey;
+
   const keys = [
     // signer
     getAccess(transferRewardSupply, AccessType.SIGNER),
     // write accounts
     getAccess(rewardTokenSupply, AccessType.WRITE),
     getAccess(rewardTokenPool, AccessType.WRITE),
+    getAccess(subReward?.tokenSupply ?? dummy(), AccessType.WRITE),
+    getAccess(subReward?.tokenPool ?? dummy(), AccessType.WRITE),
     getAccess(stakingPool, AccessType.WRITE),
     // read accounts
     getAccess(rewardTokenMint, AccessType.READ),
+    getAccess(subReward?.rewardTokenMint ?? dummy(), AccessType.READ),
     getAccess(derivedStakingProgram, AccessType.READ),
     getAccess(SYSVAR_RENT_PUBKEY, AccessType.READ),
     getAccess(TOKEN_PROGRAM_ID, AccessType.READ),
   ];
-
-  if (subReward) {
-    keys.push(
-      getAccess(subReward.tokenSupply, AccessType.WRITE),
-      getAccess(subReward.tokenPool, AccessType.WRITE),
-      getAccess(subReward.rewardTokenMint, AccessType.READ)
-    );
-  }
 
   return new TransactionInstruction({
     keys,
