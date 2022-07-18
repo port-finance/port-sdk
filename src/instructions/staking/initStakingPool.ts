@@ -1,5 +1,6 @@
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
+  Keypair,
   PublicKey,
   SYSVAR_RENT_PUBKEY,
   TransactionInstruction,
@@ -25,6 +26,8 @@ import { AccessType, getAccess } from "../../utils/Instructions";
 const DataLayout = BufferLayout.struct([
   BufferLayout.u8("instruction"),
   Layout.uint64("supply"),
+  BufferLayout.u8("sub_supply_opt"),
+  Layout.uint64("sub_supply"),
   Layout.uint64("duration"),
   Layout.uint64("earliestRewardTime"),
   BufferLayout.u8("bumpSeed"),
@@ -54,21 +57,36 @@ export const initStakingPoolInstruction = (
   derivedStakingProgram: PublicKey,
   poolOwnerAuthority: PublicKey,
   adminAuthority: PublicKey,
-  stakingProgramId: PublicKey = PORT_STAKING
+  stakingProgramId: PublicKey = PORT_STAKING,
+  subReward?: {
+    supply: number | BN;
+    tokenSupply: PublicKey;
+    tokenPool: PublicKey;
+    rewardTokenMint: PublicKey;
+  }
 ): TransactionInstruction => {
   const data = Buffer.alloc(DataLayout.span);
-  DataLayout.encode(
-    {
-      instruction: StakingInstructions.InitStakingPool,
-      supply: new BN(supply),
-      duration: new BN(duration),
-      earliestRewardTime: new BN(earliestRewardTime),
-      bumpSeed,
-      poolOwnerAuthority,
-      adminAuthority,
-    },
-    data
-  );
+  let params = {
+    instruction: StakingInstructions.InitStakingPool,
+    supply: new BN(supply),
+    sub_supply_opt: 0,
+    sub_supply: new BN(0),
+    duration: new BN(duration),
+    earliestRewardTime: new BN(earliestRewardTime),
+    bumpSeed,
+    poolOwnerAuthority,
+    adminAuthority,
+  };
+  if (subReward) {
+    params.sub_supply_opt = 1;
+    params.sub_supply = new BN(subReward.supply);
+  }
+  DataLayout.encode(params, data);
+
+  const dummyKey = Keypair.generate().publicKey;
+  const subRewardTokenSupply = subReward ? subReward.tokenSupply : dummyKey;
+  const subRewardTokenPool = subReward ? subReward.tokenPool : dummyKey;
+  const subRewardTokenMint = subReward ? subReward.rewardTokenMint : dummyKey;
 
   const keys = [
     // signer
@@ -76,9 +94,12 @@ export const initStakingPoolInstruction = (
     // write accounts
     getAccess(rewardTokenSupply, AccessType.WRITE),
     getAccess(rewardTokenPool, AccessType.WRITE),
+    getAccess(subRewardTokenSupply, AccessType.WRITE),
+    getAccess(subRewardTokenPool, AccessType.WRITE),
     getAccess(stakingPool, AccessType.WRITE),
     // read accounts
     getAccess(rewardTokenMint, AccessType.READ),
+    getAccess(subRewardTokenMint, AccessType.READ),
     getAccess(derivedStakingProgram, AccessType.READ),
     getAccess(SYSVAR_RENT_PUBKEY, AccessType.READ),
     getAccess(TOKEN_PROGRAM_ID, AccessType.READ),
