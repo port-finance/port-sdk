@@ -1,6 +1,6 @@
 {
-  "name": "@castlefinance/port-sdk",
-  "version": "0.2.69",
+  "name": "@port.finance/port-sdk",
+  "version": "0.2.68",
   "license": "MIT",
   "source": "src/index.js",
   "main": "dist/cjs/index.js",
