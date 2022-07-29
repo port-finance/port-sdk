@@ -66,7 +66,7 @@ export const initStakingPoolInstruction = (
   }
 ): TransactionInstruction => {
   const data = Buffer.alloc(DataLayout.span);
-  let params = {
+  const params = {
     instruction: StakingInstructions.InitStakingPool,
     supply: new BN(supply),
     sub_supply_opt: 0,
