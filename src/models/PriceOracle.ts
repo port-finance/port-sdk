@@ -2,7 +2,7 @@ import { AssetPrice } from "./AssetPrice";
 import { MintId } from "./MintId";
 
 export class PriceOracle {
-  private readonly cache: Map<string, AssetPrice>;
+  readonly cache: Map<string, AssetPrice>;
 
   constructor(cache: Map<string, AssetPrice>) {
     this.cache = cache;
